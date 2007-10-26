@@ -1,0 +1,3 @@
+#!/bin/sh
+
+tr - _ | dc -f - -e '[10kln/pq]sd [z1=d+lax]sa zdsn0<a'

@@ -1,0 +1,188 @@
+#!/usr/bin/python
+
+import sys
+import math
+import getopt
+
+# Decklin's mencoder bitrate/size calculator for two-pass encoding
+# ----------------------------------------------------------------
+#
+# The examples assume you have an mencoder.conf set up with mp3lame
+# in VBR mode, and profiles for mpeg4 and x264. [] denotes optional
+# arguments, and {} a choice of one or the other.
+#
+# Instructions:
+#
+#  1. Do cropdetect, then estimate bitrate and pick a size:
+# 
+#     vidsize -g X:Y -l SECS
+# 
+#  2. First encode pass:
+# 
+#     mencoder SRC \
+#         -vf crop=X:Y:W:H,scale=X:Y \
+#         {-profile mpeg4 -lavcopts vbitrate=RATE:vpass=1:turbo} \
+#         {-profile x264 -x264encopts bitrate=RATE:pass=1:turbo=2} \
+#         [-lameopts q=N] \
+#         [-sid N -vobsubout NAME] \
+#         -passlogfile NAME.log \
+#         -o /dev/null
+# 
+#  3. Calculate real bitrate:
+# 
+#     vidsize -g X:Y -l SECS -F FRAMES -a AUDIO[+SUB]
+#
+#  4. Second encode pass:
+# 
+#     mencoder SRC \
+#         -vf crop=X:Y:W:H,scale=X:Y \
+#         {-profile mpeg4 -lavcopts vbitrate=RATE:vpass=1:turbo} \
+#         {-profile x264 -x264encopts bitrate=RATE:pass=1:turbo=2} \
+#         [-lameopts q=N] \
+#         [-sid N -vobsubout NAME] \
+#         -passlogfile NAME.log \
+#         -o NAME.avi
+#
+#  5. Read below if you are interested in the implementation.
+#
+# ----------------------------------------------------------------
+
+# our magic numbers. everything is in bits, and proper SI prefixes. just
+# to be safe, leave an extra half a mib of room on the disc. i do not
+# understand why, but i experimentally observe that the AVI overhead
+# is 3 times as much as it should be, and that mpeg4 consistently
+# undershoots vbitrate by 20%.
+
+BYTE = 8
+KB = 1000
+MIB = 1024 ** 2
+DISC = 699.5 * MIB * BYTE
+MINUTE = 60
+BLOCK = 16
+AVI_OVERHEAD = 24 * BYTE
+AVI_FUDGE = 3
+MPEG4_RATE_FUDGE = 1.25
+
+# anamorphic widescreen ntsc. if it was telecined, we'll need to
+# override fps since the encoding will frob it back to 24 or whatever.
+# this is best done by taking len and frames from the first pass
+# output so that you know how many frames there really were after
+# deinterlacing.
+
+lines = 480.0
+aspect = 16.0 / 9.0
+src_x0 = lines * aspect
+src_y0 = lines
+fps = 29.97
+
+# your average scenario: stick a normal length movie on one cdrom, with
+# plenty of room for audio. this does not account for subtitles; include
+# them in -a after the first pass.
+
+bits = 1 * DISC
+len = 90.0 * MINUTE
+abr = 128.0 * KB
+
+# what we'd like the bits/pixel to be; this is subjective. acidrip
+# suggests between 0.2 and 0.25. for x264, you will want to go lower,
+# probably around 0.125 to to 0.15.
+
+bpp = 0.225
+bpp_spread = 0.025
+
+# we will output the top N sizes for consideration. if there are sizes
+# that match the original crop's aspect perfectly, this is usually
+# enough to get all of them.
+
+n_sizes = 5
+
+# normally we will get the real len, framecount, and audio track size
+# from the first pass. but estimate all these later if we don't have
+# them. we can even override rate in the same way, but this is not
+# recommended.
+
+frames = None
+audio = None
+rate = None
+
+if __name__ == '__main__':
+    opts, args = getopt.getopt(sys.argv[1:], 'A:a:g:F:f:B:b:d:l:m:n:r:')
+    for opt, arg in opts:
+        if opt == '-A':
+            abr = float(arg) * KB
+        if opt == '-a':
+            audio = int(arg) * BYTE
+        if opt == '-g':
+            src_x0, src_y0 = [float(d) for d in arg.split(':')]
+            aspect = src_x0 / src_y0
+        if opt == '-F':
+            frames = int(arg)
+        if opt == '-f':
+            fps = float(arg)
+        if opt == '-B':
+            bpp_spread = float(arg)
+        if opt == '-b':
+            bpp = float(arg)
+        if opt == '-d':
+            bits = float(arg) * DISC
+        if opt == '-l':
+            len = float(arg)
+        if opt == '-m':
+            len = float(arg) * MINUTE
+        if opt == '-n':
+            n_sizes = int(arg)
+        if opt == '-r':
+            rate = float(arg) * KB
+
+    if frames:
+        fps = frames / len
+    else:
+        frames = len * fps
+    if audio:
+        abr = audio / len
+    else:
+        audio = len * abr
+
+    bits -= audio + AVI_OVERHEAD * AVI_FUDGE * fps * len
+    if not rate: rate = bits / len
+
+    # there are many possible video sizes (although they must all be evenly
+    # divisible by BLOCK), so use something like the Bresenham line algorithm
+    # (you may think of each multiple of blocksize as a pixel and the aspect
+    # ratio as the slope of a line) to enumerate them and consider everything
+    # within the acceptable range of bpp.
+
+    def aspect_off(x, y):
+        return abs(aspect - float(x) / y)
+    def bpp_off(x, y):
+        return abs(bpp - float(bits) / frames / (x * y))
+
+    sizes = []
+    err = 0
+    y = 0
+    for x in range(0, int(src_x0), BLOCK):
+        try:
+            if bpp_off(x, y) <= bpp_spread: sizes.append((x, y))
+        except ZeroDivisionError:
+            pass
+        err += BLOCK / aspect
+        if abs(err) >= BLOCK/2:
+            y += BLOCK
+            err -= BLOCK
+
+    print '%.1fmiB + %.1fmiB / %.1fs -> br=%d bitrate=%d vbitrate=%d' % (
+        float(audio) / BYTE / MIB, float(bits) / BYTE / MIB, len, abr / KB,
+        rate / KB, rate * MPEG4_RATE_FUDGE / KB)
+
+    sizes.sort(lambda a, b: cmp(aspect_off(*a), aspect_off(*b)))
+    for t in sizes[:n_sizes]:
+        newbpp = rate / fps / float(t[0]*t[1])
+        newaspect = float(t[0])/t[1]
+        if newaspect > aspect:
+            src_x1 = src_x0
+            src_y1 = src_x0 / newaspect
+        else:
+            src_x1 = src_y0 * newaspect
+            src_y1 = src_y0
+        print '%f:1 @ %.4fbpp -> crop=%d:%d,scale=%d:%d' % (newaspect, newbpp,
+            src_x1, src_y1, t[0], t[1]) 

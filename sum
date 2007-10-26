@@ -1,0 +1,3 @@
+#!/bin/sh
+
+tr - _ | dc -f - -e '[pq]sd [z1=d+lax]sa z0<a'
