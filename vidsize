@@ -45,6 +45,8 @@ import getopt
 #
 #  5. Read below if you are interested in the implementation.
 #
+# TODO: Document the command line options.
+#
 # ----------------------------------------------------------------
 
 # our magic numbers. everything is in bits, and proper SI prefixes. just
