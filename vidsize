@@ -14,11 +14,11 @@ import getopt
 # Instructions:
 #
 #  1. Do cropdetect, then estimate bitrate and pick a size:
-# 
+#
 #     vidsize -g X:Y -l SECS
-# 
+#
 #  2. First encode pass:
-# 
+#
 #     mencoder SRC \
 #         -vf crop=X:Y:W:H,scale=X:Y \
 #         {-profile mpeg4 -lavcopts vbitrate=RATE:vpass=1:turbo} \
@@ -27,13 +27,13 @@ import getopt
 #         [-sid N -vobsubout NAME] \
 #         -passlogfile NAME.log \
 #         -o /dev/null
-# 
+#
 #  3. Calculate real bitrate:
-# 
+#
 #     vidsize -g X:Y -l SECS -F FRAMES -a AUDIO[+SUB]
 #
 #  4. Second encode pass:
-# 
+#
 #     mencoder SRC \
 #         -vf crop=X:Y:W:H,scale=X:Y \
 #         {-profile mpeg4 -lavcopts vbitrate=RATE:vpass=1:turbo} \
@@ -187,4 +187,4 @@ if __name__ == '__main__':
             src_x1 = src_y0 * newaspect
             src_y1 = src_y0
         print '%f:1 @ %.4fbpp -> crop=%d:%d,scale=%d:%d' % (newaspect, newbpp,
-            src_x1, src_y1, t[0], t[1]) 
+            src_x1, src_y1, t[0], t[1])
