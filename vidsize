@@ -11,12 +11,12 @@
 #
 #  1. Do cropdetect, then estimate bitrate and pick a size:
 #
-#     vidsize -g X:Y -l SECS
+#     vidsize -g W:H -l SECS
 #
 #  2. First encode pass:
 #
 #     mencoder SRC \
-#         -vf crop=X:Y:W:H,scale=X:Y \
+#         -vf crop=W:H:X:Y,scale=W:H \
 #         {-profile mpeg4 -lavcopts vbitrate=RATE:vpass=1:turbo} \
 #         {-profile x264 -x264encopts bitrate=RATE:pass=1:turbo=2} \
 #         [-lameopts q=N] \
@@ -26,16 +26,15 @@
 #
 #  3. Calculate real bitrate:
 #
-#     vidsize -g X:Y -l SECS -F FRAMES -a AUDIO[+SUB]
+#     vidsize -g W:H -l SECS -F FRAMES -a AUDIO[+SUB]
 #
 #  4. Second encode pass:
 #
 #     mencoder SRC \
-#         -vf crop=X:Y:W:H,scale=X:Y \
+#         -vf crop=W:H:X:Y,scale=W:H \
 #         {-profile mpeg4 -lavcopts vbitrate=RATE:vpass=1:turbo} \
 #         {-profile x264 -x264encopts bitrate=RATE:pass=1:turbo=2} \
 #         [-lameopts q=N] \
-#         [-sid N -vobsubout NAME] \
 #         -passlogfile NAME.log \
 #         -o NAME.avi
 #
