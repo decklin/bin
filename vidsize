@@ -1,9 +1,5 @@
 #!/usr/bin/python
 
-import sys
-import math
-import getopt
-
 # Decklin's mencoder bitrate/size calculator for two-pass encoding
 # ----------------------------------------------------------------
 #
@@ -49,16 +45,20 @@ import getopt
 #
 # ----------------------------------------------------------------
 
+import sys
+import math
+import getopt
+
 # our magic numbers. everything is in bits, and proper SI prefixes. just
-# to be safe, leave an extra half a mib of room on the disc. i do not
-# understand why, but i experimentally observe that the AVI overhead
+# to be safe, leave an extra third of a mib of room on the disc. i do
+# not understand why, but i experimentally observe that the AVI overhead
 # is 3 times as much as it should be, and that mpeg4 consistently
 # undershoots vbitrate by 20%.
 
 BYTE = 8
 KB = 1000
 MIB = 1024 ** 2
-DISC = 699.5 * MIB * BYTE
+DISC = 699.67 * MIB * BYTE
 MINUTE = 60
 BLOCK = 16
 AVI_OVERHEAD = 24 * BYTE
