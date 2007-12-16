@@ -26,14 +26,14 @@
 #
 #  3. Calculate real bitrate:
 #
-#     vidsize -g W:H -l SECS -F FRAMES -a AUDIO[+SUB]
+#     vidsize -g W:H -l SECS -f FRAMES -a AUDIO[+SUB]
 #
 #  4. Second encode pass:
 #
 #     mencoder SRC \
 #         -vf crop=W:H:X:Y,scale=W:H \
-#         {-profile mpeg4 -lavcopts vbitrate=RATE:vpass=1:turbo} \
-#         {-profile x264 -x264encopts bitrate=RATE:pass=1:turbo=2} \
+#         {-profile mpeg4 -lavcopts vbitrate=RATE:vpass=2} \
+#         {-profile x264 -x264encopts bitrate=RATE:pass=2} \
 #         [-lameopts q=N] \
 #         -passlogfile NAME.log \
 #         -o NAME.avi
@@ -117,9 +117,9 @@ if __name__ == '__main__':
             src_x0, src_y0 = [float(d) for d in arg.split(':')]
             aspect = src_x0 / src_y0
         if opt == '-F':
-            frames = int(arg)
-        if opt == '-f':
             fps = float(arg)
+        if opt == '-f':
+            frames = int(arg)
         if opt == '-B':
             bpp_spread = float(arg)
         if opt == '-b':
