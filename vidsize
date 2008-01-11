@@ -70,26 +70,29 @@ MPEG4_RATE_FUDGE = 1.25
 # output so that you know how many frames there really were after
 # deinterlacing.
 
-lines = 480.0
+orig_w = 720
+orig_h = 480
 aspect = 16.0 / 9.0
-src_x0 = lines * aspect
-src_y0 = lines
 fps = 29.97
 
+# how we're going to crop it
+
+w, h, xoff, yoff = [orig_w, orig_h, 0, 0]
+
 # your average scenario: stick a normal length movie on one cdrom, with
-# plenty of room for audio. this does not account for subtitles; include
-# them in -a after the first pass.
+# plenty of room for audio, but no subtitles.
 
 bits = 1 * DISC
 len = 90.0 * MINUTE
 abr = 128.0 * KB
+sub = 0
 
 # what we'd like the bits/pixel to be; this is subjective. acidrip
 # suggests between 0.2 and 0.25. for x264, you will want to go lower,
 # probably around 0.125 to to 0.15.
 
 bpp = 0.225
-bpp_spread = 0.025
+spread = 0.025
 
 # we will output the top N sizes for consideration. if there are sizes
 # that match the original crop's aspect perfectly, this is usually
@@ -107,21 +110,22 @@ audio = None
 rate = None
 
 if __name__ == '__main__':
-    opts, args = getopt.getopt(sys.argv[1:], 'A:a:g:F:f:B:b:d:l:m:n:r:')
+    opts, args = getopt.getopt(sys.argv[1:], 'A:a:G:g:F:f:B:b:d:l:m:n:r:v:')
     for opt, arg in opts:
         if opt == '-A':
             abr = float(arg) * KB
         if opt == '-a':
             audio = int(arg) * BYTE
+        if opt == '-G':
+            aspect = float(arg)
         if opt == '-g':
-            src_x0, src_y0 = [float(d) for d in arg.split(':')]
-            aspect = src_x0 / src_y0
+            w, h, xoff, yoff = [int(d) for d in arg.split(':')]
         if opt == '-F':
             fps = float(arg)
         if opt == '-f':
             frames = int(arg)
         if opt == '-B':
-            bpp_spread = float(arg)
+            spread = float(arg)
         if opt == '-b':
             bpp = float(arg)
         if opt == '-d':
@@ -134,6 +138,8 @@ if __name__ == '__main__':
             n_sizes = int(arg)
         if opt == '-r':
             rate = float(arg) * KB
+        if opt == '-v':
+            sub = int(arg) * BYTE
 
     if frames:
         fps = frames / len
@@ -144,7 +150,7 @@ if __name__ == '__main__':
     else:
         audio = len * abr
 
-    bits -= audio + AVI_OVERHEAD * AVI_FUDGE * fps * len
+    bits -= audio + sub + AVI_OVERHEAD * AVI_FUDGE * fps * len
     if not rate: rate = bits / len
 
     # there are many possible video sizes (although they must all be evenly
@@ -153,37 +159,38 @@ if __name__ == '__main__':
     # ratio as the slope of a line) to enumerate them and consider everything
     # within the acceptable range of bpp.
 
-    def aspect_off(x, y):
-        return abs(aspect - float(x) / y)
-    def bpp_off(x, y):
-        return abs(bpp - float(bits) / frames / (x * y))
+    def aspect_off(w, h):
+        return abs(aspect - float(w) / h)
+    def bpp_off(w, h):
+        return abs(bpp - float(bits) / frames / (w * h))
 
     sizes = []
     err = 0
-    y = 0
-    for x in range(0, int(src_x0), BLOCK):
+    h1 = 0
+    for w1 in range(0, int(w) + 1, BLOCK):
         try:
-            if bpp_off(x, y) <= bpp_spread: sizes.append((x, y))
+            if bpp_off(w1, h1) <= spread: sizes.append((w1, h1))
         except ZeroDivisionError:
             pass
         err += BLOCK / aspect
         if abs(err) >= BLOCK/2:
-            y += BLOCK
+            h1 += BLOCK
             err -= BLOCK
+    sizes.sort(lambda a, b: cmp(aspect_off(*a), aspect_off(*b)))
 
     print '%.1fmiB + %.1fmiB / %.1fs -> br=%d bitrate=%d vbitrate=%d' % (
         float(audio) / BYTE / MIB, float(bits) / BYTE / MIB, len, abr / KB,
         rate / KB, rate * MPEG4_RATE_FUDGE / KB)
 
-    sizes.sort(lambda a, b: cmp(aspect_off(*a), aspect_off(*b)))
-    for t in sizes[:n_sizes]:
-        newbpp = rate / fps / float(t[0]*t[1])
-        newaspect = float(t[0])/t[1]
-        if newaspect > aspect:
-            src_x1 = src_x0
-            src_y1 = src_x0 / newaspect
+    for w1, h1 in sizes[:n_sizes]:
+        new_aspect = float(w1) / h1
+        new_src_aspect = (float(orig_w) / orig_h) * new_aspect / aspect
+        new_bpp = float(rate) / fps / (w1 * h1)
+        if new_src_aspect > float(w) / h:
+            w0 = w
+            h0 = w / new_src_aspect
         else:
-            src_x1 = src_y0 * newaspect
-            src_y1 = src_y0
-        print '%f:1 @ %.4fbpp -> crop=%d:%d,scale=%d:%d' % (newaspect, newbpp,
-            src_x1, src_y1, t[0], t[1])
+            w0 = h * new_src_aspect
+            h0 = h
+        print '%f @ %.4fbpp -> crop=%d:%d:%d:%d,scale=%d:%d' % (new_aspect,
+            new_bpp, w0, h0, xoff, yoff, w1, h1)
