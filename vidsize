@@ -51,7 +51,7 @@ import math
 import getopt
 
 # our magic numbers. everything is in bits, and proper SI prefixes. just
-# to be safe, leave an extra third of a mib of room on the disc. i do
+# to be safe, leave an extra quarter of a mib of room on the disc. i do
 # not understand why, but i experimentally observe that the AVI overhead
 # is 3 times as much as it should be, and that mpeg4 consistently
 # undershoots vbitrate by 20%.
@@ -59,7 +59,7 @@ import getopt
 BYTE = 8
 KB = 1000
 MIB = 1024 ** 2
-DISC = 699.67 * MIB * BYTE
+DISC = 699.75 * MIB * BYTE
 MINUTE = 60
 BLOCK = 16
 AVI_OVERHEAD = 24 * BYTE
@@ -74,12 +74,12 @@ MPEG4_RATE_FUDGE = 1.25
 
 orig_w = 720
 orig_h = 480
-aspect = 16.0 / 9.0
+orig_a = 16.0 / 9.0
 fps = 29.97
 
 # how we're going to crop it.
 
-w, h, xoff, yoff = [orig_w, orig_h, 0, 0]
+w, h, x, y = [orig_w, orig_h, 0, 0]
 
 # your average scenario: stick a normal length movie on one cdrom, with
 # plenty of room for audio, but no subtitles.
@@ -119,9 +119,9 @@ if __name__ == '__main__':
         if opt == '-a':
             audio = int(arg) * BYTE
         if opt == '-G':
-            aspect = float(arg)
+            orig_a = float(arg)
         if opt == '-g':
-            w, h, xoff, yoff = [int(d) for d in arg.split(':')]
+            w, h, x, y = [int(d) for d in arg.split(':')]
         if opt == '-F':
             fps = float(arg)
         if opt == '-f':
@@ -155,6 +155,9 @@ if __name__ == '__main__':
     bits -= audio + sub + AVI_OVERHEAD * AVI_FUDGE * fps * len
     if not rate: rate = bits / len
 
+    a_scale = orig_a / (float(orig_w) / orig_h)
+    aspect = a_scale * float(w) / h
+
     # there are many possible video sizes (although they must all be evenly
     # divisible by BLOCK), so use something like the Bresenham line algorithm
     # (you may think of each multiple of blocksize as a pixel and the aspect
@@ -169,7 +172,7 @@ if __name__ == '__main__':
     sizes = []
     err = 0
     h1 = 0
-    for w1 in range(0, int(w) + 1, BLOCK):
+    for w1 in range(0, int(w) + BLOCK, BLOCK):
         try:
             if bpp_off(w1, h1) <= spread: sizes.append((w1, h1))
         except ZeroDivisionError:
@@ -180,19 +183,23 @@ if __name__ == '__main__':
             err -= BLOCK
     sizes.sort(lambda a, b: cmp(aspect_off(*a), aspect_off(*b)))
 
-    print '%.1fmiB + %.1fmiB / %.1fs -> br=%d bitrate=%d vbitrate=%d' % (
-        float(audio) / BYTE / MIB, float(bits) / BYTE / MIB, len, abr / KB,
-        rate / KB, rate * MPEG4_RATE_FUDGE / KB)
+    print 'input:'
+    print '  geom: %d:%d -> %f:1, cropped: %d:%d -> %f:1' % (orig_w, orig_h,
+        orig_a, w, h, aspect)
+    print '  size: %.1f + %.1f + %.1fmiB / %.1fs' % (float(bits) / BYTE / MIB,
+        float(audio) / BYTE / MIB, float(sub) / BYTE / MIB, len)
+    print '  params: abr=%d bitrate=%d vbitrate=%d' % (abr / KB, rate / KB,
+        rate * MPEG4_RATE_FUDGE / KB)
+    print 'candidates:'
 
     for w1, h1 in sizes[:n_sizes]:
-        new_aspect = float(w1) / h1
-        new_src_aspect = (float(orig_w) / orig_h) * new_aspect / aspect
         new_bpp = float(rate) / fps / (w1 * h1)
-        if new_src_aspect > float(w) / h:
+        new_a = float(w1) / h1
+        if new_a > aspect:
             w0 = w
-            h0 = w / new_src_aspect
+            h0 = w / new_a * a_scale
         else:
-            w0 = h * new_src_aspect
+            w0 = h * new_a / a_scale
             h0 = h
-        print '%f @ %.4fbpp -> crop=%d:%d:%d:%d,scale=%d:%d' % (new_aspect,
-            new_bpp, w0, h0, xoff, yoff, w1, h1)
+        print '  crop=%d:%d:%d:%d,scale=%d:%d -> %f:1, %.4fbpp' % (w0, h0,
+            x, y, w1, h1, new_a, new_bpp)
