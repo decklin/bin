@@ -86,7 +86,7 @@ w, h, xoff, yoff = [orig_w, orig_h, 0, 0]
 
 bits = 1 * DISC
 len = 90.0 * MINUTE
-abr = 128.0 * KB
+abr = 112.0 * KB
 sub = 0
 
 # what we'd like the bits/pixel to be; this is subjective. acidrip
