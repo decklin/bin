@@ -4,14 +4,16 @@
 # ----------------------------------------------------------------
 #
 # The examples assume you have an mencoder.conf set up with mp3lame
-# in VBR mode, and profiles for mpeg4 and x264. [] denotes optional
-# arguments, and {} a choice of one or the other.
+# in VBR mode, and profiles for mpeg4 and x264. {} denotes a choice
+# between sets of arguments, and [] represents arguments that are
+# entirely optional.
 #
 # Instructions:
 #
-#  1. Do cropdetect, then estimate bitrate and pick a size:
+#  1. Do cropdetect, check for telecining, then pick a size and estimate
+#     bitrate:
 #
-#     vidsize -g W:H -l SECS
+#     vidsize -g W:H:X:Y -l SECS [-F FPS]
 #
 #  2. First encode pass:
 #
@@ -26,7 +28,7 @@
 #
 #  3. Calculate real bitrate:
 #
-#     vidsize -g W:H -l SECS -f FRAMES -a AUDIO[+SUB]
+#     vidsize -g W:H:X:Y -l SECS -f FRAMES -a AUDIO_BYTES [-v SUB_BYTES]
 #
 #  4. Second encode pass:
 #
@@ -64,18 +66,18 @@ AVI_OVERHEAD = 24 * BYTE
 AVI_FUDGE = 3
 MPEG4_RATE_FUDGE = 1.25
 
-# anamorphic widescreen ntsc. if it was telecined, we'll need to
-# override fps since the encoding will frob it back to 24 or whatever.
-# this is best done by taking len and frames from the first pass
-# output so that you know how many frames there really were after
-# deinterlacing.
+# anamorphic widescreen ntsc (1.5:1 in pixels, so we will be stretching
+# horizontally). if it was telecined, we'll need to override fps since
+# the encoding will frob it back to 24 or whatever. this is best done by
+# taking len and frames from the first pass output so that you know how
+# many frames there really were after deinterlacing.
 
 orig_w = 720
 orig_h = 480
 aspect = 16.0 / 9.0
 fps = 29.97
 
-# how we're going to crop it
+# how we're going to crop it.
 
 w, h, xoff, yoff = [orig_w, orig_h, 0, 0]
 
@@ -89,12 +91,12 @@ sub = 0
 
 # what we'd like the bits/pixel to be; this is subjective. acidrip
 # suggests between 0.2 and 0.25. for x264, you will want to go lower,
-# probably around 0.125 to to 0.15.
+# probably around 0.1 to to 0.15.
 
 bpp = 0.225
 spread = 0.025
 
-# we will output the top N sizes for consideration. if there are sizes
+# we will output the top few sizes for consideration. if there are sizes
 # that match the original crop's aspect perfectly, this is usually
 # enough to get all of them.
 
