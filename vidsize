@@ -10,7 +10,7 @@
 #
 # Instructions:
 #
-#  1. Do cropdetect, check for telecining, then pick a size and estimate
+#  1. Get length, do cropdetect, check for telecining, then estimate
 #     bitrate:
 #
 #     vidsize -g W:H:X:Y -l SECS [-F FPS]
@@ -42,7 +42,7 @@
 #
 #  5. Read below if you are interested in the implementation.
 #
-# TODO: Document the command line options.
+#  6. Document the command line options.
 #
 # ----------------------------------------------------------------
 
