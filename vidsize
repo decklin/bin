@@ -113,6 +113,10 @@ rate = None
 
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'A:a:G:g:F:f:B:b:d:l:m:n:r:v:')
+    if args:
+        print >>sys.stderr, 'unrecognized arguments'
+        sys.exit(1)
+
     for opt, arg in opts:
         if opt == '-A':
             abr = float(arg) * KB
