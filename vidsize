@@ -19,6 +19,7 @@
 #
 #     mencoder SRC \
 #         -vf crop=W:H:X:Y,scale=W:H \
+#         [-fps 30000/1001 -ofps 24000/1001] \
 #         {-profile mpeg4 -lavcopts vbitrate=RATE:vpass=1:turbo} \
 #         {-profile x264 -x264encopts bitrate=RATE:pass=1:turbo=2} \
 #         [-lameopts q=N] \
@@ -34,6 +35,7 @@
 #
 #     mencoder SRC \
 #         -vf crop=W:H:X:Y,scale=W:H \
+#         [-fps 30000/1001 -ofps 24000/1001] \
 #         {-profile mpeg4 -lavcopts vbitrate=RATE:vpass=2} \
 #         {-profile x264 -x264encopts bitrate=RATE:pass=2} \
 #         [-lameopts q=N] \
@@ -53,8 +55,7 @@ import getopt
 # our magic numbers. everything is in bits, and proper SI prefixes. just
 # to be safe, leave an extra quarter of a mib of room on the disc. i do
 # not understand why, but i experimentally observe that the AVI overhead
-# is 3 times as much as it should be, and that mpeg4 consistently
-# undershoots vbitrate by 20%.
+# is 3 times as much as it should be.
 
 BYTE = 8
 KB = 1000
@@ -62,9 +63,7 @@ MIB = 1024 ** 2
 DISC = 699.75 * MIB * BYTE
 MINUTE = 60
 BLOCK = 16
-AVI_OVERHEAD = 24 * BYTE
-AVI_FUDGE = 3
-MPEG4_RATE_FUDGE = 1.25
+AVI_OVERHEAD = 24 * BYTE * 3
 
 # anamorphic widescreen ntsc (1.5:1 in pixels, so we will be stretching
 # horizontally). if it was telecined, we'll need to override fps since
@@ -156,7 +155,7 @@ if __name__ == '__main__':
     else:
         audio = len * abr
 
-    bits -= audio + sub + AVI_OVERHEAD * AVI_FUDGE * fps * len
+    bits -= audio + sub + AVI_OVERHEAD * fps * len
     if not rate: rate = bits / len
 
     a_scale = orig_a / (float(orig_w) / orig_h)
@@ -187,14 +186,11 @@ if __name__ == '__main__':
             err -= BLOCK
     sizes.sort(lambda a, b: cmp(aspect_off(*a), aspect_off(*b)))
 
-    print 'input:'
-    print '  geom: %d:%d -> %f:1, cropped: %d:%d -> %f:1' % (orig_w, orig_h,
+    print 'orig %d:%d @ %f:1 -> cropped %d:%d @ %f:3' % (orig_w, orig_h,
         orig_a, w, h, aspect)
-    print '  size: %.1f + %.1f + %.1fmiB / %.1fs' % (float(bits) / BYTE / MIB,
-        float(audio) / BYTE / MIB, float(sub) / BYTE / MIB, len)
-    print '  params: abr=%d bitrate=%d vbitrate=%d' % (abr / KB, rate / KB,
-        rate * MPEG4_RATE_FUDGE / KB)
-    print 'candidates:'
+    print '%.1f + %.1f + %.1fmiB / %.1fs -> bitrate=%d abr=%d' % \
+        (float(bits) / BYTE / MIB, float(audio) / BYTE / MIB,
+        float(sub) / BYTE / MIB, len, rate / KB, abr / KB)
 
     for w1, h1 in sizes[:n_sizes]:
         new_bpp = float(rate) / fps / (w1 * h1)
