@@ -1,0 +1,3 @@
+#!/bin/sh
+
+dd if=/dev/urandom of="$1" count=32 bs=1

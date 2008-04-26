@@ -1,0 +1,9 @@
+#!/usr/bin/python
+
+import os, sys
+
+if __name__ == '__main__':
+    lines = sys.stdin.read().rstrip('\n').split('\n')
+    pad = (int(os.getenv('COLUMNS', '80')) - max(map(len, lines))) / 2
+    for l in lines:
+        print ' ' * pad + l

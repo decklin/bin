@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec w3m "http://www.google.com/search?q=$*"

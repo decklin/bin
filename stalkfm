@@ -1,0 +1,8 @@
+#!/bin/sh
+
+wget -q -O - "http://ws.audioscrobbler.com/1.0/user/$1/recenttracks.txt" | {
+    IFS="," 
+    while read TIME TRACK; do
+        echo "[$(date -d "1970-01-01 UTC $TIME secs" "+%x %X")] $TRACK"
+    done
+} | tac
