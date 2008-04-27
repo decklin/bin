@@ -1,0 +1,4 @@
+#!/bin/sh
+
+n=$(mpc playlist | wc -l)
+mpc search "$@" | vipe | mpc add | grep -q . && mpc play $(($n+1))
