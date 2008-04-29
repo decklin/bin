@@ -1,0 +1,43 @@
+#!/usr/bin/python
+
+import sys
+import getopt
+import re
+import urllib
+import urlparse
+import BeautifulSoup
+from xml.sax.saxutils import unescape
+
+class CmdLineAuthOpener(urllib.FancyURLopener):
+    def __init__(self, user, passwd):
+        urllib.FancyURLopener.__init__(self)
+        self.user = user
+        self.passwd = passwd
+    def prompt_user_passwd(self, host, realm):
+        return self.user, self.passwd
+
+if __name__ == '__main__':
+    opts, args = getopt.getopt(sys.argv[1:], 'a:ir:')
+
+    tag = 'a'
+    att = 'href'
+    pat = ''
+    opener = urllib.FancyURLopener()
+
+    for opt, arg in opts:
+        if opt == '-a':
+            user, passwd = arg.split(':')
+            opener = CmdLineAuthOpener(user, passwd)
+        if opt == '-i':
+            tag = 'img'
+            att = 'src'
+        if opt == '-r':
+            pat = arg
+
+    for url in args:
+        doc = opener.open(url)
+        soup = BeautifulSoup.BeautifulSoup(doc.read())
+        for btag in soup.findAll('base', {'href': re.compile('.')}):
+            url = btag['href']
+        for ltag in soup.findAll(tag, {att: re.compile(pat, re.I)}):
+            print unescape(urlparse.urljoin(url, ltag[att]))
