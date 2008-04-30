@@ -11,7 +11,7 @@ set_color() {
         magenta)    FG=35;;
         cyan)       FG=36;;
         white)      FG=37;;
-        default)    FG=38;;
+        default)    FG=39;;
     esac
 
     case $2 in
@@ -23,16 +23,16 @@ set_color() {
         magenta)    BG=45;;
         cyan)       BG=46;;
         white)      BG=47;;
-        default)    BG=48;;
+        default)    BG=49;;
     esac
 
     case $3 in
         normal)     AT=00;;
         bold)       AT=01;;
-        underscore) AT=02;;
-        blink)      AT=03;;
-        reverse)    AT=04;;
-        concealed)  AT=05;;
+        blink)      AT=05;;
+        underscore) AT=04;;
+        reverse)    AT=07;;
+        concealed)  AT=08;;
     esac
 
     echo -ne "\033[${AT};${BG};${FG}m"
@@ -43,12 +43,12 @@ reset_color () {
 }
 
 for bg in black red green yellow blue magenta cyan white default; do
-    for at in normal bold reverse; do
+    for at in "$@"; do
         for fg in black red green yellow blue magenta cyan white default; do
             set_color $fg $bg $at
             echo -n "$fg "
         done
+        reset_color
         echo
     done
-    reset_color
 done
