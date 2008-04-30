@@ -3,34 +3,36 @@
 set_color() {
 
     case $1 in
-        black)          FG=30;;
-        red)            FG=31;;
-        green)          FG=32;;
-        yellow)         FG=33;;
-        blue)           FG=34;;
-        magenta)        FG=35;;
-        cyan)           FG=36;;
-        white|*)        FG=37;;
+        black)      FG=30;;
+        red)        FG=31;;
+        green)      FG=32;;
+        yellow)     FG=33;;
+        blue)       FG=34;;
+        magenta)    FG=35;;
+        cyan)       FG=36;;
+        white)      FG=37;;
+        default)    FG=38;;
     esac
 
     case $2 in
-        red)            BG=41;;
-        green)          BG=42;;
-        yellow)         BG=43;;
-        blue)           BG=44;;
-        magenta)        BG=45;;
-        cyan)           BG=46;;
-        white)          BG=47;;
-        black|*)        BG=40;;
+        black)      BG=40;;
+        red)        BG=41;;
+        green)      BG=42;;
+        yellow)     BG=43;;
+        blue)       BG=44;;
+        magenta)    BG=45;;
+        cyan)       BG=46;;
+        white)      BG=47;;
+        default)    BG=48;;
     esac
 
     case $3 in
-        bold)           AT=01;;
-        underscore)     AT=02;;
-        blink)          AT=03;;
-        reverse)        AT=04;;
-        concealed)      AT=05;;
-        none|*)         AT=00;;
+        normal)     AT=00;;
+        bold)       AT=01;;
+        underscore) AT=02;;
+        blink)      AT=03;;
+        reverse)    AT=04;;
+        concealed)  AT=05;;
     esac
 
     echo -ne "\033[${AT};${BG};${FG}m"
@@ -40,13 +42,13 @@ reset_color () {
     echo -ne "\033[0m"
 }
 
-for at in none bold blink; do
-    for bg in black red green yellow blue magenta cyan white; do
-        for fg in black red green yellow blue magenta cyan white; do
+for bg in black red green yellow blue magenta cyan white default; do
+    for at in normal bold reverse; do
+        for fg in black red green yellow blue magenta cyan white default; do
             set_color $fg $bg $at
-            echo -n " $fg "
-            reset_color
+            echo -n "$fg "
         done
         echo
     done
+    reset_color
 done
