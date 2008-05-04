@@ -1,0 +1,16 @@
+#!/usr/bin/python
+# coding=utf8
+
+import pymetar
+import sys
+
+try:
+    fetcher = pymetar.ReportFetcher(sys.argv[1])
+except IndexError:
+    print >>sys.stderr, "usage: metar STATION"
+    sys.exit(2)
+
+parser = pymetar.ReportParser()
+report = parser.ParseReport(fetcher.FetchReport())
+
+print report.getWeather(), "(%s°C)" % report.getTemperatureCelsius()
