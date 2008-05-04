@@ -1,0 +1,3 @@
+#!/bin/sh
+
+xprop -f _NET_WM_DESKTOP 32c -set _NET_WM_DESKTOP "$@"
