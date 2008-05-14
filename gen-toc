@@ -1,0 +1,19 @@
+#!/bin/sh
+
+case "$1" in
+    *.iso)
+        echo "CD_ROM"
+        echo "TRACK MODE1"
+        echo "DATAFILE \"$1\""
+        echo "ZERO 00:02:00"
+        ;;
+    *.wav)
+        echo "CD_DA"
+        echo
+        for i in "$@"; do
+            echo "TRACK AUDIO"
+            echo "//PREGAP 00:02:00"
+            echo "  FILE \"$i\" 00:00:00"
+        done
+        ;;
+esac
