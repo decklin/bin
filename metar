@@ -5,11 +5,11 @@ import pymetar
 import sys
 
 try:
-    fetcher = pymetar.ReportFetcher(sys.argv[1])
+    station = sys.argv[1]
 except IndexError:
-    print >>sys.stderr, "usage: metar STATION"
-    sys.exit(2)
+    station = 'KBOS'
 
+fetcher = pymetar.ReportFetcher(station)
 parser = pymetar.ReportParser()
 report = parser.ParseReport(fetcher.FetchReport())
 
