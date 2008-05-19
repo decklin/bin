@@ -1,0 +1,29 @@
+#!/usr/bin/ruby
+
+require 'open-uri'
+
+loc = ARGV[0] || 'ma/boston'
+uri = "http://weather.noaa.gov/pub/data/forecasts/city/#{loc}.txt"
+
+city = nil
+date = nil
+cast = []
+
+open(uri) do |f|
+  f.each_line do |l|
+    case l.strip!
+      when /^City/   then city =  l
+      when /^Issued/ then date =  l
+      when /^\./     then cast << l[1..-1]
+    end
+  end
+end
+
+head = "#{city}; #{date}"
+puts head, '=' * head.size
+
+cast.each do |day|
+  name, details = day.split('... ')
+  details.sub!(/\d+/) { |f| ((f.to_f-32)*5/9).round }
+  puts "  %15s: %s" % [name, details]
+end
