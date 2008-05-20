@@ -1,0 +1,32 @@
+#!/usr/bin/python
+
+import sys
+import os
+
+if __name__ == '__main__':
+    try:
+        state_path = sys.argv[1]
+    except IndexError:
+        print >>sys.stderr, 'usage: confer STATE'
+        sys.exit(2)
+    if os.path.exists(state_path):
+        try:
+            state_fp = open(state_path)
+            old_data = state_fp.read()
+        except IOError:
+            print >>sys.stderr, 'error reading state'
+            sys.exit(3)
+    else:
+        old_data = ''
+
+    new_data = sys.stdin.read()
+    if new_data != old_data:
+        print new_data,
+        try:
+            state_fp = open(state_path, 'w')
+            print >>state_fp, new_data,
+        except IOError:
+            print >>sys.stderr, 'error writing state'
+            sys.exit(3)
+    else:
+        sys.exit(1)
