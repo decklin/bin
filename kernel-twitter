@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# This is run from cron. We snag a copy of the banner once per run, and
+# then for each flavor defined below, use awk to print out a
+# short-and-snappy form of the first line that matches. These outputs
+# are sent to confer (found elsewhere in my ~/bin repository), which
+# saves them in per-flavor state files and prints them back out if they
+# are different from last time. If twerp has something to read on stdin,
+# it will post it; otherwise, it will exit gracefully.
+#
+# If you don't like twitter, you can just remove twerp from the pipeline
+# and cron will email you instead. In that case awk is probably overkill.
+
+banner=http://www.kernel.org/kdist/finger_banner
+flavors="stable prepatch"
+
+lib=$HOME/lib/kernel-twitter
+cache=$lib/banner
+rc=$lib/twerprc
+
+curl -s $banner > $cache
+for i in $flavors; do
+    awk "/$i/{print\"$i:\",\$NF;exit}" $cache | confer $lib/$i | twerp -c $rc
+done
