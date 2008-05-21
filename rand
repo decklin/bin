@@ -11,10 +11,11 @@ sub fisher_yates_shuffle {
     return @_;
 }
 
-getopts('1fd:', \%opts);
+getopts('1fd:s:', \%opts);
 
 if ($opts{f}) { $/ = "\n%\n"; }
 if ($opts{d}) { $/ = $opts{d}; }
+if ($opts{s}) { srand($opts{s}); }
 
 if ($opts{1}) {
     while (<>) { $line = $_ if rand($.) < 1; } print $line;
