@@ -1,0 +1,18 @@
+#!/bin/sed -f
+
+# Put an indent (possibly blank) in the hold space.
+
+h
+s/^\(\([0-9:]* *\)\?<[^>]*> \)\?.*/\1/
+s/./ /g
+x
+
+# While the last line of the input is too long, slap the indent on the
+# end, use a greedy match to break the line, and bubble the indent up.
+
+: wrap
+/[^\n]\{79,\}$/ {
+    G
+    s/^\(.*\n\)\?\([^\n]\{,78\}\) \(.*\)\(\n *\)$/\1\2\4\3/
+    b wrap
+}
