@@ -1,16 +1,36 @@
 #!/usr/bin/python
-# coding=utf8
 
-import pymetar
 import sys
+import getopt
+import pymetar
 
-try:
-    station = sys.argv[1]
-except IndexError:
-    station = 'KBOS'
+if __name__ == '__main__':
+    opts, args = getopt.getopt(sys.argv[1:], 'v')
 
-fetcher = pymetar.ReportFetcher(station)
-parser = pymetar.ReportParser()
-report = parser.ParseReport(fetcher.FetchReport())
+    verbose = False
+    for opt, arg in opts:
+        if opt == '-v':
+            verbose = True
 
-print report.getWeather(), "(%s°C)" % report.getTemperatureCelsius()
+    try:
+        station = args[0]
+    except IndexError:
+        station = 'KBOS'
+
+    f = pymetar.ReportFetcher(station)
+    p = pymetar.ReportParser()
+    r = p.ParseReport(f.FetchReport())
+
+    if not verbose:
+        print r.getWeather(), '(%s C)' % r.getTemperatureCelsius()
+
+    else:
+        head = '%s; %s' % (r.getStationCity(), r.getISOTime())
+        print head; print '=' * len(head)
+
+        print 'Conditions: %s, %s' % (r.getWeather(), r.getSkyConditions())
+        print 'Temperature: %s C' % r.getTemperatureCelsius()
+        print 'Wind: %s, %s m/s' % (r.getWindCompass(), r.getWindSpeed())
+        print 'Visibility: %s km' % r.getVisibilityKilometers()
+        print 'Dew Point: %s C' % r.getDewPointCelsius()
+        print 'Relative Humidity: %s%%' % r.getHumidity()
