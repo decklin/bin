@@ -34,7 +34,7 @@ if __name__ == '__main__':
         obs.append(('Wind', '%s %s m/s' %
                             (r.getWindCompass(), r.getWindSpeed())))
         obs.append(('Visibility', '%s km' % r.getVisibilityKilometers()))
-        obs.append(('Dew Point', '%s C' % r.getDewPointCelsius()))
+        obs.append(('Dew Point', '%s' % r.getDewPointCelsius()))
         obs.append(('Humidity', '%s%%' % r.getHumidity()))
 
         width = max([len(o[0]) for o in obs]) + 2
