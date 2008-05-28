@@ -1,0 +1,8 @@
+#!/bin/sh -e
+
+test $2 -gt -30 && { date -R >/dev/null 2>&1 && y='-d -1day' || y='-v -1d'; }
+command -v md5 >/dev/null || md5() { md5sum | cut -d' '  -f1; }; command -v \
+fetch >/dev/null && g() { fetch -q -o - "$@"; } || g() { wget -q -O - "$@"; }
+hin=$(date +%F)-$(g http://irc.peeron.com/xkcd/map/data/$(date $y +%Y/%m/%d))
+(echo 16i; echo -n $hin | md5 | sed 's/.\{16\}/0.&p/g' | tr a-f A-F) | dc | \
+while read f; do echo $1$f; shift; done
