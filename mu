@@ -1,14 +1,7 @@
 #!/bin/sh
 
-root=/music
+mpwd "$@" | mpc update - >/dev/null
 
-( for i in "$@"; do
-    case "$i" in
-        /*) path="$i";;
-        .) path="$(pwd)";;
-        *) path="$(pwd)/$i";;
-    esac
-    echo "${path##$root/}"
-done ) | mpc update - >/dev/null
-
-mop --showup &
+if [ "$DISPLAY" ] && command -v mop >/dev/null 2>&1; then
+    mop --showpl &
+fi
