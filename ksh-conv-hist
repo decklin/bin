@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use Getopt::Std;
-getopts('ios', \%opts);
+getopts('io', \%opts);
 
 $magic = "\xab\xcd";
 $delim = "\xff";
@@ -10,20 +10,13 @@ if ($opts{i}) {
     local $/ = undef;
     $blob = <>;
     die "no magic" if substr($blob, 0, 2, "") ne $magic;
-    while ($blob =~ s/^$delim(.{4,}?\x00)//s) {
-        ($n, $cmd) = unpack("NZ*", $1);
-        $cmds{$n} = $cmd;
-    }
-    if ($opts{s}) {
-        $seen{$cmds{$_}} = $_ for sort {$a<=>$b} keys %cmds;
-        print ++$i."\t$_\n" for sort {$seen{$a}<=>$seen{$b}} keys %seen;
-    } else {
-        print "$_\t$cmds{$_}\n" for sort {$a<=>$b} keys %cmds;
+    while ($blob =~ s/^\xff.{4}(.*?)\x00//ms) {
+        print "$1\n";
     }
 } elsif ($opts{o}) {
     print $magic;
     while (<>) {
-        chomp; ($n, $cmd) = split(/\t/, $_, 2);
-        print $delim, pack("NZ*", $n, $cmd);
+        chomp;
+        print $delim, pack("NZ*", ++$i, $_);
     }
 }

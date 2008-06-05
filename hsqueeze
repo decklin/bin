@@ -1,0 +1,4 @@
+#!/usr/bin/perl
+
+$seen{$_} = $. while (<>);
+print for sort {$seen{$a}<=>$seen{$b}} keys %seen;
