@@ -12,7 +12,7 @@
 # and then eating up extra ones with a backtrack match.
 
 s/\(<[^>]*>\)/           \1/
-s/ *\(.\{12\}>\)/ \1/
+s/ *\([^ ]*.\{12\}>\)/ \1/
 
 # Put an indent (possibly empty, if there is no nick) in the hold space,
 # equal in length to the timestamp/nick/spaces that begin the line.
