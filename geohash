@@ -1,9 +1,8 @@
 #!/bin/sh -e
 
-[ "$2" -gt -30 ] && { date -R >/dev/null 2>&1 && y='-d -1day' || y='-v -1d'; }
-command -v md5 >/dev/null 2>&1 || md5() { md5sum | cut -d ' ' -f 1; }
-command -v GET >/dev/null 2>&1 || GET() { wget -q -O - "$@"; }
+[ "$2" -gt -30 ] && { date -R > /dev/null 2>&1 && y='-d -1day' || y='-v -1d'; }
+command -v GET > /dev/null 2>&1 || GET() { fetch -qo- "$@" || wget -qO- "$@"; }
+command -v md5 > /dev/null 2>&1 || md5() { md5sum | cut -c 1-32; }
 
-d=$(date +%F)-$(GET http://irc.peeron.com/xkcd/map/data/$(date $y +%Y/%m/%d))
-( echo 16i; echo -n $d | md5 | sed 's/.\{16\}/0.&p/g' | tr a-f A-F ) | dc \
-| while read f; do echo $1$f; shift; done
+echo -n $(date +%F)-$(GET http://irc.peeron.com/xkcd/map/data/$(date $y +%Y/%m\
+/%d)) | md5 | tr a-f A-F | sed "s/.\{16\}/.&LgPp/g" | dc -e "[$2]Sg[$1]Sg16i" -
