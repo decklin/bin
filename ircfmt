@@ -26,8 +26,8 @@ x
 # indent, break the line with a greedy match, and bubble the indent up.
 
 : wrap
-/[^\n]\{79,\}$/ {
+/[^\n]\{78,\}$/ {
     G
-    s/^\(.*\n\)\?\([^\n]\{,78\}\) \(.*\)\(\n *\)$/\1\2\4\3/
-    b wrap
+    s/^\(.*\n\)\?\([^\n]\{20,78\}\) \([^\n]\+\)\(\n \+\)$/\1\2\4\3/
+    t wrap
 }
