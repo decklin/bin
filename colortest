@@ -35,11 +35,11 @@ set_color() {
         concealed)  AT=08;;
     esac
 
-    echo -ne "\033[${AT};${BG};${FG}m"
+    echo -n "\033[${AT};${BG};${FG}m"
 }
 
 reset_color () {
-    echo -ne "\033[0m"
+    echo -n "\033[0m"
 }
 
 for bg in black red green yellow blue magenta cyan white default; do
