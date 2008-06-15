@@ -1,6 +1,10 @@
 #!/bin/sh
 
+interp=$(which $1) && shift
+
 for i in "$@"; do
-    touch "$i"
-    chmod +x "$i"
+    if [ ! -e "$i" ]; then
+        printf "#!$interp\n\n" > "$i"
+        chmod +x "$i"
+    fi
 done
