@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 n=0
-for i in $(find $1/{cur,new} -type f); do
+for i in $(find $1/cur $1/new -type f); do
     n=$(($n+1))
     f=$(date +%s).$$_$n.$(hostname):${i##*:}
     mv $i $2/tmp/$f && ln $2/tmp/$f $2/new/$f && rm $2/tmp/$f
