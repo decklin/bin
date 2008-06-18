@@ -29,6 +29,7 @@ set_color() {
     case $3 in
         normal)     AT=00;;
         bold)       AT=01;;
+        italic)     AT=03;;
         blink)      AT=05;;
         underscore) AT=04;;
         reverse)    AT=07;;
