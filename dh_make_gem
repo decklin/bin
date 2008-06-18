@@ -1,0 +1,31 @@
+#!/usr/bin/ruby
+
+require 'rubygems'
+require 'yaml'
+
+class DebGem
+  def initialize(gem_path)
+    # ought to make a temp dir for this
+    system 'tar', 'xf', gem_path
+    @spec = YAML::load(IO::popen('zcat metadata.gz'))
+    @pkg_dir = "#{@spec.name}-#{@spec.version}"
+    @deb_dir = "#{@pkg_dir}/debian"
+    Dir.mkdir @pkg_dir
+    Dir.mkdir @deb_dir
+    system 'tar', 'xzf', 'data.tar.gz', '-C', @pkg_dir
+    File.unlink 'metadata.gz', 'data.tar.gz'
+  end
+
+  def fill_in_compat
+    open("#{@deb_dir}/compat", 'w') do |fp|
+      fp.puts '7'
+    end
+  end
+end
+
+deb = DebGem.new(ARGV[0])
+litany = %w(compat) #%w(changelog compat control copyright docs rules)
+
+litany.each do |boilerplate|
+  deb.send "fill_in_#{boilerplate}"
+end
