@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use Getopt::Std;
-getopts('io', \%opts);
+getopts('io:', \%opts);
 
 $magic = "\xab\xcd";
 $delim = "\xff";
@@ -10,10 +10,11 @@ if ($opts{i}) {
     local $/ = undef;
     $blob = <>;
     die "no magic" if substr($blob, 0, 2, "") ne $magic;
-    while ($blob =~ s/^\xff.{4}(.*?)\x00//ms) {
+    while ($blob =~ s/^$delim.{4}(.*?)\x00//ms) {
         print "$1\n";
     }
 } elsif ($opts{o}) {
+    open STDOUT, ">$opts{o}" unless $opts{o} eq "-";
     print $magic;
     while (<>) {
         chomp;
