@@ -13,18 +13,67 @@ class DebGem
     Dir.mkdir @pkg_dir
     Dir.mkdir @deb_dir
     system 'tar', 'xzf', 'data.tar.gz', '-C', @pkg_dir
+    system 'cp', '-a', @pkg_dir, "#{@pkg_dir}.orig"
     File.unlink 'metadata.gz', 'data.tar.gz'
+ 
+    boilerplate "changelog" do |f|
+      f.puts "#{@spec.name} (#{@spec.version}-1) unstable; urgency=low"
+      f.puts
+      f.puts "  * Initial release (Closes: \#nnnnnn)"
+      f.puts
+      f.puts " -- #{ENV['DEBFULLNAME']} <#{ENV['EMAIL']}>  " +
+        Time.now.strftime("%a, %d %b %Y %H:%M:%S %z")
+    end
+
+    boilerplate "compat" do |f|
+      f.puts "7"
+    end
+
+    boilerplate "control" do |f|
+      f.puts "Source: #{@spec.name}"
+      f.puts "Section: unknown"
+      f.puts "Priority: extra"
+      f.puts "Maintainer: #{ENV['DEBFULLNAME']} <#{ENV['EMAIL']}>"
+      f.puts "Build-Depends: debhelper (>= 7)"
+      f.puts "Standards-Version: 3.8.0"
+      f.puts "Homepage: #{@spec.homepage.strip}"
+      f.puts
+      f.puts "Package: lib#{@spec.name}-ruby"
+      f.puts "Architecture: all"
+      f.puts "Depends: ${shlibs:Depends}, ${misc:Depends}"
+      f.puts "Description: #{@spec.summary}"
+      f.puts " #{@spec.description}"
+    end
+
+    boilerplate "copyright" do |f|
+      if @spec.authors.length > 1
+        f.puts "Upstream Authors: #{@spec.authors.join(', ')}"
+      else
+        f.puts "Upstream Author: #{@spec.authors[0]}"
+      end
+    end
+
+    boilerplate "docs" do |f|
+      @spec.extra_rdoc_files.each {|x| f.puts x}
+    end
+
+    boilerplate "rules" do |f|
+      f.puts "#!/usr/bin/make -f"
+      f.puts
+      f.puts "%:"
+      f.puts "\tdh $@"
+    end
   end
 
-  def fill_in_compat
-    open("#{@deb_dir}/compat", 'w') do |fp|
-      fp.puts '7'
+  def boilerplate(f, &block)
+    self.class.send :define_method, "fill_in_#{f}" do
+      File.open("#{@deb_dir}/#{f}", 'w', &block)
     end
   end
 end
 
 deb = DebGem.new(ARGV[0])
-litany = %w(compat) #%w(changelog compat control copyright docs rules)
+litany = %w(changelog compat control copyright docs rules)
 
 litany.each do |boilerplate|
   deb.send "fill_in_#{boilerplate}"
