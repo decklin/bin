@@ -14,20 +14,20 @@
 s/\(<[^>]*>\)/           \1/
 s/ *\([^ ]*.\{12\}>\)/ \1/
 
-# Put an indent (possibly empty, if there is no nick) in the hold space,
-# equal in length to the timestamp/nick/spaces that begin the line.
+# Put an indent in the hold space, long enough to line up with where the
+# text starts on the first line.
 
 h
-s/^\(.* <[^>]*> \)\?.*/\1/
+s/^\(.* <[^>]*> \).*/\1/
 s/./ /g
 x
 
-# While the final line of the pattern space is too long, append the
-# indent, break the line with a greedy match, and bubble the indent up.
+# While a line of the pattern space is too long, append the indent, break
+# the line with a greedy match, and bubble the indent up.
 
 : wrap
-/[^\n]\{78,\}$/ {
+/[^\n]\{79,\}/ {
     G
-    s/^\(.*\n\)\?\([^\n]\{20,78\}\) \([^\n]\+\)\(\n \+\)$/\1\2\4\3/
+    s/\([^\n]\{13,78\}\) \([^\n]*\)\(\n *\)$/\1\3\2/
     t wrap
 }
