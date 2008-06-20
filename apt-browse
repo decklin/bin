@@ -1,0 +1,12 @@
+#!/bin/ksh
+
+IFS="
+"
+
+select pkg in $(apt-cache search "$@"); do
+  if [ "$pkg" ]; then
+    apt-cache show ${pkg%% - *}
+  else
+    break
+  fi
+done
