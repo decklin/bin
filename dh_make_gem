@@ -3,7 +3,69 @@
 require 'rubygems'
 require 'yaml'
 
+DH_MAKE_DIR = '/usr/share/debhelper/dh_make'
+
 class DebGem
+  class << self
+    def dh_tmpl(t)
+      def fill(a, spec)
+        if a.class == Symbol
+          val = spec.send(a)
+          if val.respond_to? :join
+            val.join(', ')
+          else
+            val.to_s.strip
+          end
+        else
+          a.to_s
+        end
+      end
+      proc do |spec|
+        text = open("#{DH_MAKE_DIR}/#{t}").read
+        @@pkg_attrs.each {|var, a| text.gsub! var, fill(a, spec) }
+        @@env_attrs.each {|var, a| text.gsub! var, ENV[a] }
+        text
+      end
+    end
+    def my_compat
+      proc do |spec|
+        "7"
+      end
+    end
+    def my_docs
+      proc do |spec|
+        spec.extra_rdoc_files.join("\n")
+      end
+    end
+    def my_rules
+      proc do |spec|
+        "#!/usr/bin/make -f\n\n%:\n\tdh $@"
+      end
+    end
+  end
+
+  @@templates = { 'changelog' => dh_tmpl('debian/changelog'),
+                  'compat' => my_compat,
+                  'control' => dh_tmpl('debians/control'),
+                  'copyright' => dh_tmpl('licenses/blank'),
+                  'docs' => my_docs,
+                  'rules' => my_rules }
+  @@pkg_attrs = { '#PACKAGE#' => :name,
+                  '#DATE#' => Time.now.strftime("%a, %d %b %Y %H:%M:%S %z"),
+                  '#YEAR#' => Time.now.strftime("%Y"),
+                  '#POLICY#' => "3.8.0",
+                  '#BUILD_DEPS#' => "debhelper (>= 7)",
+                  '#VERSION#' => :version,
+                  '<insert the upstream URL, if relevant>' => :homepage,
+                  '<url://example.com>' => :homepage,
+                  "<put author's name and email here>\n" +
+                                  "<likewise for another author>" => :authors,
+                  '<insert up to 60 chars description>' => :summary,
+                  '<insert long description, indented with spaces>' =>
+                                                                :description }
+  @@env_attrs = { '#USERNAME#' => 'DEBFULLNAME',
+                  '#EMAIL#' => 'EMAIL' }
+
   def initialize(gem_path)
     # ought to make a temp dir for this
     system 'tar', 'xf', gem_path
@@ -15,66 +77,20 @@ class DebGem
     system 'tar', 'xzf', 'data.tar.gz', '-C', @pkg_dir
     system 'cp', '-a', @pkg_dir, "#{@pkg_dir}.orig"
     File.unlink 'metadata.gz', 'data.tar.gz'
- 
-    boilerplate "changelog" do |f|
-      f.puts "#{@spec.name} (#{@spec.version}-1) unstable; urgency=low"
-      f.puts
-      f.puts "  * Initial release (Closes: \#nnnnnn)"
-      f.puts
-      f.puts " -- #{ENV['DEBFULLNAME']} <#{ENV['EMAIL']}>  " +
-        Time.now.strftime("%a, %d %b %Y %H:%M:%S %z")
-    end
-
-    boilerplate "compat" do |f|
-      f.puts "7"
-    end
-
-    boilerplate "control" do |f|
-      f.puts "Source: #{@spec.name}"
-      f.puts "Section: unknown"
-      f.puts "Priority: extra"
-      f.puts "Maintainer: #{ENV['DEBFULLNAME']} <#{ENV['EMAIL']}>"
-      f.puts "Build-Depends: debhelper (>= 7)"
-      f.puts "Standards-Version: 3.8.0"
-      f.puts "Homepage: #{@spec.homepage.strip}"
-      f.puts
-      f.puts "Package: lib#{@spec.name}-ruby"
-      f.puts "Architecture: all"
-      f.puts "Depends: ${shlibs:Depends}, ${misc:Depends}"
-      f.puts "Description: #{@spec.summary}"
-      f.puts " #{@spec.description}"
-    end
-
-    boilerplate "copyright" do |f|
-      if @spec.authors.length > 1
-        f.puts "Upstream Authors: #{@spec.authors.join(', ')}"
-      else
-        f.puts "Upstream Author: #{@spec.authors[0]}"
-      end
-    end
-
-    boilerplate "docs" do |f|
-      @spec.extra_rdoc_files.each {|x| f.puts x}
-    end
-
-    boilerplate "rules" do |f|
-      f.puts "#!/usr/bin/make -f"
-      f.puts
-      f.puts "%:"
-      f.puts "\tdh $@"
-    end
   end
 
-  def boilerplate(f, &block)
-    self.class.send :define_method, "fill_in_#{f}" do
-      File.open("#{@deb_dir}/#{f}", 'w', &block)
+  def create_stub(name, &block)
+    File.open("#{@deb_dir}/#{name}", 'w', &block)
+  end
+
+  def write_stubs
+    @@templates.each do |name, tmpl|
+      self.create_stub name do |f|
+        f.puts tmpl.call(@spec)
+      end
     end
   end
 end
 
 deb = DebGem.new(ARGV[0])
-litany = %w(changelog compat control copyright docs rules)
-
-litany.each do |boilerplate|
-  deb.send "fill_in_#{boilerplate}"
-end
+deb.write_stubs
