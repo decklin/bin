@@ -8,11 +8,11 @@
 
 # ----------------------------------------------------------------------
 
-# Pad the nick (%13s), by adding the largest possible number of spaces
+# Pad the nick (%15s), by adding the largest possible number of spaces
 # and then eating up extra ones with a backtrack match.
 
-s/\(<[^>]*>\)/           \1/
-s/ *\([^ ]*.\{12\}>\)/ \1/
+s/\(<[^>]*>\)/             \1/
+s/ *\([^ ]*.\{15\}>\)/ \1/
 
 # Put an indent in the hold space, long enough to line up with where the
 # text starts on the first line.
