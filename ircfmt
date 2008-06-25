@@ -12,7 +12,7 @@
 # and then eating up extra ones with a backtrack match.
 
 s/\(<[^>]*>\)/             \1/
-s/ *\([^ ]*.\{15\}>\)/ \1/
+s/ *\([^ ]*[^>]\{15\}>\)/ \1/
 
 # Put an indent in the hold space, long enough to line up with where the
 # text starts on the first line.
@@ -28,6 +28,6 @@ x
 : wrap
 /[^\n]\{79,\}/ {
     G
-    s/\([^\n]\{25,78\}\) \([^\n]*\)\(\n *\)$/\1\3\2/
+    s/\([^\n]\{32,78\}\) \([^\n]*\)\(\n *\)$/\1\3\2/
     t wrap
 }
