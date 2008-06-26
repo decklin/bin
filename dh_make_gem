@@ -5,11 +5,20 @@ require 'yaml'
 
 DH_MAKE_DIR = '/usr/share/debhelper/dh_make'
 
+RULES='''\
+#!/usr/bin/make -f
+
+%:
+	dh $@
+'''
+
 class DebGem
   class << self
     def dh_tmpl(t)
       def fill(a, spec)
-        if a.class == Symbol
+        if a.respond_to? :call
+          a.call(spec)
+        elsif spec.respond_to? a
           val = spec.send(a)
           if val.respond_to? :join
             val.join(', ')
@@ -23,34 +32,19 @@ class DebGem
       proc do |spec|
         text = open("#{DH_MAKE_DIR}/#{t}").read
         @@pkg_attrs.each {|var, a| text.gsub! var, fill(a, spec) }
-        @@env_attrs.each {|var, a| text.gsub! var, ENV[a] }
         text
-      end
-    end
-    def my_compat
-      proc do |spec|
-        "7"
-      end
-    end
-    def my_docs
-      proc do |spec|
-        spec.extra_rdoc_files.join("\n")
-      end
-    end
-    def my_rules
-      proc do |spec|
-        "#!/usr/bin/make -f\n\n%:\n\tdh $@"
       end
     end
   end
 
   @@templates = { 'changelog' => dh_tmpl('debian/changelog'),
-                  'compat' => my_compat,
+                  'compat' => "7",
                   'control' => dh_tmpl('debians/control'),
                   'copyright' => dh_tmpl('licenses/blank'),
-                  'docs' => my_docs,
-                  'rules' => my_rules }
-  @@pkg_attrs = { '#PACKAGE#' => :name,
+                  'docs' => proc {|s| s.extra_rdoc_files.join("\n")},
+                  'rules' => RULES }
+
+  @@pkg_attrs = { '#PACKAGE#' => proc {|s| "lib#{s.name}-ruby" },
                   '#DATE#' => Time.now.strftime("%a, %d %b %Y %H:%M:%S %z"),
                   '#YEAR#' => Time.now.strftime("%Y"),
                   '#POLICY#' => "3.8.0",
@@ -62,15 +56,15 @@ class DebGem
                                   "<likewise for another author>" => :authors,
                   '<insert up to 60 chars description>' => :summary,
                   '<insert long description, indented with spaces>' =>
-                                                                :description }
-  @@env_attrs = { '#USERNAME#' => 'DEBFULLNAME',
-                  '#EMAIL#' => 'EMAIL' }
+                                                                :description,
+                  '#USERNAME#' => ENV['DEBFULLNAME'] || 'Unknown Maintainer',
+                  '#EMAIL#' => ENV['EMAIL'] || 'unknown@dh.invalid' }
 
   def initialize(gem_path)
     # ought to make a temp dir for this
     system 'tar', 'xf', gem_path
     @spec = YAML::load(IO::popen('zcat metadata.gz'))
-    @pkg_dir = "#{@spec.name}-#{@spec.version}"
+    @pkg_dir = "lib#{@spec.name}-ruby-#{@spec.version}"
     @deb_dir = "#{@pkg_dir}/debian"
     Dir.mkdir @pkg_dir
     Dir.mkdir @deb_dir
@@ -86,7 +80,11 @@ class DebGem
   def write_stubs
     @@templates.each do |name, tmpl|
       self.create_stub name do |f|
-        f.puts tmpl.call(@spec)
+        if tmpl.respond_to? :call
+          f.puts tmpl.call(@spec)
+        else
+          f.puts tmpl
+        end
       end
     end
   end
