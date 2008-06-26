@@ -5,45 +5,13 @@ require 'yaml'
 
 DH_MAKE_DIR = '/usr/share/debhelper/dh_make'
 
-RULES='''\
-#!/usr/bin/make -f
+RULES='''#!/usr/bin/make -f
 
 %:
 	dh $@
 '''
 
-class DebGem
-  class << self
-    def dh_tmpl(t)
-      def fill(a, spec)
-        if a.respond_to? :call
-          a.call(spec)
-        elsif spec.respond_to? a
-          val = spec.send(a)
-          if val.respond_to? :join
-            val.join(', ')
-          else
-            val.to_s.strip
-          end
-        else
-          a.to_s
-        end
-      end
-      proc do |spec|
-        text = open("#{DH_MAKE_DIR}/#{t}").read
-        @@pkg_attrs.each {|var, a| text.gsub! var, fill(a, spec) }
-        text
-      end
-    end
-  end
-
-  @@templates = { 'changelog' => dh_tmpl('debian/changelog'),
-                  'compat' => "7",
-                  'control' => dh_tmpl('debians/control'),
-                  'copyright' => dh_tmpl('licenses/blank'),
-                  'docs' => proc {|s| s.extra_rdoc_files.join("\n")},
-                  'rules' => RULES }
-
+class DhTemplate
   @@pkg_attrs = { '#PACKAGE#' => proc {|s| "lib#{s.name}-ruby" },
                   '#DATE#' => Time.now.strftime("%a, %d %b %Y %H:%M:%S %z"),
                   '#YEAR#' => Time.now.strftime("%Y"),
@@ -59,6 +27,40 @@ class DebGem
                                                                 :description,
                   '#USERNAME#' => ENV['DEBFULLNAME'] || 'Unknown Maintainer',
                   '#EMAIL#' => ENV['EMAIL'] || 'unknown@dh.invalid' }
+
+  def initialize(path)
+    @text = open("#{DH_MAKE_DIR}/#{path}").read
+  end
+
+  def fill_in(spec)
+    text = @text
+    @@pkg_attrs.each {|var, a| text.gsub! var, interpolate(a, spec) }
+    text
+  end
+
+  def interpolate(a, spec)
+    if a.respond_to? :call
+      a.call(spec)
+    elsif spec.respond_to? a
+      val = spec.send(a)
+      if val.respond_to? :join
+        val.join(', ')
+      else
+        val.to_s.strip
+      end
+    else
+      a.to_s
+    end
+  end
+end
+
+class DebGem
+  @@templates = { 'changelog' => DhTemplate.new('debian/changelog'),
+                  'compat' => "7",
+                  'control' => DhTemplate.new('debians/control'),
+                  'copyright' => DhTemplate.new('licenses/blank'),
+                  'docs' => proc {|s| s.extra_rdoc_files.join("\n")},
+                  'rules' => RULES }
 
   def initialize(gem_path)
     # ought to make a temp dir for this
@@ -78,12 +80,14 @@ class DebGem
   end
 
   def write_stubs
-    @@templates.each do |name, tmpl|
+    @@templates.each do |name, template|
       self.create_stub name do |f|
-        if tmpl.respond_to? :call
-          f.puts tmpl.call(@spec)
+        if template.respond_to? :fill_in
+          f.puts template.fill_in(@spec)
+        elsif template.respond_to? :call
+          f.puts template.call(@spec)
         else
-          f.puts tmpl
+          f.puts template
         end
       end
     end
