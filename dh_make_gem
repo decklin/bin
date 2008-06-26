@@ -32,13 +32,11 @@ class DhTemplate
     @text = open("#{DH_MAKE_DIR}/#{path}").read
   end
 
-  def fill_in(spec)
-    text = @text
-    @@pkg_attrs.each {|var, a| text.gsub! var, interpolate(a, spec) }
-    text
+  def call(spec)
+    @@pkg_attrs.inject(@text) {|t, pair| t.gsub pair[0], fill(pair[1], spec) }
   end
 
-  def interpolate(a, spec)
+  def fill(a, spec)
     if a.respond_to? :call
       a.call(spec)
     elsif spec.respond_to? a
@@ -82,9 +80,7 @@ class DebGem
   def write_stubs
     @@templates.each do |name, template|
       self.create_stub name do |f|
-        if template.respond_to? :fill_in
-          f.puts template.fill_in(@spec)
-        elsif template.respond_to? :call
+        if template.respond_to? :call
           f.puts template.call(@spec)
         else
           f.puts template
