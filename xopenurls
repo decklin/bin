@@ -1,8 +1,9 @@
 #!/bin/sh
 
-id=$(xwit -print -all | sed -n '/Iceweasel/s/:.*//p')
-desk=$(xprop _NET_WM_DESKTOP -id $id | sed 's/.* = //')
+x-www-browser "$(xsel)"
 
-x-www-browser $(xsel)
-aedesk $desk
-xwit -pop -id $id
+id=$(xwit -print -all | sed -n '/Conkeror/s/:.*//p')
+if [ "$id" ]; then
+    desk=$(xprop _NET_WM_DESKTOP -id "$id" | sed 's/.* = //')
+    aedesk "$desk"
+fi
