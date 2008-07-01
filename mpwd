@@ -4,6 +4,10 @@ SCRIPT='s/^[[:space:]]*music_directory[[:space:]]*"\?\([^"]*\)\"\?/\1/p'
 ROOT=$(cd "$(sed -n "$SCRIPT" /etc/mpd.conf)" && pwd -P)
 
 for i in "$@"; do
-    path=$(cd "$i" && pwd -P)
+    if [ -d "$i" ]; then
+        path=$(cd "$i" && pwd -P)
+    else
+        path=$(cd "$(dirname "$i")" && pwd -P)/$(basename "$i")
+    fi
     echo "${path##$ROOT/}"
 done
