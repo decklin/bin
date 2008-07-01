@@ -14,6 +14,12 @@ if ($opts{i}) {
         print "$1\n";
     }
 } elsif ($opts{o}) {
+    # we are most likely in a pipe:
+    # khist -i .sh_history | stuff ... | khist -o .sh_history
+    # so wait for input before overwriting the given file.
+    vec($rin, fileno(STDIN), 1) = 1;
+    select($rin, undef, undef, undef);
+
     open STDOUT, ">$opts{o}" unless $opts{o} eq "-";
     print $magic;
     while (<>) {
