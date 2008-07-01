@@ -1,13 +1,9 @@
 #!/bin/sh
 
 SCRIPT='s/^[[:space:]]*music_directory[[:space:]]*"\?\([^"]*\)\"\?/\1/p'
-ROOT=$(cd $(sed -n -e "$SCRIPT" /etc/mpd.conf); pwd -P)
+ROOT=$(cd "$(sed -n "$SCRIPT" /etc/mpd.conf)" && pwd -P)
 
 for i in "$@"; do
-    case "$i" in
-        /*) path="$i";;
-        .) path="$(pwd -P)";;
-        *) path="$(pwd -P)/$i";;
-    esac
+    path=$(cd "$i" && pwd -P)
     echo "${path##$ROOT/}"
 done
