@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
-command -v GET > /dev/null 2>&1 || GET() { fetch -qo- "$@" || wget -qO- "$@"; }
-command -v md5 > /dev/null 2>&1 || md5() { md5sum | cut -c 1-32; };test -n "$1"
-[ "$2" -gt -30 ] && { date -R > /dev/null 2>&1 && y='-d -1day' || y='-v -1d'; }
-d=$(GET http://irc.peeron.com/xkcd/map/data/`date $y +%Y/%m/%d`);printf `date \
-+%F-$d` | md5 | tr a-f A-F | sed "s/.\{16\}/.&LgPp/g" | dc -e [$2]Sg[$1]Sg16i -
+command -v md5 >/dev/null 2>&1 || md5() { md5sum | cut -c 1-32; }; [ -n "$1" ]
+command -v GET >/dev/null 2>&1 || GET() { wget -qO - "$@"; }; [ "$2" -gt -30 \
+] && { date -R >/dev/null 2>&1 && y='-d yesterday' || y='-v -1d'; }; d=$(GET \
+irc.peeron.com/xkcd/map/data/$(date $y +%Y/%m/%d)); printf $(date $3 +%F-$d) |
+md5 | sed 'y/abcdef/ABCDEF/; s/.\{16\}/.&LgPp/g' | dc -e "[$2]Sg [$1]Sg 16i" -
