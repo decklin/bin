@@ -43,5 +43,5 @@ if __name__ == '__main__':
         soup = BeautifulSoup.BeautifulSoup(doc.read())
         for btag in soup.findAll('base', {'href': re.compile('.')}):
             url = btag['href']
-        for ltag in soup.findAll(tag, {att: re.compile(pat, re.I)}):
-            print urlparse.urljoin(url, unescape(ltag[att]))
+        for ltag in soup.findAll(tag, {att: re.compile(pat, re.I|re.M)}):
+            print urlparse.urljoin(url, unescape(ltag[att].strip()))
