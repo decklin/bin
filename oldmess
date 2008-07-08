@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+
+use strict;
+use POSIX qw(strftime);
+$|++;
+
+for my $name (@ARGV) {
+  next unless -e $name;
+  my $mtime = (stat $name)[9] or next;
+  my $dest = lc strftime "%Y/%b", localtime $mtime;
+  print "mv $name $dest... ";
+  if (rename $name, "$dest/$name") {
+    print "ok\n";
+  } else {
+    print "failed: $!\n";
+  }
+}
