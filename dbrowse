@@ -1,15 +1,23 @@
 #!/bin/sh
 
+FONT='-*-lucida-medium-r-*-sans-12-*-*-*-*-*-iso10646-1'
+COLOR='-nb honeydew2 -nf black -sb honeydew4 -sf white'
+
 dm() {
-#colors='-nb honeydew2 -nf black -sb honeydew4 -sf white'
-#opts='-x 440 -y 440 -w 1040'
-    dmenu -fn '-*-lucida-medium-r-*-sans-12-*-*-*-*-*-iso10646-1' -y -0
+    dmenu $COLOR -fn $FONT -y -0
 }
 
-if [ "$1" = "--run" ]; then
-    lsx $(echo $PATH | tr : ' ') | sort | dm
-else
-    while d="$(ls -ap | sort -d | dm)" && test "$d"; do
-        cd "$d" 2>/dev/null || exec x-terminal-emulator -e sensible-editor "$d"
-    done
-fi
+case $1 in
+    --edit)
+        while d="$(ls -ap | sort -d | dm)" && test "$d"; do
+            if [ -d "$d" ]; then
+                cd "$d"
+            else
+                exec x-terminal-emulator -e sensible-editor "$d"
+            fi
+        done
+        ;;
+    --run|*)
+        exec "$((IFS=':'; lsx $PATH) | sort | dm)"
+        ;;
+esac
