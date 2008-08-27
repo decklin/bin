@@ -1,0 +1,11 @@
+#!/bin/sh
+
+stty -echo
+echo -n "Passphrase: "
+read phrase; echo
+stty echo
+
+for domain in "$@"; do
+    test "$#" -gt 0 && echo -n "$domain "
+    echo "$domain$phrase" | pwgen -nA -N 1 -H /dev/stdin
+done
