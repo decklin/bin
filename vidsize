@@ -41,12 +41,6 @@
 #         [-lameopts q=N] \
 #         -passlogfile NAME.log \
 #         -o NAME.avi
-#
-#  5. Read below if you are interested in the implementation.
-#
-#  6. Document the command line options.
-#
-# ----------------------------------------------------------------
 
 import sys
 import math
