@@ -1,0 +1,59 @@
+#!/usr/bin/python
+
+import sys
+import getopt
+import re
+import os
+import string
+
+outdir = "."
+outstr = "%(file)s.wav"
+
+if __name__ == '__main__':
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "d:o:")
+    except getopt.GetoptError:
+        print >>sys.stderr, "usage: dumwav [-d dir] [-o pattern] files"
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt == "-d":
+            outdir = arg
+        if opt == "-o":
+            outstr = arg
+
+    commands = {
+        'ogg': 'ogg123 -d wav -f "%s/%s" "%s"',
+        'mp3': 'mpg321 -v --skip-printing-frames=100 -w "%s/%s" "%s"',
+        'flac': 'flac -d -o "%s/%s" "%s"',
+        'wav': 'cp -v "%s/%s" "%s"',
+        }
+
+
+    for i, infile in enumerate(args):
+        status = 0
+
+        parts = os.path.basename(infile).split('.')
+        ext = parts.pop()
+        try:
+            n = int(parts[0])
+            parts.pop(0)
+        except ValueError:
+            n = 0
+
+        outfile = outstr % {
+            'file': '.'.join(parts),
+            'n': n,
+            'i': i + 1,
+            }
+
+        try:
+            status = os.system(commands[ext] % 
+                tuple([re.sub('"', '\\"', f)
+                    for f in (outdir, outfile, infile)]))
+        except KeyError:
+            print "dumpwav: unknown file type: %s" % infile
+
+        if status != 0:
+            print >>sys.stderr, "error: decode command failed"
+            sys.exit(status)

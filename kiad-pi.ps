@@ -1,0 +1,42 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 0 0 612 792
+%%EndComments
+
+%------------------------------------------------------------------
+% A visual aid for al-Kāshī's approximation of π. Written for Kiad.
+% Decklin Foster <decklin@red-bean.com>, 2003-05-29. Public domain.
+%------------------------------------------------------------------
+
+/xcenter 306 def
+/ycenter 396 def
+/radsize 288 def
+
+/approxcircleside {
+  /aend 1 index def pop
+  /xoff aend cos radius mul def
+  /yoff aend sin radius mul def
+  /xpos xcenter xoff add def
+  /ypos ycenter yoff add def
+  xpos ypos lineto
+} def
+
+/approxcircle {
+  /radius 1 index def pop
+  /nsides 1 index def pop
+  /angle 360 nsides div def
+  /xpos xcenter radius add def
+  /ypos ycenter def
+  newpath
+  xpos ypos moveto
+  0 angle 360 angle sub {
+    angle add approxcircleside
+  } for
+  closepath
+  stroke
+} def
+
+0 1 8 {
+  2 exch exp 6 mul radsize approxcircle
+} for
+
+showpage

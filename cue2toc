@@ -1,0 +1,78 @@
+#!/usr/bin/python
+
+import sys
+import getopt
+import string
+
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "do")
+except getopt.GetoptError:
+    print "usage: cue2toc [-d] [-o] cuefile"
+    sys.exit(2)
+
+ogg = 0
+
+for opt, arg in opts:
+    if opt == "-o":
+        ogg = 1
+
+def msf_to_raw(m = 0, s = 0, f = 0):
+    """convert minute/second/frame tuple to number of frames."""
+    return int(m*4500) + int(s*75) + int(f);
+
+def raw_to_msf(t = 0):
+    """convert number of frames to minute/second/frame tuple."""
+    m, t = divmod(t, 4500)
+    s, f = divmod(t, 75)
+    return (m, s, f)
+
+all_times = []
+
+# TODO: decide what to do with multiple .cue files
+
+try:
+    input = open(args[0])
+except:
+    input = sys.stdin
+
+for line in input.readlines():
+    tokens = string.split(line)
+    if tokens:
+        if tokens[0] == "FILE":
+            cur_file = tokens[1]
+            track_times = []
+            all_times.append((cur_file, track_times))
+        if tokens[0] == "TRACK":
+            track_num = int(tokens[1])
+            pregap_start = 0
+            track_start = 0
+            pregap_len = 0
+        if tokens[0] == "INDEX" and tokens[1] == "00":
+            pregap_start = apply(msf_to_raw, map(float, tokens[2].split(':')))
+        if tokens[0] == "INDEX" and tokens[1] == "01":
+            track_start = apply(msf_to_raw, map(float, tokens[2].split(':')))
+            if pregap_start != 0:
+                pregap_len = track_start - pregap_start
+                track_start = pregap_start
+            track_times.insert(track_num, (track_start, pregap_len))
+
+if ogg != 1:
+    print "CD_DA"
+
+for file, tracks in all_times:
+    for i in range(len(tracks)):
+        (this_time, this_pregap) = tracks[i]
+        if ogg != 1:
+            print 'TRACK AUDIO\n', \
+                '  FILE', file, '%02d:%02d:%02d' % raw_to_msf(this_time),
+        if i+1 < len(tracks):
+            (next_time, next_pregap) = tracks[i+1]
+            if ogg == 1:
+                print "vcut in.ogg %02d.ogg rest.ogg %s; mv rest.ogg in.ogg" \
+                    % (i+1, 588*(next_time - this_time)),
+            else:
+                print '%02d:%02d:%02d' \
+                    % (raw_to_msf(next_time - this_time)),
+        print
+        if ogg != 1:
+            print '  START %02d:%02d:%02d' % raw_to_msf(this_pregap)

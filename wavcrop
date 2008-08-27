@@ -1,0 +1,93 @@
+#!/usr/bin/perl -w
+
+use strict;
+use Audio::Wav;
+
+$|++;
+
+sub EPSILON() { 4 }
+sub INIT_IGNORE() { 16 }
+sub MARGIN() { 64 }
+sub ALPHA() { 2 / (MARGIN + 1) }
+
+my $wav = new Audio::Wav;
+my $reader = $wav->read($ARGV[0]);
+
+my $bytes_per_samp = $reader->details()->{bits_sample} / 8 *
+    $reader->details()->{channels};
+my $len = $reader->length_samples();
+
+my $samp_start = find_start($reader);
+$samp_start = 0 if $samp_start < 0;
+print "\n";
+
+my $samp_end = find_end($reader);
+$samp_end = $len if $samp_end > $len;
+print "\n";
+
+print $samp_start / $reader->details()->{sample_rate}, " ",
+    $samp_end / $reader->details()->{sample_rate}, "\n";
+
+sub find_start {
+    my ($reader) = @_;
+
+    my $pos;
+    my $avg = 0;
+
+    for ($pos = INIT_IGNORE; $pos < $len; $pos++)
+    {
+        $reader->move_to_sample($pos);
+        my @channels = $reader->read();
+        $avg = running_avg($avg, samp_vol(\@channels));
+
+        printf("at samp %15d (%15s): avg is %+0.10f\r",
+            $pos,
+            join(' ', @channels),
+            $avg) if rand(EPSILON) < abs($avg);
+
+        return $pos - MARGIN if abs($avg) >= EPSILON;
+    }
+}
+
+sub find_end {
+    my ($reader) = @_;
+
+    my $pos;
+    my $avg = 0;
+
+    for ($pos = $len - INIT_IGNORE; $pos > 0; $pos--)
+    {
+        $reader->move_to_sample($pos);
+        my @channels = $reader->read();
+        $avg = running_avg($avg, samp_vol(\@channels));
+
+        printf("at samp %15d (%15s): avg is %+0.10f\r",
+            $pos,
+            join(' ', @channels),
+            $avg) if rand(EPSILON) < abs($avg);
+
+        return $pos + MARGIN if abs($avg) >= EPSILON;
+    }
+}
+
+sub running_avg
+{
+    my ($old_avg, $new_val) = @_;
+
+    return $new_val * ALPHA + $old_avg * (1 - ALPHA);
+}
+
+sub samp_vol
+{
+    my ($sample) = @_;
+
+    my $sum = 0;
+    my $total = 0;
+
+    for my $channel (@$sample) {
+        $sum += $channel;
+        $total++;
+    }
+
+    return $sum / $total;
+}

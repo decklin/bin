@@ -1,0 +1,3 @@
+#!/bin/sh
+
+lsdvd "$@" | sed '/^$/d;s/Audio streams:/Audio:/;s/Subpictures:/Subpics:/'

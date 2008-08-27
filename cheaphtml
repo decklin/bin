@@ -1,0 +1,11 @@
+#!/usr/bin/python
+
+import sys
+import cgi
+
+s = sys.stdin.read().rstrip('\n')
+s = cgi.escape(s)
+s = s.replace('\n', '<br>\n')
+s = s.replace('<br>\n<br>\n', '\n\n<p>')
+
+print '<p>' + s
