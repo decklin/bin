@@ -11,14 +11,15 @@
 # If you don't like twitter, you can just remove twerp from the pipeline
 # and cron will email you instead. In that case awk is probably overkill.
 
+lib=$HOME/lib/kernel-twitter
+var=$HOME/var/kernel-twitter
 banner=http://www.kernel.org/kdist/finger_banner
 flavors="stable prepatch"
 
-lib=$HOME/lib/kernel-twitter
-cache=$lib/banner
-rc=$lib/twerprc
+curl -s $banner > $var/banner
 
-curl -s $banner > $cache
-for i in $flavors; do
-    awk "/$i/{print\"$i:\",\$NF;exit}" $cache | confer $lib/$i | twerp -c $rc
+for f in $flavors; do
+    awk "/$i/{print\"$i:\",\$NF;exit}" $var/banner \
+        | confer -i $var/$i \
+        | twerp -c $lib/twerprc
 done
