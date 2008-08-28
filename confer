@@ -2,8 +2,16 @@
 
 import sys
 import os
+import getopt
 
 if __name__ == '__main__':
+    opts, args = getopt.getopt(sys.argv[1:], 'i')
+
+    ignore_empty = False
+    for opt, arg in opts:
+        if opt == '-i':
+            ignore_empty = True
+    
     try:
         state_path = sys.argv[1]
     except IndexError:
@@ -20,7 +28,10 @@ if __name__ == '__main__':
         old_data = ''
 
     new_data = sys.stdin.read()
-    if new_data != old_data:
+
+    if ignore_empty and new_data.strip() == '':
+        sys.exit(1)
+    elif new_data != old_data:
         print new_data,
         try:
             state_fp = open(state_path, 'w')
