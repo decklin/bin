@@ -19,7 +19,7 @@ flavors="stable prepatch"
 curl -s $banner > $var/banner
 
 for f in $flavors; do
-    awk "/$i/{print\"$i:\",\$NF;exit}" $var/banner \
+    awk "/^The .* $i .* is:/{print\"$i:\",\$NF;exit}" $var/banner \
         | confer -i $var/$i \
         | twerp -c $lib/twerprc
 done
