@@ -1,7 +1,7 @@
 #!/bin/sh
 
 stty -echo
-echo -n "Passphrase: "
+echo -n "Passphrase: " >&2
 read phrase; echo
 stty echo
 
