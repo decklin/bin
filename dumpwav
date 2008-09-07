@@ -23,10 +23,10 @@ if __name__ == '__main__':
             outstr = arg
 
     commands = {
-        'ogg': 'ogg123 -d wav -f "%s/%s" "%s"',
+        'ogg': 'oggdec -o "%s/%s" "%s"',
         'mp3': 'mpg321 -v --skip-printing-frames=100 -w "%s/%s" "%s"',
         'flac': 'flac -d -o "%s/%s" "%s"',
-        'wav': 'cp -v "%s/%s" "%s"',
+        'wav': 'cat >"%s/%s" <"%s"',
         }
 
 
