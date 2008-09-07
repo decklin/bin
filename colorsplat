@@ -1,0 +1,17 @@
+#!/usr/bin/python
+
+import pygtk
+import gtk
+
+if __name__ == '__main__':
+    sel = gtk.ColorSelectionDialog('Pick a color')
+
+    def print_color_cb(widget):
+        print sel.colorsel.get_current_color().to_string()
+
+    sel.ok_button.connect('clicked', print_color_cb)
+    sel.ok_button.connect('clicked', gtk.main_quit)
+    sel.cancel_button.connect('clicked', gtk.main_quit)
+
+    sel.show()
+    gtk.main()
