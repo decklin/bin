@@ -1,0 +1,30 @@
+#!/usr/bin/ruby
+
+ARGV.each do |path|
+  data = File.open(path).read
+  File.open(path, 'w') do |out|
+    data.each_line do |line|
+      if line =~ /<\?tarballs (.*?)\?>/
+        Dir.chdir(File.dirname(path))
+        balls = Dir.glob($1)
+        if balls.empty?
+          out.puts "<p><i>[error: #{$1} not found (Decklin probably needs " +
+                   "to regenerate the tarballs...)]</i></p>"
+        else
+          out.puts "#{$`}<ul>"
+          balls.sort.reverse.each do |tarball|
+            if tarball =~ /[-a-z*]+-([0-9.*]+)\.(tar\.\w+)/
+              st = File.stat(tarball)
+              out.puts "<li>" +
+                       "<a href='#{tarball}'>#{$1} (#{st.size/1024}kb #{$2}, " +
+                       "#{st.mtime.strftime '%F'})</a></li>"
+            end
+          end
+          out.puts "</ul>"
+        end
+      else
+        out.puts line
+      end
+    end
+  end
+end
