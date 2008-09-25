@@ -13,7 +13,7 @@ if __name__ == '__main__':
             ignore_empty = True
     
     try:
-        state_path = sys.argv[1]
+        state_path = args[0]
     except IndexError:
         print >>sys.stderr, 'usage: confer STATE'
         sys.exit(2)
@@ -22,7 +22,7 @@ if __name__ == '__main__':
             state_fp = open(state_path)
             old_data = state_fp.read()
         except IOError:
-            print >>sys.stderr, 'error reading state'
+            print >>sys.stderr, 'error reading state %s' % state_path
             sys.exit(3)
     else:
         old_data = ''
@@ -37,7 +37,7 @@ if __name__ == '__main__':
             state_fp = open(state_path, 'w')
             print >>state_fp, new_data,
         except IOError:
-            print >>sys.stderr, 'error writing state'
+            print >>sys.stderr, 'error writing state %s' % state_path
             sys.exit(3)
     else:
         sys.exit(1)
