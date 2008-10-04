@@ -1,0 +1,10 @@
+#!/bin/sh
+
+min=$1; shift
+msg="$*"
+
+chars=$(echo -n "$msg" | wc -c)
+pt=$((300 - $chars * 20))
+
+sleep $(($min * 60))
+gmessage -fn "Sans $pt" "$msg"
