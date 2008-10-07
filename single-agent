@@ -1,0 +1,12 @@
+#!/bin/sh
+
+VAR=$HOME/var/ssh
+
+eval $(ssh-agent | tee $VAR/agent.sh)
+cat <<EOF >$VAR/agent.csh
+setenv SSH_AUTH_SOCK $SSH_AUTH_SOCK
+setenv SSH_AGENT_PID $SSH_AGENT_PID
+EOF
+
+ssh-add
+exec "$@"
