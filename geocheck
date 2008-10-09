@@ -1,0 +1,18 @@
+#!/bin/sh
+
+read lat lon < $HOME/lib/geoloc
+
+while getopts v opt; do
+    case $opt in
+        v) verbose=1;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+today=$(geohash ${lat%.*} ${lon%.*} "$*") || exit 1
+dist=$(gcdist $lat $lon $today)
+
+if [ "$verbose" = 1 ] || [ "${dist#[0-9].}" != "$dist" ]; then
+    echo "Geohash for $(date $* +'%a, %d %b') is $dist away:"
+    echo "http://maps.google.com/maps?q=$(echo $today | sed 's/ /,/')"
+fi
