@@ -1,0 +1,8 @@
+#!/bin/sh
+
+mess=$HOME/mess
+this=$(date +%Y/%b | tr A-Z a-z)
+
+mkdir -p $mess/$this
+rm -f $mess/cur
+ln -s $this $mess/cur
