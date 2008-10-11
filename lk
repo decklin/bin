@@ -3,10 +3,12 @@
 state=$HOME/var/lk
 banner=http://www.kernel.org/kdist/finger_banner
 flavors='stable prepatch'
-tmp=`mktemp` || exit 1
+temp=`mktemp` || exit 1
 
-curl -s $banner > $tmp
+curl -s $banner > $temp
 
 for i in $flavors; do
-    awk "/latest $i/{print\"$i:\",\$NF;exit}" $tmp | confer -i $state/$i
+    awk "/latest $i/{print\"$i:\",\$NF;exit}" $temp | confer -i $state/$i
 done
+
+rm -f $temp
