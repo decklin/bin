@@ -3,6 +3,9 @@
 import sys
 import getopt
 import pymetar
+from urllib2 import URLError
+
+DEFAULT = 'KBOS'
 
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'v')
@@ -15,16 +18,17 @@ if __name__ == '__main__':
     try:
         station = args[0]
     except IndexError:
-        station = 'KBOS'
+        station = DEFAULT
 
-    f = pymetar.ReportFetcher(station)
-    p = pymetar.ReportParser()
-    r = p.ParseReport(f.FetchReport())
+    try:
+        f = pymetar.ReportFetcher(station)
+        p = pymetar.ReportParser()
+        r = p.ParseReport(f.FetchReport())
+    except URLError, e:
+        print 'Error fetching METAR: %s' % e.args[0]
+        sys.exit(1)
 
-    if not verbose:
-        print r.getWeather(), '(%s C)' % r.getTemperatureCelsius()
-
-    else:
+    if verbose:
         head = '%s; %s' % (r.getStationCity(), r.getISOTime())
         print head; print '=' * len(head)
 
@@ -40,3 +44,5 @@ if __name__ == '__main__':
         width = max([len(o[0]) for o in obs]) + 2
         for o in obs:
             print '%*s: %s' % (width, o[0], o[1])
+    else:
+        print r.getWeather(), '(%s C)' % r.getTemperatureCelsius()
