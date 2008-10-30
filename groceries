@@ -1,0 +1,54 @@
+#!/usr/bin/python
+
+import os
+import sys
+import cgi
+
+HEADER = 'Content-Type: text/html\n\n'
+PAGE = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n%s\n%s'
+TITLE = '<title>Groceries</title>'
+TICKY = '<input type=checkbox name="del" value="%s"> %s'
+FORM = '''<form method="POST">\n<p>%s</p>\n<p><input type="text" name="add">
+          </p>\n<p><input type="submit" value="Add/Remove"></p>\n</form>'''
+
+def chomp_lines(fp):
+    return [line.rstrip('\n') for line in fp]
+
+def read_items(path):
+    return chomp_lines(open(path))
+
+def write_items(path, items):
+    fp = open(path, 'w')
+    for i in items: print >>fp, i
+
+def form(items):
+    return FORM % '<br>\n'.join([TICKY % (i, i) for i in items])
+
+class Methods:
+    def GET(path):
+        return form(read_items(path))
+
+    def PUT(path):
+        items = chomp_lines(sys.stdin)
+        write_items(path, items)
+        return form(items)
+
+    def POST(path):
+        query = cgi.FieldStorage()
+        added = query.getlist('add')
+        deleted = query.getlist('del')
+
+        items = [i for i in read_items(path) if i not in deleted] + added
+        write_items(path, items)
+        return form(items)
+
+def process_request(method, path):
+    try:
+        return Methods.__dict__[method](path)
+    except IOError, e:
+        return '<p>Error: %s. Use PUT to create a list.</p>' % e.args[1]
+
+if __name__ == '__main__':
+    path = '/var/www/groceries' + os.environ.get('PATH_INFO', '')
+    body = process_request(os.environ['REQUEST_METHOD'], path)
+    print HEADER + PAGE % (TITLE, body)
