@@ -1,10 +1,11 @@
-#!/bin/sh
+#!/bin/sh -x
 
 min=$1; shift
 msg="$*"
+dpy=$(xdpyinfo | sed -n 's/dimensions: *\([0-9]*\)x.*/\1/p')
 
 chars=$(echo -n "$msg" | wc -c)
-pt=$((300 - $chars * 20))
+height=$(echo "$dpy $chars 3^vv / p" | dc)
 
 sleep $(($min * 60))
-gmessage -fn "Sans $pt" "$msg"
+pango-view --margin 20 --font "Sans ${height}px" --text "$msg"
