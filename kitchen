@@ -1,11 +1,16 @@
-#!/bin/sh -x
+#!/bin/sh
 
-min=$1; shift
+timer=$1; shift
 msg="$*"
-dpy=$(xdpyinfo | sed -n 's/dimensions: *\([0-9]*\)x.*/\1/p')
+guess=72
+pad=50
+width=$(($(xdpyinfo | sed -n 's/dimensions: *\([0-9]*\)x.*/\1/p') - $pad))
+tmp=$(mktemp)
 
-chars=$(echo -n "$msg" | wc -c)
-height=$(echo "$dpy $chars 3^vv / p" | dc)
+pango-view --margin $pad --font "Sans $guess" -t "$msg" -q -o $tmp
+sleep $timer
 
-sleep $(($min * 60))
-pango-view --margin 20 --font "Sans ${height}px" --text "$msg"
+try=$(file $tmp | sed -n 's/.* PNG image, \([0-9]*\) x.*/\1/p' && rm $tmp)
+adj=$(echo "6k $width $pad 2 * - $try $pad 2 * - / $guess * p" | dc)
+
+pango-view --margin $pad --font "Sans ${adj}" -t "$msg" #-q -o $tmp
