@@ -15,8 +15,13 @@ def pick_color(name):
         global selcolor
         selcolor = sel.colorsel.get_current_color().to_string()
 
+    def cancel(widget):
+        global selcolor
+        selcolor = name
+
     sel.ok_button.connect('clicked', ok)
     sel.ok_button.connect('clicked', gtk.main_quit)
+    sel.cancel_button.connect('clicked', cancel)
     sel.cancel_button.connect('clicked', gtk.main_quit)
 
     sel.show()
