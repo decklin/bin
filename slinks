@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Substitute links -- I had a tree with a whole bunch of symlinks down
+# into dir A, whose contents I wanted to keep in dir B instead. So,
+# this does s/A/B/ on them all at once. I used find -0 to generate the
+# list and piped it here; the two args are A and B.
+
+old=$1
+new=$2
+
+xargs -0 ls -l \
+    | grep $old \
+    | fx 9 11 \
+    | while read link target; do
+          rm $link && ln -s $(echo $target | sed "s,$old,$new,') $link
+      done

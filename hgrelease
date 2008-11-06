@@ -1,0 +1,8 @@
+#!/bin/sh
+
+pkg=$(basename $PWD)
+ver=$1
+out=/home/decklin/pub/rb-www/$pkg/$pkg-$ver.tar.gz
+
+hg arc -t tgz -r $1 -X .hg_archival.txt -X .hgtags -p $pkg-$ver $out
+tar tzf $out
