@@ -28,6 +28,6 @@ try=$(file "$tmp" | cut -d, -f2)
 ix=${try%x*}
 iy=${try#*x}
 
-adj=$(echo "6k $x $ix / dsx $y $iy / dsy >x z0=y $guess * p" | dc)
-pango-view --margin $pad --font "$face $adj" -t "$msg"
+adj=$(echo "6k $x $ix / dsx $y $iy / dsy >x z0=y $approx * p" | dc)
+pango-view --margin $margin --font "$face $adj" -t "$msg"
 rm $tmp
