@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Picks and sets an xterm-compatible "dynamic" background color.
+# Saturation and luminance are constant; hue (360 degrees, 0 == red)
+# is randomly selected by hashing the given token.
+#
+# Suggested usage: colorme `hostname` in your shell init everywhere.
+# This (quietly) reminds me which terminal is logged in on what
+# machine by "feel". (Obviously, it's quite redundant with the window
+# title, shell prompt, etc, but that's not the same half of the
+# brain.)
+
+min_hue=45
+max_hue=270
+value=96
+chroma=2
+
+command -v md5 >/dev/null 2>&1 || md5() { md5sum | cut -c 1-32; }
+fraction="0.$(echo -n "$1" | md5 | tr abcdef ABCDEF)"
+hue=$(echo "16i $fraction Ai $max_hue $min_hue - * $min_hue + p" | dc)
+
+echo -ne "\033]11;TekHVC:$hue/$value/$chroma\007"

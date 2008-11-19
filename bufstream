@@ -1,0 +1,12 @@
+#!/bin/sh
+
+buf=256k
+url="$1"; shift
+
+curl "$url" \
+    | bfr -b $buf \
+    | case "$url" in
+          *ogg) oggdec -Q -R -o - -;;
+          *) mpg321 -q -s -;;
+      esac \
+    | bfp -b $buf $*

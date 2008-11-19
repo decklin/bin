@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+
+use Digest::MD5;
+
+for $diff (@ARGV) {
+    if ($diff =~ /(.*?)_(.*?)-(.*?)\.diff\.gz/) {
+        $orig = "${1}_$2.orig.tar.gz";
+        $dsc = "${1}_$2-$3.dsc";
+        open DSC, ">$dsc" or die "Can't open $dsc: $!";
+        print DSC "Format: 1.0\n";
+        print DSC "Source: $1\n";
+        print DSC "Version: $2-$3\n";
+        print DSC "Files: \n";
+        for ($orig, $diff) {
+            open F, $_ or die "Can't open $_: $!";
+            $ctx = Digest::MD5->new;
+            $ctx->addfile(*F);
+            print DSC " ", $ctx->hexdigest, " ", -s, " $_\n";
+        }
+    }
+}
