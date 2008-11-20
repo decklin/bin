@@ -14,5 +14,5 @@ setenv SSH_AUTH_SOCK $SSH_AUTH_SOCK
 setenv SSH_AGENT_PID $SSH_AGENT_PID
 EOF
 
-ssh-add
+ssh-add -l >/dev/null 2>&1 || ssh-add
 exec "$@"
