@@ -12,5 +12,5 @@ xargs -0 ls -l \
     | grep $old \
     | fx 9 11 \
     | while read link target; do
-          rm $link && ln -s $(echo $target | sed "s,$old,$new,') $link
+          rm $link && ln -s $(echo $target | sed "s,$old,$new,") $link
       done
