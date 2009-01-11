@@ -11,11 +11,11 @@ if __name__ == '__main__':
     for opt, arg in opts:
         if opt == '-i':
             ignore_empty = True
-    
+
     try:
         state_path = args[0]
     except IndexError:
-        print >>sys.stderr, 'usage: confer STATE'
+        print >>sys.stderr, 'usage: confer [-i] STATE'
         sys.exit(2)
     if os.path.exists(state_path):
         try:
