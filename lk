@@ -2,10 +2,11 @@
 
 state=$HOME/var/lk
 banner=http://www.kernel.org/kdist/finger_banner
+tree=2.6
 flavors='stable prepatch'
 temp=`mktemp` || exit 1
 
-curl -s $banner > $temp
+curl -s $banner | grep "$tree" > $temp
 
 for i in $flavors; do
     awk "/latest $i/{print\"$i:\",\$NF;exit}" $temp | confer -i $state/$i
