@@ -1,12 +1,8 @@
 #!/bin/sh
 
-if ALTERNATE_EDITOR=false emacsclient -e nil; then
-    emacsrunning=y
-fi
-
-if [ "$emacsrunning" -a "$WINDOW" ]; then
+if ALTERNATE_EDITOR=false emacsclient -e nil && [ "$WINDOW" ]; then
     echo "$WINDOW" > ~/var/emacs-caller
     screen -X select emacs
 fi
 
-emacsclient ${DISPLAY:+-c} "$@"
+emacsclient ${DISPLAY:+-c} "$@" || test -t 1 || xmessage 'Emacs not running'
