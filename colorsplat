@@ -7,8 +7,8 @@ import gtk
 poundcolor = re.compile('#[0-9a-fA-F]+')
 selcolor = None
 
-def pick_color(name):
-    sel = gtk.ColorSelectionDialog('Pick a color')
+def pick_color(name, title):
+    sel = gtk.ColorSelectionDialog('colorsplat: %s' % title)
     sel.colorsel.set_current_color(gtk.gdk.color_parse(name))
 
     def ok(widget):
@@ -33,7 +33,7 @@ def pick_color(name):
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         for name in sys.argv[1:]:
-            print pick_color(name)
+            print pick_color(name, name)
     else:
-        for line in sys.stdin:
-            print poundcolor.sub(lambda m: pick_color(m.group(0)), line),
+        for line in map(str.rstrip, sys.stdin):
+            print poundcolor.sub(lambda m: pick_color(m.group(0), line), line)
