@@ -1,0 +1,18 @@
+#!/usr/bin/perl -w
+
+use WWW::Mechanize;
+my $mech = new WWW::Mechanize;
+
+open LOGIN, "$ENV{'HOME'}/.netflip" or die $!;
+my ($email, $password) = split ' ', <LOGIN>;
+close LOGIN;
+
+$mech->get('http://www.netflix.com/Login');
+$mech->form_name('login_form');
+$mech->set_visible($email, $password);
+$mech->submit();
+
+$mech->get('http://www.netflix.com/DVDDistribution');
+$mech->form_name('registration_update_form');
+$mech->set_visible(@ARGV);
+$mech->click('save');
