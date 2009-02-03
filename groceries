@@ -3,12 +3,10 @@
 require 'rubygems'
 require 'sinatra'
 
-def read_list(path)
-  File.open(path).read.split("\n") rescue []
-end
-
-def save_list(path, items)
-  File.open(path, 'w') {|fp| fp.write(items.join("\n")) }
+class List
+  def initialize(path); @path = path; end
+  def load; File.open(@path).read.split($/) rescue []; end
+  def save(items); File.open(@path, 'w') {|f| f.puts(items.join($/)) }; end
 end
 
 before do
@@ -24,19 +22,19 @@ put '/' do
 end
 
 get '/:list' do
-  @items = read_list(params[:list])
+  @items = List.new(params[:list]).load
   erb :tickyboxes
 end
 
 put '/:list' do
-  save_list(params[:list], request.body.read.split("\n"))
+  List.new(params[:list]).save(request.body.read.split($/))
   redirect request.url, 303
 end
 
 post '/:list' do
-  @items = read_list(params[:list]) - params[:del].to_a + params[:add].to_a
-  save_list(params[:list], @items)
-  erb :tickyboxes
+  list = List.new(params[:list])
+  list.save(list.load - params[:del].to_a + params[:add].to_a)
+  redirect request.url, 303
 end
 
 __END__
