@@ -21,8 +21,7 @@ get '/:list' do
 end
 
 put '/:list' do
-  @items = request.body.read.split("\n")
-  save_list(params[:list], @items)
+  save_list(params[:list], request.body.read.split("\n"))
   redirect request.url, 303
 end
 
@@ -44,10 +43,8 @@ __END__
 or upload it with HTTP PUT: <code>curl -T mylist <%= request.url %></code>
 
 @@ list
-<form method="post">
-<% @items.each do |i| %>
-  <input type="checkbox" name="del" value="<%= i %>"><%= i %><br>
-<% end %>
+<form method="post"><% @items.each do |i| %>
+  <input type="checkbox" name="del" value="<%= i %>"><%= i %><br><% end %>
 <p><input type="text" name="add">
 <p><input type="submit" value="Add/Remove">
 </form>
