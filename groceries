@@ -11,6 +11,10 @@ def save_list(path, items)
   File.open(path, 'w') {|fp| fp.write(items.join("\n")) }
 end
 
+before do
+  halt 401, 'Forbidden' unless request.path_info =~ /^\/[\w.-]*$/
+end
+
 get '/' do
   erb :index
 end
