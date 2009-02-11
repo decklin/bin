@@ -4,13 +4,9 @@ require 'rubygems'
 require 'sinatra'
 
 class List
-  def initialize(path); @path = path; end
-  def load; File.open(@path).read.split($/) rescue []; end
+  def initialize(p); @path = p; throw :halt, 403 if @path =~ /[^\w.-]/; end
+  def load; File.exists?(@path) ? File.open(@path).read.split($/) : []; end
   def save(items); File.open(@path, 'w') {|f| f.puts(items.join($/)) }; end
-end
-
-before do
-  halt 401, 'Forbidden' unless request.path_info =~ /^\/[\w.-]*$/
 end
 
 get '/' do
