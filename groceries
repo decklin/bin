@@ -14,21 +14,21 @@ get '/' do
 end
 
 put '/' do
-  redirect request.url + params[:list], 303
+  redirect request.url + params[:id], 303
 end
 
-get '/:list' do
-  @items = List.new(params[:list]).load
+get '/:id' do
+  @items = List.new(params[:id]).load
   erb :tickyboxes
 end
 
-put '/:list' do
-  List.new(params[:list]).save(request.body.read.split($/))
+put '/:id' do
+  List.new(params[:id]).save(request.body.read.split($/))
   redirect request.url, 303
 end
 
-post '/:list' do
-  list = List.new(params[:list])
+post '/:id' do
+  list = List.new(params[:id])
   list.save(list.load - params[:del].to_a + params[:add].to_a)
   redirect request.url, 303
 end
@@ -42,7 +42,7 @@ __END__
 
 @@ welcome
 <form method="post"><input type="hidden" name="_method" value="put">
-<p>Make a list: <input type="text" name="list"> <input type="submit"></form>
+<p>Make a list: <input type="text" name="id"> <input type="submit"></form>
 <p>Or upload one: <code>curl -T list <%= request.url %></code>
 
 @@ tickyboxes
