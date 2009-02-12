@@ -16,7 +16,7 @@ get '/' do
   erb :welcome
 end
 
-put '/' do
+post '/' do
   redirect request.url + params[:id], 303
 end
 
@@ -31,26 +31,20 @@ put '/:id' do
 end
 
 post '/:id' do
-  list = List.new(params[:id])
-  list.save(list.load - params[:del].to_a + params[:add].to_a)
+  l = List.new(params[:id])
+  l.save(l.load - params[:del].to_a + params[:add].to_a)
   redirect request.url, 303
 end
 
 __END__
 
 @@ layout
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<title>Groceries</title>
-<%= yield %>
+<!DOCTYPE html><title>Groceries</title><form method="post"><%= yield %></form>
 
 @@ welcome
-<form method="post"><input type="hidden" name="_method" value="put">
-<p>Make a list: <input type="text" name="id"> <input type="submit"></form>
-<p>Or upload one: <code>curl -T list <%= request.url %></code>
+<p>Create/view a list: <input type="text" name="id"> <input type="submit">
+<p>Or upload a text file: <kbd>curl -T list <%= request.url %></kbd>
 
 @@ tickyboxes
-<form method="post"><% @items.each do |i| %>
-  <input type="checkbox" name="del" value="<%= i %>"><%= i %><br><% end %>
-<p><input type="text" name="add">
-<p><input type="submit" value="Add/Remove">
-</form>
+<% @items.each do |i| %><input type="checkbox" name="del" value="<%= i %>">
+<%= i %><br><% end %><p><input type="text" name="add"><p><input type="submit">
