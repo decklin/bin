@@ -20,6 +20,13 @@ class CmdLineAuthOpener(AgentOpener):
     def prompt_user_passwd(self, host, realm):
         return self.user, self.passwd
 
+def dump(fp):
+    soup = BeautifulSoup.BeautifulSoup(fp.read())
+    for btag in soup.findAll('base', {'href': re.compile('.')}):
+        url = btag['href']
+    for ltag in soup.findAll(tag, {att: re.compile(pat, re.I|re.M)}):
+        print urlparse.urljoin(url, unescape(ltag[att].strip()))
+
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'a:ir:')
 
@@ -38,10 +45,8 @@ if __name__ == '__main__':
         if opt == '-r':
             pat = arg
 
-    for url in args:
-        doc = opener.open(url)
-        soup = BeautifulSoup.BeautifulSoup(doc.read())
-        for btag in soup.findAll('base', {'href': re.compile('.')}):
-            url = btag['href']
-        for ltag in soup.findAll(tag, {att: re.compile(pat, re.I|re.M)}):
-            print urlparse.urljoin(url, unescape(ltag[att].strip()))
+    if args:
+        for url in args:
+            dump(opener.open(url))
+    else:
+        dump(sys.stdin)
