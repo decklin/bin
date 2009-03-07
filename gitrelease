@@ -1,0 +1,7 @@
+#!/bin/sh
+
+pkg=$(basename $PWD)
+ver=$1
+out=/home/decklin/pub/rb-www/$pkg/$pkg-$ver.tar.gz
+
+git archive --format=tar --prefix=$pkg-$ver $ver | gzip > $out
