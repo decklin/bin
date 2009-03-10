@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# This runs from cron every morning and mirrors my repos. While it's
+# at it, it checks the date on each HEAD and wakes me up with a card
+# from the Oblique Strategies deck if I haven't committed to anything
+# in three days (and therefore probably need some inspiration).
+
+age=$(($(date +%s) - 3*86400))
+tmp=$(mktemp)
+
+for repo in $HOME/pub/git/*.git; do
+    (cd $repo &&
+        git log -1 --pretty=tformat:%at >> $tmp
+        for r in $(git remote); do git push $r; done)
+done
+
+if [ $(sort -n $tmp | tail -1) -le $age ]; then
+    fortune $HOME/lib/oblique | mail -s 'oblique strategy' mobile
+fi
+
+rm -f $tmp
