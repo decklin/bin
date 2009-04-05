@@ -68,7 +68,7 @@ AVI_OVERHEAD = 24 * BYTE * 3
 orig_w = 720
 orig_h = 480
 orig_a = 16.0 / 9.0
-fps = 29.97
+fps = 30000.0 / 1001
 
 # how we're going to crop it.
 
@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
     print 'orig %d:%d @ %f:1 -> cropped %d:%d @ %f:3' % (orig_w, orig_h,
         orig_a, w, h, aspect)
-    print '%.1f + %.1f + %.1fmiB / %.1fs -> bitrate=%d abr=%d' % \
+    print '%.1f + %.1f + %.1fMiB / %.1fs -> bitrate=%d abr=%d' % \
         (float(bits) / BYTE / MIB, float(audio) / BYTE / MIB,
         float(sub) / BYTE / MIB, len, rate / KB, abr / KB)
 
