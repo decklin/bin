@@ -4,7 +4,7 @@ FONT='-*-lucida-medium-r-*-sans-12-*-*-*-*-*-iso10646-1'
 COLOR='-nb honeydew2 -nf black -sb honeydew4 -sf white'
 
 dm() {
-    dmenu $COLOR -fn $FONT -y -0
+    dmenu $COLOR -fn $FONT
 }
 
 case $1 in
