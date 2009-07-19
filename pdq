@@ -1,0 +1,7 @@
+#!/bin/sh
+
+words=/usr/share/dict/words
+
+for filt in cat rev; do
+    grep "^$(echo "$*" | $filt | sed 's/x/e?x/g;s/ /.*/g')" $words
+done
