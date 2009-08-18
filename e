@@ -32,18 +32,17 @@ else
     newframe='-t'
 fi
 
-# If we have multihead support, use it; otherwise, see if we're in a
-# screen session set up for an older emacs server. You can try to
-# stash the current $WINDOW in a file somewhere and then switch back
-# to the original window from a hook, but I found that too magical.
-
-if emacsclient --help | grep -q create-frame; then
-    clientargs="$newframe"
-elif [ "$WINDOW" ]; then
-    screen -X emacs
-fi
 
 if emacsclient -a false -e nil >/dev/null 2>&1; then
+    # If we have multihead support, use it; otherwise, see if we're in
+    # a screen session set up for an older emacs server. You can try
+    # to stash the current $WINDOW in a file somewhere and then return
+    # to the original win from a hook, but I found that too magical.
+    if emacsclient --help | grep -q create-frame; then
+        clientargs="$newframe"
+    elif [ "$WINDOW" ]; then
+        screen -X select emacs
+    fi
     if [ "$*" ]; then
         exec $term emacsclient $clientargs "$@"
     else
