@@ -11,7 +11,9 @@ tmp=$(mktemp)
 for repo in $HOME/pub/git/*.git; do
     (cd $repo &&
         git log -1 --pretty=tformat:%at >> $tmp
-        for r in $(git remote); do git push $r; done)
+        for r in $(git remote); do
+            git push $r 2>&1 | grep -v 'Everything up-to-date'
+        done)
 done
 
 if [ $(sort -n $tmp | tail -1) -le $age ]; then
