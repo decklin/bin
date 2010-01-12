@@ -1,22 +1,23 @@
 #!/bin/sh
 
 # Create a directory and init it as a git repository at the same time.
-# Also sets up a remote and configures it to push both heads and tags
-# by default.
+# Also optionally sets up remotes and configures them to be pushed both
+# heads and tags by default.
 #
 # Usage: git innit repo [remotes [heads]]
 #        git innit --bare repo.git [remotes [heads]]
 #
-# where remotes and heads are both space-separated lists (if heads is
-# not given, it defaults to *). Values for remotes need to be set in
-# ~/.gitconfig to the parent directory where repositories are stored,
-# like this:
+# where remotes and heads are both space-separated lists (spaces within
+# the arg, so you'll need to quote in the shell). If heads is not given,
+# it defaults to *. Values for remotes need to be set in ~/.gitconfig to
+# the parent directory where repositories are stored, like this:
 #
 # [innit "foo"]
 #     url = user@example.com:pub/git
 #
-# In this case, "git innit bar foo" would set a remote called "foo"
-# pointing to user@example.com:pub/git/bar.git.
+# In this case, "git innit bar foo" would set up a remote called "foo"
+# pointing to user@example.com:pub/git/bar.git. It assumes your remotes
+# are bare repos.
 
 while [ "${1#-}" != "$1" ]; do
     init_args="$init_args $1"; shift
