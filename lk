@@ -1,15 +1,22 @@
 #!/bin/sh
 
-state=$HOME/var/lk
-banner=http://www.kernel.org/kdist/finger_banner
+state_dir=$HOME/var/lk
+creds=$HOME/lib/lk/creds
+banner_url=http://www.kernel.org/kdist/finger_banner
+twitter_url=http://api.twitter.com/1/statuses/update.xml
 tree=2.6
-flavors='stable prepatch'
+flavors='stable mainline'
 temp=`mktemp` || exit 1
 
-curl -s $banner | grep "$tree" > $temp
+curl -s $banner_url | grep "$tree" > $temp
 
 for i in $flavors; do
-    awk "/latest $i/{print\"$i:\",\$NF;exit}" $temp | confer -i $state/$i
+    x="$(awk "/latest $i/{print\"$i:\",\$NF;exit}" $temp \
+        | confer -i $state_dir/$i)"
+    if [ "$x" ]; then
+        curlicue -f $creds -- \
+            -s -d "status=$(urlencode "$x")" "$twitter_url" >/dev/null
+    fi
 done
 
 rm -f $temp
