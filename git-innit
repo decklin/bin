@@ -1,0 +1,59 @@
+#!/bin/sh
+
+# Create a directory and init it as a git repository at the same time.
+# Also optionally sets up remotes and configures them to be pushed both
+# heads and tags by default.
+#
+# Usage: git innit repo [remotes [heads]]
+#        git innit --bare repo.git [remotes [heads]]
+#
+# where remotes and heads are both space-separated lists (spaces within
+# the arg, so you'll need to quote in the shell). If heads is not given,
+# it defaults to *. Values for remotes need to be set in ~/.gitconfig to
+# the parent directory where repositories are stored, like this:
+#
+# [innit "foo"]
+#     url = user@example.com:pub/git
+#
+# In this case, "git innit bar foo" would set up a remote called "foo"
+# pointing to user@example.com:pub/git/bar.git. It assumes your remotes
+# are bare repos.
+
+while [ "${1#-}" != "$1" ]; do
+    init_args="$init_args $1"; shift
+done
+
+repo_dir="$1"; shift
+
+if [ $# -gt 0 ]; then
+    remotes="$1"; shift
+else
+    remotes=''
+fi
+
+if [ $# -gt 0 ]; then
+    push_heads="$1"; shift
+else
+    push_heads="*"
+fi
+
+case "$repo_dir" in
+    *.git) bare_repo="$repo_dir";;
+    *) bare_repo="$repo_dir.git"
+esac
+
+mkdir "$repo_dir" && cd "$repo_dir" && (
+    git init $init_args
+    for r in $remotes; do
+        remote_dir=$(git config --get innit.$r.url)
+        if [ "$remote_dir" ]; then
+            git remote add $r $remote_dir/$bare_repo
+            for head in $push_heads; do
+                git config remote.$r.push "+refs/heads/$head"
+            done
+        else
+            echo "unknown remote: $r (skipped)"
+        fi
+        git config --add remote.$r.push +refs/tags/*
+    done
+)

@@ -1,33 +1,3 @@
 #!/bin/sh
 
-# Kitchen timer -- displays a message across the entire screen with
-# pango-view after sleeping. First arg is the argument to sleep(1).
-#
-# Size is calculated by writing out a temp file at an arbitrary size,
-# then scaling so that the larger dimension just barely fits within our
-# (real display - gutter). This occasionally goes a little over so I
-# don't recommend making the gutter zero.
-
-face="Sans"
-margin=50
-gutter=25
-approx=100
-
-dur=$1; shift
-msg="$*"
-
-dpy=$(xdpyinfo | awk '/dimensions:/{print $2}')
-x=$((${dpy%x*} - $gutter - 2 * $margin))
-y=$((${dpy#*x} - $gutter - 2 * $margin))
-
-tmp=$(mktemp)
-pango-view --margin 0 --font "$face $approx" -t "$msg" -q -o $tmp
-sleep $dur
-
-try=$(file "$tmp" | cut -d, -f2)
-ix=${try%x*}
-iy=${try#*x}
-
-adj=$(echo "6k $x $ix / dsx $y $iy / dsy >x z0=y $approx * p" | dc)
-pango-view --margin $margin --font "$face $adj" -t "$msg"
-rm $tmp
+(sleep "$1"; shift; sm "$@") &
