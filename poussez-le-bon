@@ -13,7 +13,6 @@ for repo in $HOME/pub/git/*.git; do
         git log -1 --pretty=tformat:%at >> $tmp
         for r in $(git remote); do
             git push $r 2>&1 | grep -v 'Everything up-to-date'
-            git push --tags $r 2>&1 | grep -v 'Everything up-to-date'
         done)
 done
 
