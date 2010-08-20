@@ -13,7 +13,7 @@ if __name__ == '__main__':
     try:
         opts, args = getopt.getopt(sys.argv[1:], "d:o:")
     except getopt.GetoptError:
-        print >>sys.stderr, "usage: dumwav [-d dir] [-o pattern] files"
+        print >>sys.stderr, "usage: dumpwav [-d dir] [-o pattern] files"
         sys.exit(2)
 
     for opt, arg in opts:
@@ -48,12 +48,12 @@ if __name__ == '__main__':
             }
 
         try:
-            status = os.system(commands[ext] % 
-                tuple([re.sub('"', '\\"', f)
-                    for f in (outdir, outfile, infile)]))
+            cmd = commands[ext] % tuple([re.sub('"', '\\"', f)
+                    for f in (outdir, outfile, infile)])
+            status = os.system(cmd)
         except KeyError:
             print "dumpwav: unknown file type: %s" % infile
 
         if status != 0:
-            print >>sys.stderr, "error: decode command failed"
+            print >>sys.stderr, "error: decode command (%s) failed" % cmd
             sys.exit(status)
