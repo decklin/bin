@@ -1,6 +1,6 @@
 #!/bin/sh
 
-mpwd "$@" | mpc update - >/dev/null
+mpc update "$(mpwd "$@")" >/dev/null
 
 if [ "$DISPLAY" ] && command -v mop >/dev/null 2>&1; then
     mop --showpl &
