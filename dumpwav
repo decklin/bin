@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     commands = {
         'ogg': 'oggdec -o "%s/%s" "%s"',
-        'mp3': 'mpg321 -v --skip-printing-frames=100 -w "%s/%s" "%s"',
+        'mp3': 'mpg123 -v -w "%s/%s" "%s"',
         'flac': 'flac -d -o "%s/%s" "%s"',
         'wav': 'cat >"%s/%s" <"%s"',
         }
