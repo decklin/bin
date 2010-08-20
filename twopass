@@ -4,7 +4,7 @@ require 'uri'
 
 cols = 13
 rows = 1
-dx = 100
+dx = 50
 dy = 10
 
 parts = URI::parse(ARGV.shift).host.split('.')
@@ -15,5 +15,4 @@ mouse = `xdotool getmouselocation`
 x, y = mouse.match(/x:(\d+) y:(\d+)/).captures.collect(&:to_i)
 args = "-T #{host} -g #{cols}x#{rows}+#{x-dx}+#{y-dy} #{ARGV.join(' ')}"
 
-passwd = `urxvt #{args} -e sh -c 'spwgen #{host} >&3' 3>&1`.strip()
-exec 'xdotool', 'type', passwd
+puts `urxvt #{args} -e sh -c 'spwgen #{host} >&3' 3>&1`.strip()
