@@ -12,6 +12,11 @@ class List
   def save(items); File.open(@path, 'w') {|f| f.puts(items.join($/)) }; end
 end
 
+configure do
+  set :static, true
+  set :public, 'public'
+end
+
 get '/' do
   erb :welcome
 end
@@ -39,7 +44,11 @@ end
 __END__
 
 @@ layout
-<!DOCTYPE html><title>Groceries</title><form method="post"><%= yield %></form>
+<!DOCTYPE html>
+<title>Groceries</title>
+<link rel="shortcut icon" href="/grocery_icon.png">
+<meta name="viewport" content="width=device-width">
+<form method="post"><%= yield %></form>
 
 @@ welcome
 <p>Create/view a list: <input type="text" name="id"> <input type="submit">
@@ -47,4 +56,5 @@ __END__
 
 @@ tickyboxes
 <% @items.each do |i| %><input type="checkbox" name="del" value="<%= i %>">
-<%= i %><br><% end %><p><input type="text" name="add"><p><input type="submit">
+<%= i %><br><% end %><p><input type="text" name="add" autofocus>
+<p><input type="submit">
