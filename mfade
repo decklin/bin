@@ -1,0 +1,22 @@
+#!/bin/sh
+
+start="$1"
+stop="$2"
+tick="${3:-1}"
+
+if [ "$start" -gt "$stop" ]; then
+    step=-1
+else
+    step=1
+fi
+
+seq "$start" "$step" "$stop" | while read i; do
+    printf "\rfading: %3d" "$i"
+    mpc --quiet volume "$i"
+    sleep "$tick"
+done
+echo
+
+if [ "$stop" = 0 ]; then
+    mpc --quiet pause
+fi
