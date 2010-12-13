@@ -9,14 +9,13 @@ import urlparse
 import BeautifulSoup
 from xml.sax.saxutils import unescape
 
-class AgentOpener(urllib.FancyURLopener):
-    version = "Pythön-urllib/%s" % urllib.__version__
-
-class CmdLineAuthOpener(AgentOpener):
-    def __init__(self, user, passwd):
+class DumplinksOpener(urllib.FancyURLopener):
+    def __init__(self, user, passwd, agent):
         urllib.FancyURLopener.__init__(self)
         self.user = user
         self.passwd = passwd
+        if agent:
+            self.version = agent
     def prompt_user_passwd(self, host, realm):
         return self.user, self.passwd
 
@@ -36,20 +35,25 @@ def dump(url, fp, inspect, pat):
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'a:ilr:')
 
-    opener = AgentOpener()
+    agent = None
+    user = None
+    passwd = None
     inspect = ['a', 'img']
     pat = any
 
     for opt, arg in opts:
+        if opt == '-A':
+            agent = arg
         if opt == '-a':
             user, passwd = arg.split(':')
-            opener = CmdLineAuthOpener(user, passwd)
         if opt == '-i':
             inspect = ['img']
         if opt == '-l':
             inspect = ['a']
         if opt == '-r':
             pat = re.compile(arg, re.I|re.M)
+
+    opener = DumplinksOpener(user, passwd, agent)
 
     if args:
         for url in args:
