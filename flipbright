@@ -1,6 +1,0 @@
-#!/bin/sh
-
-case $(sudo bright) in
-    15) sudo bright 1 >/dev/null;;
-    *) sudo bright 15 >/dev/null;;
-esac
