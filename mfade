@@ -1,22 +1,32 @@
 #!/bin/sh
 
-start="$1"
-stop="$2"
-tick="${3:-1}"
+delta="$1"
+tick="${2:-1}"
 
-if [ "$start" -gt "$stop" ]; then
-    step=-1
-else
-    step=1
-fi
+curvol() {
+    mpc volume | sed 's/.* \([0-9]\+\)%.*/\1/'
+}
 
-seq "$start" "$step" "$stop" | while read i; do
-    printf "\rfading: %3d" "$i"
-    mpc --quiet volume "$i"
+case "$delta" in
+    -)
+        step='-1'; n="$(curvol)";;
+    -*)
+        step='-1'; n="${1##-}";;
+    +*)
+        step='+1'; n="${1##+}";;
+    *)
+        echo 'usage: mfade {+N|-N|-} [SEC]'; exit 2;;
+esac
+
+for i in $(seq "$n"); do
+    mpc --quiet volume "$step"
+    echo -n "fading: $(curvol)% "
     sleep "$tick"
+    echo -n "\r"
 done
-echo
 
-if [ "$stop" = 0 ]; then
-    mpc --quiet pause
+if [ "$(curvol)" = 0 ]; then
+    mpc pause
+else
+    mpc
 fi
