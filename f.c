@@ -2,32 +2,30 @@
 #include <string.h>
 #include <stdio.h>
 
-#define LINE_BUF 2048
-#define MAX_FIELDS 256
-#define DEFAULT_IFS " \t\n"
+#define LINE_MAX 2048
+#define FIELD_MAX 256
+#define DEFAULT_IFS " \t"
 
 int main(int argc, char **argv)
 {
-    int idx[MAX_FIELDS], nidx;
-    char *f[MAX_FIELDS]; int nf;
-    char buf[LINE_BUF], *sep, *w, *nl;
-    int i, a;
+    int idx[FIELD_MAX], nidx, nf, i, tmp;
+    char *f[FIELD_MAX], buf[LINE_MAX], *sep, *nl;
 
     if (argc == 1) {
-        fprintf(stderr, "usage: f N [N...]\n");
-        exit(2);
-    }
-
-    if (argc > MAX_FIELDS + 1) {
-        fprintf(stderr, "error: more than %d fields specified\n", MAX_FIELDS);
+        fprintf(stderr, "usage: [IFS=sep] f N [N...]\n");
         exit(2);
     }
 
     for (i = 1, nidx = 0; i < argc; i++) {
-        if ((a = strtol(argv[i], NULL, 10)) > 0) {
-            idx[nidx++] = a - 1;
+        if ((tmp = strtol(argv[i], NULL, 0)) > 0) {
+            if (nidx < FIELD_MAX) {
+                idx[nidx++] = tmp - 1;
+            } else {
+                fprintf(stderr, "f: can only handle %d fields\n", FIELD_MAX);
+                break;
+            }
         } else {
-            fprintf(stderr, "error: cannot parse number: %s\n", argv[i]);
+            fprintf(stderr, "f: invalid field number: %s\n", argv[i]);
             exit(2);
         }
     }
@@ -35,15 +33,29 @@ int main(int argc, char **argv)
     if ((sep = getenv("IFS")) == NULL)
         sep = DEFAULT_IFS;
 
-    while (fgets(buf, sizeof buf, stdin)) {
-        if ((nl = strstr(buf, "\n")) != NULL)
+    while (fgets(buf, sizeof buf, stdin) != NULL) {
+        if ((nl = strchr(buf, '\n')) != NULL) {
             *nl = '\0';
-        else
-            fprintf(stderr, "warning: line truncated to %ld bytes\n", sizeof buf);
-        for (nf = 0, w = strtok(buf, sep); w && nf < MAX_FIELDS; w = strtok(NULL, sep))
-            f[nf++] = w;
-        for (i = 0; i < nidx; i++)
-            printf("%s%s", idx[i] < nf ? f[idx[i]] : "", i < nidx - 1 ? "\t" : "\n");
+        } else {
+            fprintf(stderr, "f: truncating line at %d bytes\n", LINE_MAX);
+            while ((tmp = getchar()) != EOF) {
+                if (tmp != '\n')
+                    break;
+            }
+        }
+
+        nf = 0;
+        f[nf] = strtok(buf, sep);
+        while (f[nf] != NULL && nf < FIELD_MAX)
+            f[++nf] = strtok(NULL, sep);
+
+        for (i = 0; i < nidx; i++) {
+            if (idx[i] < nf)
+                printf("%s", f[idx[i]]);
+            if (i < nidx - 1)
+                printf("\t");
+        }
+        printf("\n");
     }
 
     return 0;
