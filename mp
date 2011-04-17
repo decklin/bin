@@ -1,3 +1,5 @@
 #!/bin/sh
 
-mpc playlist --format '%file%' | sed 's/^/\/srv\/music\//;s/.*/"&"/'
+n="$(mpc playlist | wc -l)"
+ma "$@"
+mpc play "$((n+1))"
