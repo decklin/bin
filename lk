@@ -10,7 +10,7 @@ state_dir=$HOME/var/lk/$account
 creds=$HOME/lib/lk/$account
 
 temp=`mktemp` || exit 1
-curl -s $banner_url | grep "$tree" > $temp
+curl -s $banner_url | grep "\<$tree\>" > $temp
 
 for i in $flavors; do
     x="$(awk "/latest $i/{print\"$i:\",\$NF;exit}" $temp \
