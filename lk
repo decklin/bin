@@ -1,13 +1,15 @@
 #!/bin/sh
 
-state_dir=$HOME/var/lk
-creds=$HOME/lib/lk/creds
 banner_url=http://www.kernel.org/kdist/finger_banner
 twitter_url=http://api.twitter.com/1/statuses/update.xml
-tree=2.6
 flavors='stable mainline'
-temp=`mktemp` || exit 1
 
+account=$1
+tree=$2
+state_dir=$HOME/var/lk/$account
+creds=$HOME/lib/lk/$account
+
+temp=`mktemp` || exit 1
 curl -s $banner_url | grep "$tree" > $temp
 
 for i in $flavors; do
