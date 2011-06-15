@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#define LINE_MAX 2048
+#define LINE_MAX 16384
 #define FIELD_MAX 256
 #define DEFAULT_IFS " \t"
 
