@@ -11,11 +11,8 @@ def chain_selector(arg, fn)
   when '-e', '--each';    proc {|x| x.each {|e| fn.call(e) } }
   when '-k', '--keys';    proc {|x| x.keys.each {|k| fn.call(k) } }
   when '-v', '--values';  proc {|x| x.values.each {|v| fn.call(v) } }
-  when /^[A-Za-z_]/;      proc {|x| fn.call(x[arg]) }
-  when /^[0-9]/;          proc {|x| fn.call(x[arg.to_i]) }
-  else
-    STDERR.puts "unknown option: #{arg}"
-    exit 2
+  when /^[0-9]+$/;        proc {|x| fn.call(x[arg.to_i]) }
+  else                    proc {|x| fn.call(x[arg]) }
   end
 end
 
