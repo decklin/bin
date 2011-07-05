@@ -3,6 +3,8 @@
 require 'json'
 require 'pp'
 
+JSON.create_id = nil
+
 def chain_selector(arg, fn)
   case arg
   when '-p', '--plain';   proc {|x| puts x }
