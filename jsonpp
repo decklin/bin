@@ -1,0 +1,22 @@
+#!/usr/bin/ruby
+
+require 'json'
+require 'pp'
+
+JSON.create_id = nil
+
+def chain_selector(arg, fn)
+  case arg
+  when '-p', '--plain';   proc {|x| puts x }
+  when '-i', '--inspect'; proc {|x| puts x.inspect }
+  when '-j', '--json';    proc {|x| puts JSON.pretty_generate(x) }
+  when '-e', '--each';    proc {|x| x.each {|e| fn.call(e) } }
+  when '-k', '--keys';    proc {|x| x.keys.each {|k| fn.call(k) } }
+  when '-v', '--values';  proc {|x| x.values.each {|v| fn.call(v) } }
+  when /^[0-9]+$/;        proc {|x| fn.call(x[arg.to_i]) }
+  else                    proc {|x| fn.call(x[arg]) }
+  end
+end
+
+input = JSON.parse(STDIN.read)
+ARGV.reverse.reduce(proc {|x| pp x }) {|fn, arg| chain_selector(arg, fn) }.call(input)

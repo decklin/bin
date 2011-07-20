@@ -1,0 +1,42 @@
+#!/usr/bin/ruby
+
+class Array
+  def weighted_sum; zip(0..size).reduce(0) {|a, b| a + b[0]/2**b[1] }; end
+  def weighted_avg; weighted_sum / ([1.0]*size).weighted_sum; end
+  def chg; self[-1] - self[-2]; end
+end
+
+def decomp(t)
+  [[86400, 'd'], [3600, 'h'], [60, 'm'], [1, 's']].
+    map {|n, u| r, t = t.divmod(n); [r, u] if r > 0 || u == 's' }.compact.
+    map {|r, u| "#{r}#{u}" }
+end
+def fmt_eta(h)
+  h.finite? && h >= 0 ? "#{Time.now+h} (#{decomp(h).join ' '})" : 'divergent'
+end
+def fmt_rate(r)
+  r != 0 ? '%.2f/s' % r : 'stalled'
+end
+
+goal = ARGV[0].to_f
+times = []
+values = []
+rates = []
+
+begin
+  STDIN.each_line do |line|
+    times << Time.now
+    values << line.to_f
+    rates << values.chg / times.chg if times.size > 1 && times.chg > 0.001
+
+    if rates.empty?
+      status = 'initializing'
+    else
+      hence = (goal - values.last) / rates.last(10).reverse.weighted_avg
+      status = "#{fmt_eta(hence)}, #{fmt_rate(rates.last)}"
+    end
+
+    puts "#{line.chomp}\t#{status}"
+  end
+rescue Interrupt
+end

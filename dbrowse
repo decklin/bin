@@ -7,6 +7,10 @@ dm() {
     dmenu $COLOR -fn $FONT
 }
 
+lx() {
+    IFS=':'; lsx $PATH
+}
+
 case $1 in
     --edit)
         while d="$(ls -ap | sort -d | dm)" && test "$d"; do
@@ -18,6 +22,6 @@ case $1 in
         done
         ;;
     --run|*)
-        exec "$((IFS=':'; lsx $PATH) | sort | dm)"
+        exec "$(lx | sort | dm)"
         ;;
 esac

@@ -1,18 +1,37 @@
 #!/bin/sh
 
-VAR=$HOME/var/ssh
+state_file="$HOME/var/ssh/agent.sh"
 
-kill -0 $SSH_AGENT_PID || eval $(ssh-agent)
+agent_running() {
+    kill -0 "$SSH_AGENT_PID" 2>/dev/null
+}
 
-cat <<EOF >$VAR/agent.sh
-export SSH_AUTH_SOCK=$SSH_AUTH_SOCK
-export SSH_AGENT_PID=$SSH_AGENT_PID
-EOF
+echo_state() {
+    echo "export SSH_AGENT_PID='$SSH_AGENT_PID'"
+    echo "export SSH_AUTH_SOCK='$SSH_AUTH_SOCK'"
+}
 
-cat <<EOF >$VAR/agent.csh
-setenv SSH_AUTH_SOCK $SSH_AUTH_SOCK
-setenv SSH_AGENT_PID $SSH_AGENT_PID
-EOF
+save_agent() {
+    mkdir -p "$(dirname "$state_file")"
+    echo_state > "$state_file"
+}
 
-ssh-add -l >/dev/null 2>&1 || ssh-add
+identity_added() {
+    ssh-add -l >/dev/null 2>&1
+}
+
+if agent_running; then
+    save_agent > "$state_file"
+else
+    . "$state_file"
+    if ! agent_running; then
+        eval "$(ssh-agent)"
+        save_agent > "$state_file"
+    fi
+fi
+
+if ! identity_added; then
+    ssh-add
+fi
+
 exec "$@"
