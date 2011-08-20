@@ -1,0 +1,6 @@
+#!/bin/sh
+
+test -t 0 && tty='-t'
+test -n "$*" || set -- -e nil
+
+exec emacsclient "${tty:--c}" -a "" "$@"
