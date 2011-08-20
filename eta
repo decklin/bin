@@ -1,8 +1,8 @@
 #!/usr/bin/ruby
 
 class Array
-  def weighted_sum; zip(0..size).reduce(0) {|a, b| a + b[0]/2**b[1] }; end
-  def weighted_avg; weighted_sum / ([1.0]*size).weighted_sum; end
+  def weighted_sum(a); zip(0..size).reduce(0) {|x, y| x + y[0]/a**y[1] }; end
+  def weighted_avg(a); weighted_sum(a) / ([1.0]*size).weighted_sum(a); end
   def chg; self[-1] - self[-2]; end
 end
 
@@ -32,7 +32,7 @@ begin
     if rates.empty?
       status = 'initializing'
     else
-      hence = (goal - values.last) / rates.last(10).reverse.weighted_avg
+      hence = (goal - values.last) / rates.last(20).reverse.weighted_avg(1.1)
       status = "#{fmt_eta(hence)}, #{fmt_rate(rates.last)}"
     end
 
