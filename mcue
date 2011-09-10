@@ -1,10 +1,15 @@
 #!/bin/sh
 
+do_search() {
+    if [ "$*" = "-" ]; then
+        while read line; do mpc search any "$line"; done
+    else
+        mpc search any "$@"
+    fi
+}
+
 n=$(mpc playlist | wc -l)
 
-if [ "$*" = "-" ]; then
-    while read line; do eval "mpc search $line"; done
-else
-    mpc search "$@"
-fi | \
-    vipe | mpc add | grep -q . && mpc play $(($n+1))
+if do_search "$@" | vipe | mpc add; then
+    mpc play $(($n+1))
+fi
