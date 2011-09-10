@@ -37,6 +37,7 @@ int main(int argc, char **argv)
         if ((nl = strchr(buf, '\n')) != NULL) {
             *nl = '\0';
         } else {
+            // XXX not true if it was a short line with no newline
             fprintf(stderr, "f: truncating line at %d bytes\n", LINE_MAX);
             while ((tmp = getchar()) != EOF) {
                 if (tmp != '\n')
