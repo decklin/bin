@@ -18,6 +18,10 @@ case "$delta" in
         echo 'usage: mfade {+N|-N|-} [SEC]'; exit 2;;
 esac
 
+if [ "$(curvol)" = 0 ]; then
+    mpc play
+fi
+
 for i in $(seq "$n"); do
     mpc --quiet volume "$step"
     echo -n "fading: $(curvol)% "
