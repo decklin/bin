@@ -55,6 +55,6 @@ __END__
 <p>Or upload a text file: <kbd>curl -T list <%= request.url %></kbd>
 
 @@ tickyboxes
-<% @items.each do |i| %><input type="checkbox" name="del[]" value="<%= i %>">
+<% @items.each do |i| %><input type="checkbox" name="del[]" value="<%= i.gsub('"', '&quot;') %>">
 <%= i %><br><% end %><p><input type="text" name="add" autofocus>
 <p><input type="submit">
