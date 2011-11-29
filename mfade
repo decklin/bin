@@ -4,7 +4,7 @@ delta="$1"
 tick="${2:-1}"
 
 curvol() {
-    mpc volume | sed 's/.* \([0-9]\+\)%.*/\1/'
+    mpc volume | sed 's/^volume: \([0-9]*\)%.*/\1/'
 }
 
 case "$delta" in
@@ -24,9 +24,9 @@ fi
 
 for i in $(seq "$n"); do
     mpc --quiet volume "$step"
-    echo -n "fading: $(curvol)% "
+    printf "fading: $(curvol)%% "
     sleep "$tick"
-    echo -n "\r"
+    printf '\r'
 done
 
 if [ "$(curvol)" = 0 ]; then
