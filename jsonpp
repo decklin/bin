@@ -1,22 +1,39 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 require 'json'
 require 'pp'
 
-JSON.create_id = nil
-
-def chain_selector(arg, fn)
-  case arg
-  when '-p', '--plain';   proc {|x| puts x }
-  when '-i', '--inspect'; proc {|x| puts x.inspect }
-  when '-j', '--json';    proc {|x| puts JSON.pretty_generate(x) }
-  when '-e', '--each';    proc {|x| x.each {|e| fn.call(e) } }
-  when '-k', '--keys';    proc {|x| x.keys.each {|k| fn.call(k) } }
-  when '-v', '--values';  proc {|x| x.values.each {|v| fn.call(v) } }
-  when /^[0-9]+$/;        proc {|x| fn.call(x[arg.to_i]) }
-  else                    proc {|x| fn.call(x[arg]) }
+def gwim(obj, key)
+  case key
+  when /,/; key.split(',').map {|k| gwim(obj, k) }
+  when /\./; key.split('.').reduce(obj) {|o, k| gwim(o, k) }
+  when /^\d+$/; obj[key.to_i]
+  else obj[key]
   end
 end
 
+def text(obj)
+  case obj
+  when Array; obj.join("\t")
+  when Hash; obj.map {|pair| text(pair) }
+  else obj
+  end
+end
+
+def json(obj)
+  JSON.create_id = nil
+  JSON.pretty_generate(obj)
+end
+
 input = JSON.parse(STDIN.read)
-ARGV.reverse.reduce(proc {|x| pp x }) {|fn, arg| chain_selector(arg, fn) }.call(input)
+chain = ARGV.reverse.reduce(proc {|obj| pp obj }) do |rest, arg|
+  case arg
+  when '-t'; proc {|obj| puts text(obj) }
+  when '-j'; proc {|obj| puts json(obj) }
+  when '-e'; proc {|obj| obj.each {|e| rest.call(e) } }
+  when '-k'; proc {|obj| obj.keys.each {|k| rest.call(k) } }
+  when '-v'; proc {|obj| obj.values.each {|v| rest.call(v) } }
+  else       proc {|obj| rest.call(gwim(obj, arg)) }
+  end
+end
+chain.call(input)
