@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+DEFAULT = [0, 1]
+
+def read_cfg(dir)
+  File.read("#{dir}/.randsleep").split.take(2).map(&:to_f) rescue nil
+end
+
+case ARGV.size
+when 0
+  min, max = read_cfg(Dir.pwd) || read_cfg(ENV['HOME']) || DEFAULT
+when 2
+  min, max = ARGV.take(2).map(&:to_f)
+else
+  STDERR.puts "usage: randsleep [MIN MAX]"
+  exit 2
+end
+
+sleep(min + rand * (max - min))
