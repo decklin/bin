@@ -1,42 +1,42 @@
 #!/usr/bin/ruby
 
-class Array
-  def weighted_sum(a); zip(0..size).reduce(0) {|x, y| x + y[0]/a**y[1] }; end
-  def weighted_avg(a); weighted_sum(a) / ([1.0]*size).weighted_sum(a); end
-  def chg; self[-1] - self[-2]; end
+def abs_t(t)
+  (Time.now + t).strftime(t > 86400 ? '%FT%X' : '%X')
 end
-
-def decomp(t)
+def rel_t(t)
   [[86400, 'd'], [3600, 'h'], [60, 'm'], [1, 's']].
     map {|n, u| r, t = t.divmod(n); [r, u] if r > 0 || u == 's' }.compact.
-    map {|r, u| "#{r}#{u}" }
-end
-def fmt_eta(h)
-  h.finite? && h >= 0 ? "#{Time.now+h} (#{decomp(h).join ' '})" : 'divergent'
-end
-def fmt_rate(r)
-  r != 0 ? '%.2f/s' % r : 'stalled'
+    map {|r, u| "#{r}#{u}" }.join(' ')
 end
 
-goal = ARGV[0].to_f
-times = []
-values = []
-rates = []
+class Eta
+  ALPHA = 0.1
+  def initialize(goal)
+    @goal = goal
+  end
+  def add(x, t)
+    return 'no input' if x.nil?
+    return 'stalled' if x == @x
+    return 'done' if x == @goal
+    if @x
+      rr = (t - @t) / (x - @x)
+      @avg = @avg ? ALPHA * rr + (1 - ALPHA) * @avg : rr
+      eta = (@goal - x) * @avg
+    end
+    @x = x
+    @t = t
+    return 'initializing' if @avg.nil?
+    return 'divergent' if eta < 0
+    return "eta #{abs_t(eta)} #{rel_t(eta)} %.3f %.3f" % [1/rr, 1/@avg]
+  end
+end
 
 begin
+  eta = Eta.new(ARGV.first.to_f)
   STDIN.each_line do |line|
-    times << Time.now
-    values << line.to_f
-    rates << values.chg / times.chg if times.size > 1 && times.chg > 0.001
-
-    if rates.empty?
-      status = 'initializing'
-    else
-      hence = (goal - values.last) / rates.last(20).reverse.weighted_avg(1.1)
-      status = "#{fmt_eta(hence)}, #{fmt_rate(rates.last)}"
-    end
-
-    puts "#{line.chomp}\t#{status}"
+    now = Time.now
+    status = eta.add(line =~ /[\d.-]+/ ? $&.to_f : nil, now.to_f)
+    puts "#{line.chomp}\t#{abs_t(0)} #{status}"
   end
 rescue Interrupt
 end
