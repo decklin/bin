@@ -12,10 +12,13 @@ if __name__ == '__main__':
         cutoff = 4
 
     lines = sys.stdin.readlines()
+    out = []
 
-    for i in range(0, len(lines)):
-        for j in range(i + 1, min(i + search, len(lines))):
-            if lev.distance(lines[i], lines[j]) < cutoff:
+    for ln in reversed(lines):
+        for goodln in out[-search:]:
+            if lev.distance(ln, goodln) < cutoff:
                 break
         else:
-            print lines[i],
+            out.insert(0, ln.rstrip('\n'))
+
+    print '\n'.join(out)
