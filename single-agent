@@ -23,7 +23,7 @@ identity_added() {
 if agent_running; then
     save_agent > "$state_file"
 else
-    . "$state_file"
+    test -e "$state_file" && . "$state_file"
     if ! agent_running; then
         eval "$(ssh-agent)"
         save_agent > "$state_file"
