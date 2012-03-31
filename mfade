@@ -4,7 +4,7 @@ delta="$1"
 tick="${2:-1}"
 
 curvol() {
-    mpc volume | sed 's/^volume: \([0-9]*\)%.*/\1/'
+    mpc volume | sed 's/^volume:  *\([0-9]*\)%.*/\1/'
 }
 
 case "$delta" in
