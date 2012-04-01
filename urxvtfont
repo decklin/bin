@@ -1,0 +1,36 @@
+#!/bin/sh
+
+esc_seq() {
+    printf '\e]%d;%s\007' "$1" "$2"
+}
+
+apply_fonts() {
+    case "$TERM" in
+        rxvt-unicode*)
+            esc_seq 710 "$1"
+            esc_seq 711 "$2"
+            esc_seq 712 "$3"
+            ;;
+        *)
+            urxvt -fn "$1" -fb "$2" -fi "$3"
+            ;;
+    esac
+}
+
+font() {
+    apply_fonts "$1" "${XFT_BOLD:+$1:bold}" "${XFT_ITALIC:+$1:italic}"
+}
+
+while getopts bi opt; do
+    case "$opt" in
+        b) XFT_BOLD=yes;;
+        i) XFT_ITALIC=yes;;
+    esac
+done
+shift $(($OPTIND - 1))
+
+case "$#" in
+    1) font "$1";;
+    2) font "xft:$1:pixelsize=$2";;
+    *) echo "usage: urxvtfont [-bi] {FONT|XFTFONT PX}"; exit 2;;
+esac
