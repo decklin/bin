@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding=utf-8 -*-
 
 import sys
 import getopt
@@ -8,12 +9,15 @@ from urllib2 import URLError
 DEFAULT = 'KBOS'
 
 if __name__ == '__main__':
-    opts, args = getopt.getopt(sys.argv[1:], 'v')
+    opts, args = getopt.getopt(sys.argv[1:], 'vi')
 
     verbose = False
+    imperial = False
     for opt, arg in opts:
         if opt == '-v':
             verbose = True
+        if opt == '-i':
+            imperial = True
 
     try:
         station = args[0]
@@ -21,28 +25,37 @@ if __name__ == '__main__':
         station = DEFAULT
 
     try:
-        f = pymetar.ReportFetcher(station)
-        p = pymetar.ReportParser()
-        r = p.ParseReport(f.FetchReport())
+        fetcher = pymetar.ReportFetcher(station)
+        parser = pymetar.ReportParser()
+        report = parser.ParseReport(fetcher.FetchReport())
+        if imperial:
+            getTemperature = report.getTemperatureFahrenheit
+            getDewPoint = report.getDewPointFahrenheit
+            getVisibility = report.getVisibilityMiles
+            visibilityUnits = 'mi'
+        else:
+            getTemperature = report.getTemperatureCelsius
+            getDewPoint = report.getDewPointCelsius
+            getVisibility = report.getVisibilityKilometers
+            visibilityUnits = 'km'
     except URLError, e:
         print 'Error fetching METAR: %s' % e.args[0][1]
         sys.exit(1)
 
     if verbose:
-        head = '%s; %s' % (r.getStationCity(), r.getISOTime())
+        head = '%s; %s' % (report.getStationCity(), report.getISOTime())
         print head; print '=' * len(head)
 
         obs = []
-        obs.append(('Conditions', r.getWeather()))
-        obs.append(('Temperature', r.getTemperatureCelsius()))
-        obs.append(('Wind', '%s %s m/s' %
-                            (r.getWindCompass(), r.getWindSpeed())))
-        obs.append(('Visibility', '%s km' % r.getVisibilityKilometers()))
-        obs.append(('Dew Point', '%s' % r.getDewPointCelsius()))
-        obs.append(('Humidity', '%s%%' % r.getHumidity()))
+        obs.append(('Conditions', report.getWeather()))
+        obs.append(('Temperature', getTemperature()))
+        obs.append(('Wind', '%s %s m/s' % (report.getWindCompass(), report.getWindSpeed())))
+        obs.append(('Visibility', '%s %s' % (getVisibility(), visibilityUnits)))
+        obs.append(('Dew Point', '%s' % getDewPoint()))
+        obs.append(('Humidity', '%s%%' % report.getHumidity()))
 
         width = max([len(o[0]) for o in obs]) + 2
-        for o in obs:
-            print '%*s: %s' % (width, o[0], o[1])
+        for m, v in obs:
+            print '%*s: %s' % (width, m, v)
     else:
-        print r.getWeather(), '(%s C)' % r.getTemperatureCelsius()
+        print report.getWeather(), '%s°' % getTemperature()
