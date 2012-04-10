@@ -1,0 +1,4 @@
+#!/bin/sh
+
+xdotool windowactivate "$(xdotool search --name " - Chromium" | tail -1)"
+chromium "$@"

@@ -1,9 +1,0 @@
-#!/bin/sh
-
-chrome "$(xsel)"
-
-id=$(xwit -print -all | sed -n '/Chromium/s/:.*//p')
-if [ "$id" ]; then
-    desk=$(xprop _NET_WM_DESKTOP -id "$id" | sed 's/.* = //')
-    aedesk "$desk"
-fi
