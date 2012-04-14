@@ -1,0 +1,7 @@
+#!/usr/bin/ruby
+
+require 'cgi'
+
+ARGV.each do |arg|
+  puts CGI.escape(arg)
+end

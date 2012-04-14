@@ -1,0 +1,165 @@
+#!/usr/bin/python
+
+# Mop - the MPD OSD Python client. Works nicely with xbindkeys.
+
+import os
+import sys
+import time
+import getopt
+import pyosd
+import mpdclient2
+
+font = '-*-lucida-bold-r-*-*-*-360-*-*-*-*-iso10646-1'
+color = '#40ffff'
+time_fmt = '%a %d %b, %H:%M'
+delay = 3
+shadow = 2
+pos = pyosd.POS_TOP
+align = pyosd.ALIGN_RIGHT
+offset = 2
+
+host = 'localhost'
+port = 6600
+
+if __name__ == '__main__':
+    shortopts = 'f:c:d:howlupnPatSe:CUv:'
+    longopts = [
+        'font=',
+        'color=',
+        'delay=',
+        'show',
+        'showpos',
+        'showvol',
+        'showpl',
+        'showup',
+        'prev',
+        'next',
+        'play',
+        'pause',
+        'toggle',
+        'stop',
+        'seek=',
+        'clear',
+        'update',
+        'vol=',
+        ]
+
+    try:
+        mpd = mpdclient2.connect()
+    except (EOFError, mpdclient2.socket.error):
+        print >>sys.stderr, "error: could not connect to MPD"
+        sys.exit(1)
+
+    osd = pyosd.osd(timeout=delay, pos=pos, align=align, lines=1,
+        offset=offset, font=font, 
+        colour=color, shadow=shadow)
+
+    opts, args = getopt.getopt(sys.argv[1:], shortopts, longopts)
+
+    for opt, arg in opts:
+        if opt in ('--font', '-f'):
+            font = arg
+
+        if opt in ('--color', '-c'):
+            color = arg
+
+        if opt in ('--delay', '-d'):
+            delay = int(arg)
+            osd.set_timeout(delay)
+
+        if opt in ('--show', '-h'):
+            status = mpd.do.status()
+            if status.state == 'play':
+                song = mpd.do.currentsong()
+                try:
+                    print song.time
+                    osd.display("%s - %s [%d/%d, %d:%02d]" %
+                        ((song.get('artist', ''), song.get('title', ''),
+                        int(song.pos) + 1, int(status.playlistlength)) +
+                        divmod(int(song.get('time', 0)), 60)))
+                except AttributeError:
+                    osd.display(song.file)
+            elif status.state == 'pause':
+                osd.display("[Paused]")
+            else:
+                osd.display("[Stopped]")
+            time.sleep(delay)
+
+        if opt in ('--showpos', '-o'):
+            status = mpd.do.status()
+            try:
+                pos, len = map(float, status.time.split(':'))
+                osd.display(int(pos/len*100), pyosd.TYPE_PERCENT)
+            except AttributeError:
+                osd.display("[Not playing]")
+            time.sleep(delay)
+
+        if opt in ('--showvol', '-w'):
+            status = mpd.do.status()
+            osd.display(int(status.volume), pyosd.TYPE_SLIDER)
+            time.sleep(delay)
+
+        if opt in ('--showpl', '-l'):
+            status = mpd.do.status()
+            pl_len = int(status.playlistlength)
+            playlist = mpd.do.playlistinfo()
+            length = reduce(int.__add__,
+                [int(song.get('time', 0)) for song in playlist], 0)
+            min, sec = divmod(length, 60)
+            osd.display("[%d songs, %d:%02d]" % (pl_len, min, sec))
+            time.sleep(delay)
+
+        if opt in ('--showup', '-u'):
+            status = mpd.do.status()
+            try:
+                osd.display("[Updating, #%d]" % int(status.updating_db))
+            except AttributeError:
+                stats = mpd.do.stats()
+                osd.display("[Last updated %s]" % time.strftime(time_fmt,
+                    time.localtime(int(stats.db_update))))
+            time.sleep(delay)
+
+        if opt in ('--prev', '-p'):
+            mpd.do.previous()
+
+        if opt in ('--next', '-n'):
+            mpd.do.next()
+
+        if opt in ('--play', '-P'):
+            mpd.do.play()
+
+        if opt in ('--pause', '-a'):
+            mpd.do.pause(1)
+
+        if opt in ('--toggle', '-t'):
+            status = mpd.do.status()
+            if status.state == 'play':
+                mpd.do.pause(1)
+            elif status.state == 'pause':
+                mpd.do.pause(0)
+            else:
+                mpd.do.play()
+
+        if opt in ('--stop', '-S'):
+            mpd.do.stop()
+
+        if opt in ('--seek', '-e'):
+            song, pos = map(int, arg.split(':'))
+            mpd.do.seek(song, pos)
+
+        if opt in ('--clear', '-c'):
+            mpd.do.clear()
+
+        if opt in ('--update', '-c'):
+            mpd.do.update()
+
+        if opt in ('--vol', '-v'):
+            if arg[0] == '+':
+                status = mpd.do.status()
+                vol = int(status.volume) + int(arg[1:])
+            elif arg[0] == '-':
+                status = mpd.do.status()
+                vol = int(status.volume) - int(arg[1:])
+            else:
+                vol = int(arg)
+            mpd.do.setvol(vol)
