@@ -1,24 +1,20 @@
 #!/bin/sh
 
-banner_url=http://www.kernel.org/kdist/finger_banner
-twitter_url=http://api.twitter.com/1/statuses/update.xml
-flavors='stable mainline'
+banner_url="http://www.kernel.org/kdist/version.shtml"
+twitter_url="http://api.twitter.com/1/statuses/update.xml"
 
-account=$1
-tree=$2
-state_dir=$HOME/var/lk/$account
-creds=$HOME/lib/lk/$account
+account="$1"; shift
+state_dir="$HOME/var/lk"
+creds="$HOME/lib/lk/$account"
 
 temp=`mktemp` || exit 1
-curl -s $banner_url | grep "\<$tree\>" > $temp
+curl -s "$banner_url" | sed 's,</tr>,&<br>,' | w3m -dump -T text/html -cols 1024 | awk '{print $1, $2}' > $temp
 
-for i in $flavors; do
-    x="$(awk "/latest $i/{print\"$i:\",\$NF;exit}" $temp \
-        | confer -i $state_dir/$i)"
+for series in "$@"; do
+    x="$(awk "/: $series/{print;exit}" $temp | confer -i $state_dir/$series)"
     if [ "$x" ]; then
-        curlicue -f $creds -- \
-            -s -d "status=$(urlencode "$x")" "$twitter_url" >/dev/null
+        curlicue -f "$creds" -- -s -d "status=$(urlencode "$x")" "$twitter_url" >/dev/null
     fi
 done
 
-rm -f $temp
+rm -f "$temp"
