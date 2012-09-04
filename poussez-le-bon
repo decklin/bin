@@ -5,7 +5,10 @@
 # from the Oblique Strategies deck if I haven't committed to anything
 # in three days (and therefore probably need some inspiration).
 
-age=$(($(date +%s) - 3*86400))
+grace=$((5*86400))
+range=$((4*3600))
+
+age=$(($(date +%s) - $grace))
 tmp=$(mktemp)
 
 for repo in $HOME/pub/git/*.git; do
@@ -17,7 +20,7 @@ for repo in $HOME/pub/git/*.git; do
 done
 
 if [ $(sort -n $tmp | tail -1) -le $age ]; then
-    fortune $HOME/lib/oblique | mail -s 'oblique strategy' mobile
+    (sleep $(($RANDOM % $range)); fortune $HOME/lib/oblique | mail -s 'oblique strategy' mobile) &
 fi
 
 rm -f $tmp
