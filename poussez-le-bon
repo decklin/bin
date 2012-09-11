@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This runs from cron every morning and mirrors my repos. While it's
 # at it, it checks the date on each HEAD and wakes me up with a card
