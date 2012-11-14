@@ -13,7 +13,7 @@ curl -s "$banner_url" | sed 's,</tr>,&<br>,' | w3m -dump -T text/html -cols 1024
 for series in "$@"; do
     x="$(awk "/: $series/{print;exit}" $temp | confer -i $state_dir/$series)"
     if [ "$x" ]; then
-        curlicue -f "$creds" -- -s -d "status=$(urlencode "$x")" "$twitter_url" >/dev/null
+        curlicue -f "$creds" -- -s -d "status=$(url-encode "$x")" "$twitter_url" >/dev/null
     fi
 done
 
