@@ -1,19 +1,19 @@
 #!/bin/sh
 
-banner_url="http://www.kernel.org/kdist/version.shtml"
-twitter_url="http://api.twitter.com/1/statuses/update.xml"
+banner_url="http://www.kernel.org/kdist/finger_banner"
+twitter_url="http://api.twitter.com/1.1/statuses/update.json"
 
 account="$1"; shift
 state_dir="$HOME/var/lk"
-creds="$HOME/lib/lk/$account"
+creds="$HOME/lib/lk/$account.creds"
 
 temp=`mktemp` || exit 1
-curl -s "$banner_url" | sed 's,</tr>,&<br>,' | w3m -dump -T text/html -cols 1024 | awk '{print $1, $2}' > $temp
+curl -s "$banner_url" | sed -n 's/^The latest \([^ ]*\) \([^ ]*\) version of the Linux kernel is: *\([^ ]*\) */\1: \3/p' > "$temp"
 
 for series in "$@"; do
     x="$(awk "/: $series/{print;exit}" $temp | confer -i $state_dir/$series)"
     if [ "$x" ]; then
-        curlicue -f "$creds" -- -s -d "status=$(url-encode "$x")" "$twitter_url" >/dev/null
+        curlicue -f "$creds" -- -s -d "status=$(url-encode-nonplus "$x")" "$twitter_url" #>/dev/null
     fi
 done
 
