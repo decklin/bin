@@ -1,7 +1,7 @@
 #!/bin/sh
 
-banner_url="http://www.kernel.org/kdist/finger_banner"
-twitter_url="http://api.twitter.com/1.1/statuses/update.json"
+banner_url="https://www.kernel.org/finger_banner"
+twitter_url="https://api.twitter.com/1.1/statuses/update.json"
 
 account="$1"; shift
 state_dir="$HOME/var/lk"
