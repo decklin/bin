@@ -3,19 +3,32 @@
 require 'json'
 require 'pp'
 
-def gwim(obj, key)
-  case key
-  when /,/; key.split(',').map {|k| gwim(obj, k) }
-  when /\./; key.split('.').reduce(obj) {|o, k| gwim(o, k) }
-  when /^\d+$/; obj[key.to_i]
-  else obj[key]
+# Transform the arguments into a query by threading them "backwards" (a
+# right fold). Instead of building up a list that possibly contains
+# several items, the fold builds up a proc (closure) that possibly calls
+# other procs.
+#
+# Printing options (-p, -t, and -j) ignore anything to their right;
+# looping options (-e, -k, and -v) and selection (any other argument)
+# evaluate everything to their right. A final -p is always implied but
+# not necessarily reached.
+
+query = ARGV.reverse_each.inject('-p') do |rest, arg|
+  case arg
+  when '-p'; proc {|obj| pp(obj) }
+  when '-t'; proc {|obj| puts text(obj) }
+  when '-j'; proc {|obj| puts json(obj) }
+  when '-e'; proc {|obj| obj.each        {|e| rest.call(e) } }
+  when '-k'; proc {|obj| obj.keys.each   {|k| rest.call(k) } }
+  when '-v'; proc {|obj| obj.values.each {|v| rest.call(v) } }
+  else       proc {|obj| r = gwim(obj, arg) ; rest.call(r)   }
   end
 end
 
 def text(obj)
   case obj
   when Array; obj.join("\t")
-  when Hash; obj.map {|pair| text(pair) }
+  when Hash ; obj.map {|pair| text(pair) }
   else obj
   end
 end
@@ -25,15 +38,13 @@ def json(obj)
   JSON.pretty_generate(obj)
 end
 
-input = JSON.parse(STDIN.read)
-chain = ARGV.reverse.reduce(proc {|obj| pp obj }) do |rest, arg|
-  case arg
-  when '-t'; proc {|obj| puts text(obj) }
-  when '-j'; proc {|obj| puts json(obj) }
-  when '-e'; proc {|obj| obj.each {|e| rest.call(e) } }
-  when '-k'; proc {|obj| obj.keys.each {|k| rest.call(k) } }
-  when '-v'; proc {|obj| obj.values.each {|v| rest.call(v) } }
-  else       proc {|obj| rest.call(gwim(obj, arg)) }
+def gwim(obj, key)
+  case key
+  when /,/    ; key.split(',').map {|k| gwim(obj, k) }
+  when /\./   ; key.split('.').reduce(obj) {|o, k| gwim(o, k) }
+  when /^\d+$/; obj[key.to_i]
+  else          obj[key]
   end
 end
-chain.call(input)
+
+query.call(JSON.parse(STDIN.read))
