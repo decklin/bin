@@ -3,21 +3,23 @@
 require 'json'
 require 'pp'
 
-# Transform the arguments into a query by threading them "backwards" (a
-# right fold). Instead of building up a list that possibly contains
-# several items, the fold builds up a proc (closure) that possibly calls
-# other procs.
-#
-# Printing options (-p, -t, and -j) ignore anything to their right;
-# looping options (-e, -k, and -v) and selection (any other argument)
-# evaluate everything to their right. A final -p is always implied but
-# not necessarily reached.
+# Read from standard input.
 
-query = ARGV.reverse_each.inject('-p') do |rest, arg|
+begin
+  input = JSON.parse(STDIN.read)
+rescue
+  exit 1
+end
+
+# Turn an argument into a selector. Printing options (-p, -t, and -j)
+# ignore anything to their right; looping options (-e, -k, and -v) and
+# selection (any other argument) evaluate everything to their right.
+
+def sel(arg, rest=nil)
   case arg
   when '-p'; proc {|obj| pp(obj) }
-  when '-t'; proc {|obj| puts text(obj) }
   when '-j'; proc {|obj| puts json(obj) }
+  when '-t'; proc {|obj| puts text(obj) }
   when '-e'; proc {|obj| obj.each        {|e| rest.call(e) } }
   when '-k'; proc {|obj| obj.keys.each   {|k| rest.call(k) } }
   when '-v'; proc {|obj| obj.values.each {|v| rest.call(v) } }
@@ -25,18 +27,22 @@ query = ARGV.reverse_each.inject('-p') do |rest, arg|
   end
 end
 
-def text(obj)
-  case obj
-  when Array; obj.join("\t")
-  when Hash ; obj.map {|pair| text(pair) }
-  else obj
-  end
-end
+# How to print things, if not using the pp style.
 
 def json(obj)
   JSON.create_id = nil
   JSON.pretty_generate(obj)
 end
+
+def text(obj)
+  case obj
+  when Array; obj.join("\t")
+  when Hash ; obj.map {|pair| text(pair) }
+  else        obj.to_s
+  end
+end
+
+# Get-what-I-mean key selection.
 
 def gwim(obj, key)
   case key
@@ -47,4 +53,7 @@ def gwim(obj, key)
   end
 end
 
-query.call(JSON.parse(STDIN.read))
+# Transform the arguments into a query proc by doing a right fold. A
+# final -p is implied in case no other printing option is reached.
+
+ARGV.reverse_each.inject(sel('-p')) {|r, a| sel(a, r) }.call(input)
