@@ -16,4 +16,6 @@ else
   exit 2
 end
 
-sleep(min + rand * (max - min))
+delay = min + rand * (max - min)
+puts "Sleeping #{delay}..." if ENV['RANDSLEEP_VERBOSE']
+sleep(delay)
