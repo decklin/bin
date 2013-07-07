@@ -1,0 +1,95 @@
+#!/usr/bin/ruby
+
+# rsync wrapper for VFAT thumb drives etc. Rather than thinking about
+# which parts of --archive I need to skip, this just strips them out.
+# Also adds the necessary options to deal with lack of symlinks and
+# low mtime resolution.
+#
+# To prevent buffering up a ton of data and then slowing to a crawl,
+# each process grabs under a lock on the whole filesystem and calls
+# sync(1) before exiting. With the 'flush' mount option this might not
+# be as necessary.
+
+def argsplit(args)
+  args.map do |arg|
+    case arg
+    when /^--[A-Za-z0-9]+/; argfix(arg)
+    when /^-([A-Za-z0-9]+)/; $1.chars.map {|c| argfix("-#{c}") }
+    else; arg
+    end
+  end.flatten
+end
+
+def argfix(arg)
+  case arg
+  when '-l', '--links', '-p', '--perms', '-g', '--group', '-o', '-D', '--devices', '--specials'
+    STDERR.puts "dosrsync: ignoring arg '#{arg}'"
+  when '-a', '--archive'
+    '-rt'
+  else
+    arg
+  end
+end
+
+def get_df(dest)
+  begin
+    df_line = IO.popen([ENV, 'df', '-k', dest]).read.split("\n")[1]
+    dev, kb_total, kb_used, kb_free, percent, mount_point = df_line.split
+    [mount_point, kb_free.to_i]
+  rescue
+    STDERR.puts "dosrsync: error parsing df"
+    exit 1
+  end
+end
+
+def get_transfer(opts, src, dest)
+  dryrun_opts = opts.reject {|o| ['-h', '--human-readable'].include?(o) }
+  dryrun_opts << '--dry-run'
+  dryrun_opts << '--stats'
+
+  dryrun_out = IO.popen([ENV, 'rsync', *dryrun_opts, src, dest]).read
+  if dryrun_out =~ /^Total transferred file size: (\d+) bytes/
+    $1.to_i / 1024
+  else
+    STDERR.puts "dosrsync: can't determine amount to be transferred"
+    0
+  end
+end
+
+def locked_rsync_sync(mount_point, opts, src, dest)
+  dest_fs = File.open(mount_point)
+  dest_fs.flock(File::LOCK_EX)
+  system 'rsync', *opts, src, dest
+  print "dosrsync: syncing after #{src} ..."
+  system 'sync'
+  dest_fs.flock(File::LOCK_UN)
+  puts " done."
+end
+
+opts, paths = argsplit(ARGV).partition {|arg| arg.start_with?('-') }
+
+opts << '--modify-window=5'
+opts << '--copy-links'
+
+dest = paths.pop
+
+# Normally rsync doesn't check for this but I tend to shoot myself in
+# the foot with it when copying multiple albums to my music player.
+
+if paths.size > 1 && paths.any? {|s| s.end_with?('/') }
+  STDERR.puts "dosrsync: cowardly refusing to combine multiple source paths and trailing slashes"
+  exit 2
+end
+
+paths.each do |src|
+  # The mount point will not change between sources but free space will.
+  mount_point, kb_free = get_df(dest)
+  kb_transfer = get_transfer(opts, src, dest)
+
+  if kb_transfer < kb_free
+    STDERR.puts "dosrsync: transferring #{src} (#{kb_transfer} kB) to #{dest} ..."
+    locked_rsync_sync(mount_point, opts, src, dest)
+  else
+    STDERR.puts "dosrsync: not enough space for #{src} on #{dest} (#{kb_transfer} > #{kb_free} kB)"
+  end
+end
