@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require 'nokogiri'
+require 'reverse_markdown'
+
+sel = ARGV.shift
+attr = ARGV.shift
+page = Nokogiri::HTML(STDIN.read)
+puts page.css(sel).map {|elt| attr ? elt[attr] : ReverseMarkdown.parse(elt) }
