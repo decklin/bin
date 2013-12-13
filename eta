@@ -6,13 +6,14 @@ end
 def rel_t(t)
   [[86400, 'd'], [3600, 'h'], [60, 'm'], [1, 's']].
     map {|n, u| r, t = t.divmod(n); [r, u] if r > 0 || u == 's' }.compact.
-    map {|r, u| "#{r}#{u}" }.join(' ')
+    map {|r, u| "#{r}#{u}" }.join('')
 end
 
 class Eta
   ALPHA = 0.1
-  def initialize(goal)
+  def initialize(goal, verbose)
     @goal = goal
+    @verbose = verbose
   end
   def add(x, t)
     return 'no input' if x.nil?
@@ -27,16 +28,19 @@ class Eta
     @t = t
     return 'initializing' if @avg.nil?
     return 'divergent' if eta < 0
-    return "eta #{abs_t(eta)} #{rel_t(eta)} %.3f %.3f" % [1/rr, 1/@avg]
+    return '%s inst %.3f avg %.3f' % [show_t(eta), 1/rr, 1/@avg]
+  end
+  def show_t(eta)
+    (@verbose ? "at #{abs_t(0)} " : '') + "eta #{abs_t(eta)} (#{rel_t(eta)})"
   end
 end
 
 begin
-  eta = Eta.new(ARGV.first.to_f)
+  eta = Eta.new(ARGV.first.to_f, ENV['VERBOSE'])
   STDIN.each_line do |line|
     now = Time.now
     status = eta.add(line =~ /[\d.-]+/ ? $&.to_f : nil, now.to_f)
-    puts "#{line.chomp}\t#{abs_t(0)} #{status}"
+    puts "#{line.chomp}\t#{status}"
   end
 rescue Interrupt
 end
