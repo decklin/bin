@@ -7,7 +7,8 @@ require 'pp'
 
 begin
   input = JSON.parse(STDIN.read)
-rescue
+rescue => e
+  STDERR.puts "Error parsing JSON input: #{e}"
   exit 1
 end
 
