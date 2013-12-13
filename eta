@@ -1,9 +1,9 @@
 #!/usr/bin/ruby
 
-def abs_t(t)
+def abs_time(t=0)
   (Time.now + t).strftime(t > 86400 ? '%FT%X' : '%X')
 end
-def rel_t(t)
+def rel_time(t=0)
   [[86400, 'd'], [3600, 'h'], [60, 'm'], [1, 's']].
     map {|n, u| r, t = t.divmod(n); [r, u] if r > 0 || u == 's' }.compact.
     map {|r, u| "#{r}#{u}" }.join('')
@@ -20,27 +20,26 @@ class Eta
     return 'stalled' if x == @x
     return 'done' if x == @goal
     if @x
-      rr = (t - @t) / (x - @x)
-      @avg = @avg ? ALPHA * rr + (1 - ALPHA) * @avg : rr
+      rate = (t - @t) / (x - @x)
+      @avg = @avg ? ALPHA * rate + (1 - ALPHA) * @avg : rate
       eta = (@goal - x) * @avg
     end
     @x = x
     @t = t
     return 'initializing' if @avg.nil?
     return 'divergent' if eta < 0
-    return '%s inst %.3f avg %.3f' % [show_t(eta), 1/rr, 1/@avg]
+    return '%s inst %.3f avg %.3f' % [show_time(eta), 1/rate, 1/@avg]
   end
-  def show_t(eta)
-    (@verbose ? "at #{abs_t(0)} " : '') + "eta #{abs_t(eta)} (#{rel_t(eta)})"
+  def show_time(t=0)
+    (@verbose ? "at #{abs_time} " : '') + "eta #{abs_time(t)} (#{rel_time(t)})"
   end
 end
 
 begin
   eta = Eta.new(ARGV.first.to_f, ENV['VERBOSE'])
   STDIN.each_line do |line|
-    now = Time.now
-    status = eta.add(line =~ /[\d.-]+/ ? $&.to_f : nil, now.to_f)
-    puts "#{line.chomp}\t#{status}"
+    x = line =~ /[\d.-]+/ ? $&.to_f : nil
+    puts "#{line.chomp}\t#{eta.add(x, Time.now.to_f)}"
   end
 rescue Interrupt
 end
