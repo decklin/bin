@@ -48,8 +48,8 @@ def get_transfer(opts, src, dest)
   dryrun_opts << '--stats'
 
   dryrun_out = IO.popen([ENV, 'rsync', *dryrun_opts, src, dest]).read
-  if dryrun_out =~ /^Total transferred file size: (\d+) bytes/
-    $1.to_i / 1024
+  if dryrun_out =~ /^Total transferred file size: ([\d,]+) bytes/
+    $1.gsub(',', '').to_i / 1024
   else
     STDERR.puts "dosrsync: can't determine amount to be transferred"
     0
@@ -57,6 +57,7 @@ def get_transfer(opts, src, dest)
 end
 
 def locked_rsync_sync(mount_point, opts, src, dest)
+  puts "dosrsync: locking #{mount_point} ..."
   dest_fs = File.open(mount_point)
   dest_fs.flock(File::LOCK_EX)
   system 'rsync', *opts, src, dest
