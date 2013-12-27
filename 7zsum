@@ -1,0 +1,35 @@
+#!/usr/bin/ruby
+
+require 'openssl'
+require 'seven_zip_ruby'
+
+alg = ARGV.shift
+begin
+  test_digest = OpenSSL::Digest.new(alg)
+rescue RuntimeError
+  STDERR.puts 'usage: 7zsum DIGEST_ALG ARCHIVES...'
+  STDERR.puts '  e.g: 7zsum md5 *.7z'
+  exit 2
+end
+
+class SevenZipRuby::Reader
+  def hexdigest(alg, ent)
+    d = OpenSSL::Digest.new(alg)
+    if ent.has_data?
+      d << extract_data(ent)
+      d.hexdigest
+    else
+      '-' * d.hexdigest.length
+    end
+  end
+end
+
+ARGV.each do |archive_path|
+  File.open(archive_path, 'rb') do |data|
+    SevenZipRuby::Reader.open(data) do |reader|
+      reader.entries.each do |ent|
+        puts "#{reader.hexdigest(alg, ent)}  #{ent.path}"
+      end
+    end
+  end
+end
