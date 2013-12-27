@@ -1,0 +1,15 @@
+#!/bin/sh
+
+cmd="$1"; shift
+if test -z "$*"; then
+    echo "usage: modwatch SHELL_CMD FILES..."
+    echo "  e.g: modwatch 'wc -l \"\$1\"' *.txt"
+    exit 2
+fi
+
+for f; do
+    sh -c "$cmd" - "$f" INIT
+done
+inotifywait -m -e modify,close_write "$@" 2>/dev/null | while read f events _; do
+    sh -c "$cmd" - "$f" "$events"
+done
