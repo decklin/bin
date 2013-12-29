@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 # rsync wrapper for VFAT thumb drives etc. Rather than thinking about
 # which parts of --archive I need to skip, this just strips them out.

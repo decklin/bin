@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 def abs_time(t=0)
   (Time.now + t).strftime(t > 86400 ? '%FT%X' : '%X')

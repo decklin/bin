@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 # A very quick and dirty sqlite3-based tool for processing a queue in
 # your shell. The only structure to the data in the queue is that it is
