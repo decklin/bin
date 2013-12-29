@@ -1,0 +1,87 @@
+#!/usr/bin/ruby
+
+# A very quick and dirty sqlite3-based tool for processing a queue in
+# your shell. The only structure to the data in the queue is that it is
+# a series of lines.
+#
+# - The queue is stored in .dq.sqlite in the current directory. This can
+#   be overridden with --file.
+#
+# - Invoke with no args to read lines and push them onto the queue.
+#
+# - Invoke with some args to run them repeatedly as a command, with an
+#   additional arg of the next line pulled from the queue. If --quit is
+#   given, exit when the queue is exhausted, otherwise wait forever for
+#   more lines to be pushed.
+#
+# - With --oneshot, only run the command once, or exit immediately with
+#   status 1 if the queue is empty.
+#
+# If you need more complex commands, use sh: dq sh -c 'echo "$1"; echo
+# "$1"' - (the -, or something else to set the shell's argv[0] to, is
+# required).
+#
+# If you have your lines to enqueue as args, use printf: printf '%s\n'
+# foo bar baz | dq (this is useful in many scripting situations).
+#
+# WARNINGS: Writes are synchronous. There is no sophisticated logic
+# around repeatedly retrying the db if it's locked. There is no security
+# apart from what Unix files provide; if someone can write to the sqlite
+# db, they can run commands as you. There is no handling of integer IDs
+# wrapping around. Basically, it's just meant to be a slight improvement
+# over a couple text files and loops or xargs.
+
+require 'optparse'
+require 'sqlite3'
+
+class DQueue
+  SCHEMA = 'CREATE TABLE IF NOT EXISTS queue (id INTEGER PRIMARY KEY AUTOINCREMENT, line TEXT);'
+  def initialize(db_path)
+    @db = SQLite3::Database.new(db_path)
+    @db.busy_handler { sleep(1) }
+    @db.execute(SCHEMA)
+  end
+  def <<(line)
+    @db.execute('INSERT INTO queue (line) VALUES (?)', line)
+  end
+  def run(argv)
+    line = nil
+    @db.execute('BEGIN TRANSACTION')
+    if row = @db.execute('SELECT id, line FROM queue ORDER BY id LIMIT 1').first
+      _id, line = row
+      @db.execute('DELETE FROM queue WHERE id = ?', _id)
+    end
+    @db.execute('COMMIT')
+    if line
+      system(*argv, line)
+    else
+      yield
+    end
+  end
+end
+
+db_path = '.dq.sqlite'
+quit_on_empty = false
+oneshot = false
+OptionParser.new do |opts|
+  opts.on("-f", "--file FILE", "Database file") {|f| db_path = f }
+  opts.on("-q", "--quit", "Exit when queue is empty") { quit_on_empty = true }
+  opts.on("-1", "--oneshot", "Only pop one line from the queue") { oneshot = true }
+end.parse!
+
+begin
+  dq = DQueue.new(db_path)
+  if ARGV.empty?
+    STDIN.each_line do |line|
+      dq << line.chomp
+    end
+  else
+    if oneshot
+      dq.run(ARGV) { exit(1) }
+    else
+      loop { dq.run(ARGV) { quit_on_empty ? exit : sleep(1) } }
+    end
+  end
+rescue Interrupt
+  exit
+end
