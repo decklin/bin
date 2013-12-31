@@ -3,6 +3,7 @@
 interp="$(which "$1")" && shift
 case "$interp" in
     /usr/local/bin/*) interp="/usr/bin/env $(basename "$interp")";;
+    /usr/bin/sh) interp="/bin/sh";;
 esac
 
 for i in "$@"; do
