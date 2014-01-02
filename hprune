@@ -8,15 +8,18 @@ if __name__ == '__main__':
         search = int(sys.argv[1])
         cutoff = int(sys.argv[2])
     except IndexError:
-        search = 10
-        cutoff = 4
+        search = 800
+        cutoff = 6
 
     history = [line.rstrip('\n') for line in sys.stdin.readlines()]
     pruned = []
+    seen = {}
 
     for line in reversed(history):
-        if line in pruned:
+        if line in seen:
             continue
+        else:
+            seen[line] = True
         for goodline in pruned[-search:]:
             if lev.distance(line, goodline) < cutoff:
                 break
