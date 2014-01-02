@@ -11,16 +11,16 @@ if __name__ == '__main__':
         search = 10
         cutoff = 4
 
-    lines = sys.stdin.readlines()
-    out = []
+    history = [line.rstrip('\n') for line in sys.stdin.readlines()]
+    pruned = []
 
-    for ln in reversed(lines):
-        if ln in out:
+    for line in reversed(history):
+        if line in pruned:
             continue
-        for goodln in out[-search:]:
-            if lev.distance(ln, goodln) < cutoff:
+        for goodline in pruned[-search:]:
+            if lev.distance(line, goodline) < cutoff:
                 break
         else:
-            out.insert(0, ln.rstrip('\n'))
+            pruned.insert(0, line)
 
-    print '\n'.join(out)
+    print '\n'.join(pruned)
