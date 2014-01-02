@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     for ln in reversed(lines):
         if ln in out:
-            break
+            continue
         for goodln in out[-search:]:
             if lev.distance(ln, goodln) < cutoff:
                 break
