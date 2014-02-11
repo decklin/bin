@@ -1,9 +1,31 @@
 #!/usr/bin/env ruby
 
+require 'optparse'
 require 'nokogiri'
-require 'reverse_markdown'
 
-sel = ARGV.shift
-attr = ARGV.shift
-page = Nokogiri::HTML(STDIN.read)
-puts page.css(sel).map {|elt| attr ? elt[attr] : ReverseMarkdown.parse(elt) }
+attr = nil
+markdown = true
+strip = false
+
+OptionParser.new do |op|
+  op.on('-a ATTR') {|a| attr = a }
+  op.on('-t') { markdown = false }
+  op.on('-s') { strip = true }
+end.parse!
+
+if markdown
+  begin
+    require 'reverse_markdown'
+  rescue LoadError
+    STDERR.puts 'could not load reverse_markdown, disabling'
+    markdown = false
+  end
+end
+
+doc = Nokogiri::HTML(STDIN.read)
+ARGV.each do |sel|
+  doc.css(sel).each do |elt|
+    text = attr ? elt[attr] : markdown ? ReverseMarkdown.parse(elt) : elt.text
+    puts strip ? text.strip : text
+  end
+end
