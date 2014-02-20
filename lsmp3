@@ -1,0 +1,14 @@
+#!/bin/sh
+
+info() {
+    mp3info -r a -p "%8.2r %3m:%02s %f\n" "$@"
+}
+
+for f; do
+    if test -f "$f"; then
+        info "$f"
+    elif test -d "$f"; then
+        echo "$f:"
+        info "$f"/*.mp3
+    fi
+done
