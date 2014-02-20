@@ -1,7 +1,7 @@
 #!/bin/sh
 
-mpwd "$@" | mpc add
+mpath "$@" | mpc add
 
-if [ "$DISPLAY" ] && command -v mop >/dev/null 2>&1; then
+if test -n "$DISPLAY" && command -v mop >/dev/null 2>&1; then
     mop --showpl &
 fi
