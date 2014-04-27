@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+ARGV.each do |path|
+  mtime = File.stat(path).mtime
+  puts "#{mtime.year}q#{(mtime.month - 1) / 3 + 1}"
+end
