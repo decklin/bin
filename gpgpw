@@ -1,0 +1,44 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+require 'readline'
+
+class Hash
+  def get_in(keys)
+    keys.reduce(self, &:[])
+  end
+  def to_completion_proc
+    proc do |str|
+      path = str.split('/', -1)
+      leaf = path.pop || ''
+      dir = get_in(path)
+      if dir.is_a?(Hash)
+        dir.select {|k, v| k.start_with?(leaf) }.map do |k, v|
+          (path+[k]).join('/') + (v.is_a?(Hash) ? '/' : '')
+        end
+      end
+    end
+  end
+end
+
+file = ARGV.shift
+secrets = YAML.load(`gpg --decrypt #{file}`)
+
+if secrets
+  puts
+else
+  STDERR.puts "Error loading gpg output as YAML"
+  exit 1
+end
+
+unless key = ARGV.shift
+  Readline.completion_append_character = ''
+  Readline.completion_proc = secrets.to_completion_proc
+  key = Readline.readline("#{File.basename(file)}> ", true)
+end
+
+if key
+  puts secrets.get_in(key.split('/'))
+else
+  puts
+end
