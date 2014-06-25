@@ -3,42 +3,52 @@
 require 'yaml'
 require 'readline'
 
+SEP = '/'
+
 class Hash
   def get_in(keys)
     keys.reduce(self, &:[])
   end
   def to_completion_proc
     proc do |str|
-      path = str.split('/', -1)
+      path = str.split(SEP, -1)
       leaf = path.pop || ''
       dir = get_in(path)
       if dir.is_a?(Hash)
         dir.select {|k, v| k.start_with?(leaf) }.map do |k, v|
-          (path+[k]).join('/') + (v.is_a?(Hash) ? '/' : '')
+          (path+[k]).join(SEP) + (v.is_a?(Hash) ? SEP : '')
         end
       end
     end
   end
 end
 
-file = ARGV.shift
-secrets = YAML.load(`gpg --decrypt #{file}`)
-
-if secrets
-  puts
-else
-  STDERR.puts "Error loading gpg output as YAML"
+begin
+  file = ARGV.shift
+  secrets = YAML.load(`gpg --decrypt #{file}`)
+rescue => e
+  STDERR.puts "Error loading gpg output as YAML: #{e}"
   exit 1
 end
 
 unless key = ARGV.shift
   Readline.completion_append_character = ''
   Readline.completion_proc = secrets.to_completion_proc
-  key = Readline.readline("#{File.basename(file)}> ", true)
+  begin
+    key = Readline.readline("#{File.basename(file)}> ", true)
+  rescue Interrupt
+    key = nil
+  end
 end
 
 if key
-  puts secrets.get_in(key.split('/'))
+  if secret = secrets.get_in(key.split(SEP).drop_while(&:empty?))
+    puts
+    puts secret
+  else
+    puts "No such key: #{key}"
+  end
 else
   puts
+  exit 1
 end
