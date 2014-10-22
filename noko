@@ -25,7 +25,7 @@ end
 doc = Nokogiri::HTML(STDIN.read)
 ARGV.each do |sel|
   doc.css(sel).each do |elt|
-    text = attr ? elt[attr] : markdown ? ReverseMarkdown.parse(elt) : elt.text
+    text = attr ? elt[attr] : markdown ? ReverseMarkdown.convert(elt) : elt.text
     puts strip ? text.strip : text
   end
 end
