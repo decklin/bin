@@ -1,7 +1,10 @@
 #!/bin/sh
 
-set_color() {
+color_escape () {
+    printf '\e[%sm' "$@"
+}
 
+set_color() {
     case $1 in
         black)      FG=30;;
         red)        FG=31;;
@@ -13,7 +16,6 @@ set_color() {
         white)      FG=37;;
         default)    FG=39;;
     esac
-
     case $2 in
         black)      BG=40;;
         red)        BG=41;;
@@ -25,7 +27,6 @@ set_color() {
         white)      BG=47;;
         default)    BG=49;;
     esac
-
     case $3 in
         normal)     AT=00;;
         bold)       AT=01;;
@@ -35,21 +36,23 @@ set_color() {
         reverse)    AT=07;;
         concealed)  AT=08;;
     esac
-
-    echo -n "\033[${AT};${BG};${FG}m"
+    color_escape "$AT;$BG;$FG"
 }
 
 reset_color () {
-    echo -n "\033[0m"
+    color_escape 0
 }
 
-for bg in black red green yellow blue magenta cyan white default; do
-    for at in "$@"; do
+test -z "$*" && set -- normal bold italic blink underscore reverse concealed
+
+for at; do
+    for bg in default black red green yellow blue magenta cyan white default; do
         for fg in black red green yellow blue magenta cyan white default; do
-            set_color $fg $bg $at
-            echo -n "$fg "
+            set_color "$fg" "$bg" "$at"
+            printf '%s' "$fg "
+            reset_color
+            printf 'ok '
         done
-        reset_color
         echo
     done
 done
