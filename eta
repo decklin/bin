@@ -1,45 +1,45 @@
 #!/usr/bin/env ruby
 
-def abs_time(t=0)
-  (Time.now + t).strftime(t > 86400 ? '%FT%X' : '%X')
-end
-def rel_time(t=0)
-  [[86400, 'd'], [3600, 'h'], [60, 'm'], [1, 's']].
-    map {|n, u| r, t = t.divmod(n); [r, u] if r > 0 || u == 's' }.compact.
-    map {|r, u| "#{r}#{u}" }.join('')
-end
-
 class Eta
+  UNITS = {d: 86400, h: 3600, m: 60, s: 1}
   ALPHA = 0.1
   def initialize(goal, verbose)
     @goal = goal
     @verbose = verbose
   end
-  def add(x, t)
+  def update(x, t=Time.now.to_f)
     return 'no input' if x.nil?
-    return 'stalled' if x == @x
+    return 'stalled' if x == @prev_x
     return 'done' if x == @goal
-    if @x
-      rate = (t - @t) / (x - @x)
-      @avg = @avg ? ALPHA * rate + (1 - ALPHA) * @avg : rate
-      eta = (@goal - x) * @avg
+    if @prev_x
+      int = (t - @prev_t) / (x - @prev_x)
+      @avg_int = @avg_int ? (1 - ALPHA) * @avg_int + ALPHA * int : int
+      eta = (@goal - x) * @avg_int
     end
-    @x = x
-    @t = t
-    return 'initializing' if @avg.nil?
+    @prev_x = x
+    @prev_t = t
+    return 'initializing' if @avg_int.nil?
     return 'divergent' if eta < 0
-    return '%s inst %.3f avg %.3f' % [show_time(eta), 1/rate, 1/@avg]
+    return '%s avg %s cur %s' % [detail(eta), rate(@avg_int), rate(int)]
   end
-  def show_time(t=0)
-    (@verbose ? "at #{abs_time} " : '') + "eta #{abs_time(t)} (#{rel_time(t)})"
+  def detail(t)
+    (@verbose ? "at #{abs_time(0)} " : '') + "eta #{abs_time(t)} (#{rel_time(t)})"
+  end
+  def abs_time(t)
+    (Time.now + t).strftime(t > UNITS[:d] ? '%FT%X' : '%X')
+  end
+  def rel_time(t)
+    UNITS.map {|u, s| r, t = t.divmod(s); "#{r}#{u}" if r > 0 || u == 's' }.compact.join
+  end
+  def rate(int)
+    UNITS.map {|u, s| '%.1f/%s' % [s/int, u] if int.abs < s }.compact.last
   end
 end
 
 begin
   eta = Eta.new(ARGV.first.to_f, ENV['VERBOSE'])
   STDIN.each_line do |line|
-    x = line =~ /[\d.-]+/ ? $&.to_f : nil
-    puts "#{line.chomp}\t#{eta.add(x, Time.now.to_f)}"
+    puts "#{line.chomp}\t#{eta.update(line =~ /[\d.-]+/ ? $&.to_f : nil)}"
   end
 rescue Interrupt
 end
