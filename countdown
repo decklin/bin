@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+
+def show(n)
+  n.to_s + ' ' + '.' * n
+end
+def clear(n)
+  "\r" + ' ' * show(n).size + "\r"
+end
+
+ARGV.map(&:to_i).each do |delay|
+  delay.downto(1) do |n|
+    print show(n)
+    sleep 1
+    print clear(n)
+  end
+end
