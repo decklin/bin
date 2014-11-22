@@ -2,25 +2,31 @@
 
 class Eta
   UNITS = {d: 86400, h: 3600, m: 60, s: 1}
-  ALPHA = 0.2
+  MAX_WEIGHT = 0.8
   def initialize(goal, verbose)
     @goal = goal
     @verbose = verbose
+    @avg = 0
+    @weight = 0
   end
   def update(x, t=Time.now.to_f)
     return 'no input' if x.nil?
     return 'stalled' if x == @prev_x
     return 'done' if x == @goal
     if @prev_x
-      int = (t - @prev_t) / (x - @prev_x)
-      @avg_int = @avg_int ? (1 - ALPHA) * @avg_int + ALPHA * int : int
-      eta = (@goal - x) * @avg_int
+      interval = (t - @prev_t) / (x - @prev_x)
+      eta = (@goal - x) * new_avg(interval)
     end
     @prev_x = x
     @prev_t = t
-    return 'initializing' if @avg_int.nil?
+    return 'initializing' if eta.nil?
     return 'divergent' if eta < 0
-    return '%s avg %s cur %s' % [detail(eta), rate(@avg_int), rate(int)]
+    return '%s avg %s cur %s' % [detail(eta), rate(@avg), rate(interval)]
+  end
+  def new_avg(i)
+    @avg = @weight * @avg + (1 - @weight) * i
+    @weight = (MAX_WEIGHT + @weight) / 2
+    @avg
   end
   def detail(t)
     (@verbose ? "at #{abs_time(0)} " : '') + "eta #{abs_time(t)} (#{rel_time(t)})"
@@ -31,8 +37,8 @@ class Eta
   def rel_time(t)
     UNITS.map {|u, s| r, t = t.divmod(s); "#{r}#{u}" if r > 0 || u == 's' }.compact.join
   end
-  def rate(int)
-    UNITS.map {|u, s| '%.1f/%s' % [s/int, u] if int.abs < s }.compact.last
+  def rate(i)
+    UNITS.map {|u, s| '%.1f/%s' % [s/i, u] if i.abs < s }.compact.last
   end
 end
 
