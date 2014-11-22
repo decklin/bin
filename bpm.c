@@ -2,7 +2,8 @@
  * To build: cc -lncurses -o bpm bpm.c
  *
  * Tap any key except ESC for a beat. ESC will reset if counting and
- * exit if already reset.
+ * exit if already reset. Pausing for more than RESET_TIME seconds will
+ * reset on the next tap.
  */
 
 #include <unistd.h>
@@ -11,6 +12,7 @@
 
 #define ESC 27
 #define MAX_WEIGHT 0.9
+#define RESET_TIME 2.0
 
 int main() {
     double cur, last, bpm, avg, weight;
@@ -38,6 +40,7 @@ int main() {
                 last = cur;
                 gettimeofday(&now, NULL);
                 cur = now.tv_sec + now.tv_usec / 1000000.0;
+                if (last && cur - last > RESET_TIME) last = 0;
             }
         }
     }
