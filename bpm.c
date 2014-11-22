@@ -10,10 +10,11 @@
 #include <curses.h>
 
 #define ESC 27
+#define MAX_WEIGHT 0.9
 
 int main() {
     long cur, last;
-    float bpm;
+    float bpm, avg, weight;
     struct tms t;
 
     initscr();
@@ -21,11 +22,13 @@ int main() {
     noecho();
 
     while (!isendwin()) {
-        cur = last = 0;
+        cur = last = avg = weight = 0;
         while (1) {
             if (last) {
                 bpm = 60.0 * sysconf(_SC_CLK_TCK) / (cur - last);
-                mvprintw(0, 0, "%.2f BPM\n", bpm);
+                avg = avg * weight + bpm * (1 - weight);
+                weight = (MAX_WEIGHT + weight) / 2;
+                mvprintw(0, 0, "%.2f BPM\n", avg);
             } else {
                 mvprintw(0, 0, "%s...\n", cur ? "Starting" : "Ready");
             }
