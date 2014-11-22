@@ -12,8 +12,8 @@
 #define ESC 27
 
 int main() {
-    long started, beats;
-    float dur;
+    long cur, last;
+    float bpm;
     struct tms t;
 
     initscr();
@@ -21,20 +21,20 @@ int main() {
     noecho();
 
     while (!isendwin()) {
-        started = beats = 0;
+        cur = last = 0;
         while (1) {
-            if (beats) {
-                dur = (times(&t) - started) / (float) sysconf(_SC_CLK_TCK);
-                mvprintw(0, 0, "%.2f BPM\n", 60 * beats / dur);
+            if (last) {
+                bpm = 60.0 * sysconf(_SC_CLK_TCK) / (cur - last);
+                mvprintw(0, 0, "%.2f BPM\n", bpm);
             } else {
-                mvprintw(0, 0, "%s...\n", started ? "Starting" : "Ready");
+                mvprintw(0, 0, "%s...\n", cur ? "Starting" : "Ready");
             }
             if (getch() == ESC) {
-                if (!started) endwin();
+                if (!cur) endwin();
                 break;
             } else {
-                if (started) beats++;
-                else started = times(&t);
+                last = cur;
+                cur = times(&t);
             }
         }
     }
