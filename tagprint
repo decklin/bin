@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+
+require 'taglib2'
+
+def tagkeys(path)
+  if File.exists?(path)
+    tag = TagLib::File.new(path)
+    {
+      '%a' => tag.artist,
+      '%A' => tag.album,
+      '%g' => tag.genre,
+      '%n' => '%02d' % tag.track,
+      '%t' => tag.title,
+      '%d' => tag.year,
+      '%c' => tag.comment,
+      '%D' => File.dirname(path),
+      '%F' => File.basename(path),
+      '%E' => File.extname(path).sub(/^\./, ''),
+      '%P' => path,
+      '%%' => '%',
+    }
+  else
+    nil
+  end
+end
+
+fmt = ARGV.shift
+ARGV.each do |path|
+  if keys = tagkeys(path)
+    puts fmt.gsub(/%./) {|match| keys[match] || 'UNKNOWN' }
+  else
+    STDERR.puts "could not read: #{path}"
+  end
+end
