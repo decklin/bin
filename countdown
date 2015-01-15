@@ -1,16 +1,20 @@
 #!/usr/bin/env ruby
 
 def show(n)
-  n.to_s + ' ' + '.' * n
+  "#{n} #{'.' * n}"
 end
 def clear(n)
-  "\r" + ' ' * show(n).size + "\r"
+  "\r#{' ' * show(n).size}\r"
+end
+def skew(target)
+  Time.now.to_f - target
 end
 
 ARGV.map(&:to_i).each do |delay|
+  finish = Time.now.to_f + delay
   delay.downto(1) do |n|
     print show(n)
-    sleep 1
+    sleep 1 - skew(finish - n)
     print clear(n)
   end
 end
