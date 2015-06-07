@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+# This is basically like `comm -1 -3 ARGF -` (assuming we had a magic
+# shell equivalent of ARGF; there's no standard one, but <(cat "$@")
+# would work in bash): print all lines from stdin that do not occur in
+# the given file(s). However, unlike comm, the input files don't need to
+# be sorted, and order of lines in the output is preserved.
+
+exclude = {}
+
+ARGF.each_line do |ln|
+  exclude[ln] = true
+end
+
+STDIN.each_line do |ln|
+  print ln unless exclude[ln]
+end
