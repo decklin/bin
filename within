@@ -1,0 +1,23 @@
+#!/usr/bin/perl -w
+
+# Print all lines from stdin that are in (or not in, with -v) the files
+# named as arguments.
+#
+# This could be done with fgrep -x (slower) or comm (requires that all
+# inputs be pre-sorted). It does require more memory since all the lines
+# in the named files need to be placed in a hash.
+
+use Getopt::Std;
+
+my %seen = ();
+my %opts;
+
+getopts('v', \%opts);
+
+while (<>) {
+    $seen{$_} = 1;
+}
+
+while (<STDIN>) {
+    print if $opts{v} ? !$seen{$_} : $seen{$_};
+}
