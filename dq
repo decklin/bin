@@ -1,35 +1,56 @@
 #!/usr/bin/env ruby
 
-# A very quick and dirty sqlite3-based tool for processing a queue in
-# your shell. The only structure to the data in the queue is that it is
-# a series of lines.
+# A quick and dirty sqlite3-based tool for processing a queue in your
+# shell. The only structure to the data in the queue is that it is a
+# series of lines, each of which is a single argument to some command.
 #
-# - The queue is stored in .dq.sqlite in the current directory. This can
-#   be overridden with --file.
+# Usage:
 #
-# - Invoke with no args to read lines and push them onto the queue.
+# * Run with no args to read lines and push them onto the queue.
 #
-# - Invoke with some args to run them repeatedly as a command, with an
-#   additional arg of the next line pulled from the queue. If --quit is
-#   given, exit when the queue is exhausted, otherwise wait forever for
-#   more lines to be pushed.
+# * Run with some args to run them repeatedly as a command, with an
+#   additional arg of the next line pulled from the queue.
 #
-# - With --oneshot, only run the command once, or exit immediately with
-#   status 1 if the queue is empty.
+# Options:
 #
-# If you need more complex commands, use sh: dq sh -c 'echo "$1"; echo
-# "$1"' - (the -, or something else to set the shell's argv[0] to, is
-# required).
+# * --file: change the path used for the database (default: ./.dq.sqlite)
 #
-# If you have your lines to enqueue as args, use printf: printf '%s\n'
-# foo bar baz | dq (this is useful in many scripting situations).
+# * --list: print out all lines in the queue without running anything.
 #
-# WARNINGS: Writes are synchronous. There is no sophisticated logic
-# around repeatedly retrying the db if it's locked. There is no security
-# apart from what Unix files provide; if someone can write to the sqlite
-# db, they can run commands as you. There is no handling of integer IDs
-# wrapping around. Basically, it's just meant to be a slight improvement
-# over a couple text files and loops or xargs.
+# * --max N: run the command at most the specified number of times, then
+#   exit with status 0.
+#
+# * --quit: exit with status 1 when the queue is exhausted instead of
+#   waiting forever (in 1s sleeps) for more lines to be pushed.
+#
+# Tips:
+#
+# * If your command has options of its own, use -- before it to end
+#   parsing of dq options.
+#
+# * If you need to put the argument in a different position, or run
+#   multiple commands, use sh (the final - is required, it sets the
+#   shell's argv[0]):
+#
+#     dq -- sh -c 'rsync "$1" somewhere' -
+#     dq -- sh -c 'curl "$1"; sleep 60' -
+#
+#   If it gets any more complicated than that, though, it may be easier
+#   to create a throwaway shell script.
+#
+# * If you have your lines to enqueue as args, the inverse of xargs (so
+#   to speak) is printf:
+#
+#     printf '%s\n' "$@" | dq
+#
+# WARNINGS:
+#
+# Writes are synchronous. There is no sophisticated logic around
+# repeatedly retrying the db if it's locked. There is no security apart
+# from what the filesystem provides; if someone can write to the
+# database, they can run commands as you. There is no handling of
+# integer IDs wrapping around. Basically, it's just meant to be a slight
+# improvement over a couple text files and loops or xargs.
 
 require 'optparse'
 require 'sqlite3'
@@ -41,45 +62,52 @@ class DQueue
     @db.busy_handler { sleep(1) }
     @db.execute(SCHEMA)
   end
-  def <<(line)
+  def show_all
+    @db.execute('SELECT line FROM queue').each do |row|
+      puts row[0]
+    end
+  end
+  def push(line)
     @db.execute('INSERT INTO queue (line) VALUES (?)', line)
   end
-  def run(argv)
+  def pop
     line = nil
     @db.execute('BEGIN TRANSACTION')
     if row = @db.execute('SELECT id, line FROM queue ORDER BY id LIMIT 1').first
-      _id, line = row
-      @db.execute('DELETE FROM queue WHERE id = ?', _id)
+      id, line = row
+      @db.execute('DELETE FROM queue WHERE id = ?', id)
     end
     @db.execute('COMMIT')
-    if line
-      system(*argv, line)
-    else
-      yield
-    end
+    line
   end
 end
 
-db_path = '.dq.sqlite'
-quit_on_empty = false
-oneshot = false
-OptionParser.new do |opts|
-  opts.on("-f", "--file FILE", "Database file") {|f| db_path = f }
-  opts.on("-q", "--quit", "Exit when queue is empty") { quit_on_empty = true }
-  opts.on("-1", "--oneshot", "Only pop one line from the queue") { oneshot = true }
+options = {
+  :path => '.dq.sqlite',
+  :iter => loop,
+}
+OptionParser.new do |op|
+  op.on("-f", "--file FILE", "Database file") {|f| options[:path] = f }
+  op.on("-l", "--list", "List the queue") { options[:list] = true }
+  op.on("-n", "--max N", "Pop at most N lines from the queue") {|n| options[:iter] = n.to_i.times }
+  op.on("-q", "--quit", "Exit when queue is empty") { options[:quit] = true }
 end.parse!
 
 begin
-  dq = DQueue.new(db_path)
-  if ARGV.empty?
+  dq = DQueue.new(options[:path])
+  if options[:list]
+    dq.show_all
+  elsif ARGV.empty?
     STDIN.each_line do |line|
-      dq << line.chomp
+      dq.push(line.chomp)
     end
   else
-    if oneshot
-      dq.run(ARGV) { exit(1) }
-    else
-      loop { dq.run(ARGV) { quit_on_empty ? exit : sleep(1) } }
+    options[:iter].each do
+      if line = dq.pop
+        system(*ARGV, line)
+      else
+        options[:quit] ? exit(1) : sleep(1)
+      end
     end
   end
 rescue Interrupt
