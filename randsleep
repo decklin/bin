@@ -17,5 +17,5 @@ else
 end
 
 delay = min + rand * (max - min)
-puts "Sleeping #{delay}..." if ENV['RANDSLEEP_VERBOSE']
+STDERR.puts "Sleeping #{delay.round(2)}..." if ENV['RANDSLEEP_VERBOSE']
 sleep(delay)
