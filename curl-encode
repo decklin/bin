@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# This is from Curlicue, just repackaged as a standalone script.
+
+encode_arg() {
+    curl -s -w '%{url_effective}' --data-urlencode "$1" -G / | cut -c 3-
+}
+
+for i; do encode_arg "$i"; done | paste -s -d '&' -
