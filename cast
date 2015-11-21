@@ -4,15 +4,17 @@ require 'optparse'
 require 'net/http'
 require 'cgi'
 require 'simple_upnp'
+require 'pp'
 
 class CastOptions < OptionParser
-  attr_accessor :name, :host, :port, :stop, :status
+  attr_accessor :name, :host, :port, :stop, :status, :debug
   def initialize
     @name = nil
     @host = nil
     @port = 8008
     @stop = []
     @status = []
+    @debug = false
     super do |opts|
       opts.on('-?', '--help', 'Display usage') do
         puts opts
@@ -32,6 +34,9 @@ class CastOptions < OptionParser
       end
       opts.on('-q', '--status APP', 'Get status of app') do |arg|
         @status << arg
+      end
+      opts.on('--debug', 'Print device debug info') do
+        @debug = true
       end
     end
     parse!
@@ -127,7 +132,7 @@ class CastDevice
       @device_base_uri = URI.parse("http://#{options.host}:#{options.port}")
     else
       SimpleUpnp::Discovery.find do |device|
-        device_info = device.to_json(true)
+        device_info = device.to_json(true) # note: not actually JSON
         device_type = device_info['root']['device']['deviceType'] rescue nil
         if device_type && device_type.start_with?('urn:dial-multiscreen-org:')
           friendly_name = device_info['root']['device']['friendlyName'] rescue nil
@@ -158,12 +163,17 @@ class CastDevice
     end
     puts "No app matched #{uri}"
   end
+  def show_info
+    puts "Chromecast device at #{@device_base_uri}"
+    pp @device_info
+  end
 end
 
 options = CastOptions.new
 device = CastDevice.new(options)
 
 if device.found?
+  device.show_info if options.debug
   ARGV.each do |arg|
     device.cast(arg)
   end
