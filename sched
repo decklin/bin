@@ -1,0 +1,42 @@
+#!/usr/bin/ruby
+
+require 'optparse'
+
+# Run a command n times, spread over some duration with randomized
+# sleeps, as if we were sleeping n+1 times (but exit immediately after
+# the last command, rather than doing the final sleep).
+#
+# Between sleeps, we attempt to compensate for the time taken by running
+# the command, but since the last invocation of a slow command could
+# finish after the end of the duration, you can't depend on how long
+# this script takes to run in total.
+#
+# The lengths of the sleeps are calculated by generating n+1 random
+# numbers with a range from fudge to fudge+1 and scaling the available
+# time. So, if you decrease fudge to 0, some sleeps could literally be
+# 0, and if you increase it to a very large number, all sleeps will be
+# very close to equal. By default the longest sleep can be 5x the
+# shortest sleep.
+
+duration = 3600
+n_times = 1
+fudge = 0.25
+
+OptionParser.new do |op|
+  op.on('-d DURATION') {|a| duration = a.to_f }
+  op.on('-n TIMES') {|a| n_times = a.to_i }
+  op.on('-f FACTOR') {|a| fudge = a.to_f }
+end.parse!
+
+gap_scaling_factors = (0..n_times).map { fudge + rand }
+scaling_sum = gap_scaling_factors.reduce(&:+)
+gaps = gap_scaling_factors.map {|sf| duration * sf / scaling_sum }
+gaps.pop
+
+elapsed = 0
+gaps.each do |gap|
+  sleep(gap - elapsed)
+  start_time = Time.now
+  system(*ARGV)
+  elapsed = Time.now - start_time
+end
