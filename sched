@@ -13,28 +13,30 @@ require 'optparse'
 # the specified total duration. So, don't make any assumptions about how
 # long this script will take to run.
 #
-# The lengths of the sleeps are calculated by generating n+1 random
-# numbers with a range from fudge to fudge+1 and scaling the available
-# time. So, if you decrease fudge to 0, some sleeps could literally be
-# 0, and if you increase it to a very large number, all sleeps will be
-# very close to equal. By default the longest sleep can be 5x the
-# shortest sleep.
+# The lengths of the gaps when the script sleeps are calculated using a
+# scale factor: the longest sleep will be no more than scale times the
+# shortest sleep. If you pass a scale of 1, all gaps will be equal, so
+# for the default settings (1 time, 1 hour) you will get a sleep of
+# exactly 30 minutes. Specifying --scale 59, on the other hand, will
+# yield a sleep of somewhere between 1 and 59 minutes. The default scale
+# is 9, so a single run will happen somewhere between 10% and 90% into
+# the duration.
 
 duration = 3600
 n_times = 1
-fudge = 0.25
+scale = 9
 verbose = false
 
 OptionParser.new do |op|
   op.on('-d', '--duration SECONDS') {|a| duration = a.to_f }
   op.on('-n', '--times TIMES') {|a| n_times = a.to_i }
-  op.on('-f', '--fudge FACTOR') {|a| fudge = a.to_f }
+  op.on('-s', '--scale FACTOR') {|a| scale = a.to_f }
   op.on('-v', '--verbose') {|a| verbose = true }
 end.parse!
 
-gap_scaling_factors = (0..n_times).map { fudge + rand }
-scaling_sum = gap_scaling_factors.reduce(&:+)
-gaps = gap_scaling_factors.map {|sf| duration * sf / scaling_sum }
+gap_scale_factors = (0..n_times).map { 1 + rand * (scale - 1) }
+gap_scale_sum = gap_scale_factors.reduce(&:+)
+gaps = gap_scale_factors.map {|gsf| duration * gsf / gap_scale_sum }
 gaps.pop
 
 elapsed = 0
