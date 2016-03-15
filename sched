@@ -2,14 +2,16 @@
 
 require 'optparse'
 
-# Run a command n times, spread over some duration with randomized
-# sleeps, as if we were sleeping n+1 times (but exit immediately after
-# the last command, rather than doing the final sleep).
+# Run a command n times, spread over some duration with randomly-divided
+# sleeps (by default, 1 time over 1 hour).
 #
-# Between sleeps, we attempt to compensate for the time taken by running
-# the command, but since the last invocation of a slow command could
-# finish after the end of the duration, you can't depend on how long
-# this script takes to run in total.
+# In most cases, this script will take less than the specified duration
+# to complete: once the command has run for the final time, the script
+# exits immediately. However, if the command itself takes a long time,
+# and subsequent invocations are "behind schedule", then (1) sleeping
+# will be skipped (2) the entire script execution may take longer than
+# the specified total duration. So, don't make any assumptions about how
+# long this script will take to run.
 #
 # The lengths of the sleeps are calculated by generating n+1 random
 # numbers with a range from fudge to fudge+1 and scaling the available
@@ -21,11 +23,13 @@ require 'optparse'
 duration = 3600
 n_times = 1
 fudge = 0.25
+verbose = false
 
 OptionParser.new do |op|
-  op.on('-d DURATION') {|a| duration = a.to_f }
-  op.on('-n TIMES') {|a| n_times = a.to_i }
-  op.on('-f FACTOR') {|a| fudge = a.to_f }
+  op.on('-d', '--duration SECONDS') {|a| duration = a.to_f }
+  op.on('-n', '--times TIMES') {|a| n_times = a.to_i }
+  op.on('-f', '--fudge FACTOR') {|a| fudge = a.to_f }
+  op.on('-v', '--verbose') {|a| verbose = true }
 end.parse!
 
 gap_scaling_factors = (0..n_times).map { fudge + rand }
@@ -35,7 +39,13 @@ gaps.pop
 
 elapsed = 0
 gaps.each do |gap|
-  sleep(gap - elapsed)
+  until_next_gap = gap - elapsed
+  if until_next_gap >= 0
+    STDERR.puts "sched: sleeping #{until_next_gap.round(2)}" if verbose
+    sleep(until_next_gap)
+  else
+    STDERR.puts "sched: warning: not sleeping, behind #{-until_next_gap.round(2)}"
+  end
   start_time = Time.now
   system(*ARGV)
   elapsed = Time.now - start_time
