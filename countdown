@@ -14,7 +14,12 @@ ARGV.map(&:to_i).each do |delay|
   finish = Time.now.to_f + delay
   delay.downto(1) do |n|
     print show(n)
-    sleep 1 - skew(finish - n)
+    begin
+      sleep 1 - skew(finish - n)
+    rescue Interrupt
+      puts
+      exit
+    end
     print clear(n)
   end
 end
