@@ -3,7 +3,7 @@
 test -t 0 && tty='-t'
 test -n "$*" || set -- -e nil
 
-# Work around sudo braindamage
-test -z "$TMPDIR" -a -d "$HOME/tmp" && export TMPDIR="$HOME/tmp"
+# sudo likes to clear the environment
+test -z "$TMPDIR" -a -e "$HOME/tmp" && export TMPDIR="$HOME/tmp"
 
 exec emacsclient "${tty:--c}" -a "" "$@"
