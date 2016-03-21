@@ -1,26 +1,32 @@
 #!/bin/bash
 
-# This runs from cron every morning and mirrors my repos. While it's
-# at it, it checks the date on each HEAD and wakes me up with a card
-# from the Oblique Strategies deck if I haven't committed to anything
-# in three days (and therefore probably need some inspiration).
+# This runs from cron every morning and mirrors my repos. While it's at
+# it, it checks the date on each HEAD and wakes me up with a card from
+# the Oblique Strategies deck if I haven't committed to anything in some
+# number of days (and therefore probably need some inspiration).
 
-grace=$((5*86400))
-range=$((4*3600))
+repos_dir="$HOME/pub/git"
+fortune_dir="$HOME/lib/oblique"
+mail_subj='oblique strategy'
+mail_dest='mobile'
 
-age=$(($(date +%s) - $grace))
-tmp=$(mktemp)
+grace='30' # days
+delay='4' # hours
 
-for repo in $HOME/pub/git/*.git; do
-    (cd $repo &&
-        git log -1 --pretty=tformat:%at >> $tmp
+age="$(($(date +%s) - $grace * 86400))"
+tmp="$(mktemp)"
+
+for repo in "$repos_dir"/*.git; do
+    test -t 1 && echo "Mirroring $repo"
+    (cd "$repo" &&
+        git log -1 --pretty=tformat:%at >> "$tmp" &&
         for r in $(git remote); do
-            git push $r 2>&1 | grep -v 'Everything up-to-date'
+            git push "$r" 2>&1 | grep -v 'Everything up-to-date'
         done)
 done
 
-if [ $(sort -n $tmp | tail -1) -le $age ]; then
-    (sleep $(($RANDOM % $range)); fortune $HOME/lib/oblique | mail -s 'oblique strategy' mobile) &
+if test "$(sort -n "$tmp" | tail -1)" -le "$age"; then
+    sched -d "${delay}h" fortune "$fortune_dir" | mail -s "$mail_subj" "$mail_dest"
 fi
 
-rm -f $tmp
+rm -f "$tmp"
