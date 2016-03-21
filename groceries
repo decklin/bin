@@ -43,6 +43,7 @@ __END__
 @@ layout
 <!DOCTYPE html>
 <title>Groceries</title>
+<style>body { font-family: sans-serif; word-wrap: break-word }</style>
 <link rel="shortcut icon" href="/grocery_icon.png">
 <meta name="viewport" content="width=device-width">
 <form method="post"><%= yield %></form>
