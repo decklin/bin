@@ -34,7 +34,7 @@ end
 
 post '/:id' do
   l = List.new(params[:id])
-  l.save(l.load - params[:del].to_a + params[:add].to_a)
+  l.save(l.load - params[:del].to_a + [params[:add]])
   redirect request.url, 303
 end
 
