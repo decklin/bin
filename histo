@@ -1,30 +1,41 @@
 #!/usr/bin/python
 
 import sys
-
-def print_hist(data, buckets=20, bsize=None, cols=68):
-    lo = min(data)
-    hi = max(data)
-    if bsize:
-        buckets = (hi - lo) / bsize
-        lo -= lo % bsize
-    else:
-        bsize = (hi - lo) / buckets
-
-    b = {}
-    for x in data:
-        n = int((x - lo) / bsize)
-        b[n] = b.setdefault(n, 0) + 1
-
-    mode = max(b.values())
-    for n in range(0, buckets):
-        print '%4d' % (lo + n * bsize), '#' * (cols * b.get(n, 0) / mode)
+import argparse
 
 if __name__ == '__main__':
-    try:
-        data = [int(line) for line in sys.stdin]
-        args = [int(a) for a in sys.argv[1:]]
-    except ValueError:
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-b', '--buckets', type=int, default=24)
+    parser.add_argument('-s', '--bucket-size', type=int, default=None)
+    parser.add_argument('-c', '--columns', type=int, default=80)
+    args = parser.parse_args()
 
-    print_hist(data, *args)
+    data = []
+    for line in sys.stdin:
+        try:
+            data.append(int(float(line))) # ugh
+        except (ValueError, OverflowError):
+            pass
+
+    lo = min(data)
+    hi = max(data)
+    spread = hi - lo + 1
+    n_buckets = min(spread, args.buckets)
+    columns = args.columns - 9
+    bsize = args.bucket_size
+
+    if bsize:
+        n_buckets = spread / bsize
+        lo -= lo % bsize
+    else:
+        bsize = spread / n_buckets
+
+    buckets = {}
+    for x in data:
+        n = int((x - lo) / bsize)
+        buckets.setdefault(n, 0)
+        buckets[n] += 1
+
+    mode = max(buckets.values())
+    for n in range(0, n_buckets):
+        print '%7d\t%s' % (lo + n * bsize, '#' * (columns * buckets.get(n, 0) / mode))
