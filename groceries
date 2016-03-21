@@ -1,9 +1,5 @@
 #!/usr/bin/env ruby
 
-# This should produce something validating & usable on my dumbphone, and fit
-# on a printed page. Otherwise, I'd use Haml and XHTML like sane people.
-
-require 'rubygems'
 require 'sinatra'
 
 class List
