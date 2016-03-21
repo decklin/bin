@@ -15,6 +15,7 @@ end
 configure do
   set :static, true
   set :public, 'public'
+  set :bind, 'localhost'
 end
 
 get '/' do
