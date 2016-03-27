@@ -21,14 +21,27 @@ require 'optparse'
 # yield a sleep of somewhere between 1 and 59 minutes. The default scale
 # is 9, so a single run will happen somewhere between 10% and 90% into
 # the duration.
+#
+# The following suffixes may also be used to specify longer durations:
+
+SUFFIXES = {'m' => 60, 'h' => 3600, 'd' => 86400}
 
 duration = 3600
 n_times = 1
 scale = 9
 verbose = false
 
+def parse_duration(d_str)
+  if d_str =~ /^(\d*(?:\.\d+)?)([smhd])?$/
+    $1.to_f * SUFFIXES.fetch($2, 1)
+  else
+    STDERR.puts "couldn't understand duration: #{d_str}"
+    exit 2
+  end
+end
+
 OptionParser.new do |op|
-  op.on('-d', '--duration SECONDS') {|a| duration = a.to_f }
+  op.on('-d', '--duration SECONDS') {|a| duration = parse_duration(a) }
   op.on('-n', '--times TIMES') {|a| n_times = a.to_i }
   op.on('-s', '--scale FACTOR') {|a| scale = a.to_f }
   op.on('-v', '--verbose') {|a| verbose = true }
