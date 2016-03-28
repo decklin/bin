@@ -90,6 +90,7 @@ OptionParser.new do |op|
   op.on("-f", "--file FILE", "Database file") {|f| options[:path] = f }
   op.on("-l", "--list", "List the queue") { options[:list] = true }
   op.on("-n", "--max N", "Pop at most N lines from the queue") {|n| options[:iter] = n.to_i.times }
+  op.on("-1", "--once", "Shortcut for -n 1") {|n| options[:iter] = 1.times }
   op.on("-q", "--quit", "Exit when queue is empty") { options[:quit] = true }
 end.parse!
 
