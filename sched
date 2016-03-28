@@ -56,7 +56,7 @@ elapsed = 0
 gaps.each do |gap|
   until_next_gap = gap - elapsed
   if until_next_gap >= 0
-    STDERR.puts "sched: sleeping until #{Time.now + until_next_gap}, (#{until_next_gap.round(1)}s)" if verbose
+    STDERR.puts "sched: sleeping until #{Time.now + until_next_gap} (#{until_next_gap.round(1)}s)" if verbose
     begin
       sleep(until_next_gap)
     rescue Interrupt
