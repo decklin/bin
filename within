@@ -12,12 +12,13 @@ use Getopt::Std;
 my %seen = ();
 my %opts;
 
-getopts('v', \%opts);
+getopts('vj:', \%opts);
 
 while (<>) {
     $seen{$_} = 1;
 }
 
 while (<STDIN>) {
-    print if $opts{v} ? !$seen{$_} : $seen{$_};
+    my $this_line = $opts{j} ? (split)[$opts{j}-1]."\n" : $_;
+    print if $seen{$this_line} xor $opts{v};
 }
