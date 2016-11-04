@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+import os
+import sys
+import argparse
+import random
+import csv
+import re
+from xml.sax import saxutils
+
+def chunk(n, a):
+    k, m = len(a) / n, len(a) % n
+    return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in xrange(n))
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--no-expand-urls', dest='expand_urls', default=True, action='store_false')
+    parser.add_argument('--exclude-rts', dest='include_rts', default=True, action='store_false')
+    parser.add_argument('--include-date', action='store_true')
+    parser.add_argument('--strip-rt-user', action='store_true')
+    parser.add_argument('--double-space', action='store_true')
+    parser.add_argument('--cutup', type=int)
+    parser.add_argument('csv')
+    args = parser.parse_args()
+
+    with open(args.csv) as csv_file:
+        reader = csv.DictReader(csv_file)
+        output = []
+        for row in reader:
+            if args.include_rts or not row['retweeted_status_id']:
+                text = saxutils.unescape(row['text'])
+                if args.expand_urls:
+                    urls = row['expanded_urls'].split(',')
+                    text = re.sub(r'\bhttps?://t\.co/.+\b', lambda m: urls.pop(), text)
+                if args.strip_rt_user:
+                    text = re.sub(r'^RT @.+?: ', '', text)
+                if args.include_date:
+                    text = row['timestamp'] + ' ' + text
+                output.append(text)
+
+    if args.cutup:
+        parts = [[] for _ in range(args.cutup)]
+        for tweet in output:
+            for i, words in enumerate(chunk(args.cutup, tweet.split())):
+                parts[i].append(' '.join(words))
+        for i in reversed(range(len(parts[0]))):
+            pasted = [p.pop(random.randint(0, i)) for p in parts]
+            print(' '.join([s for s in pasted if s]))
+            if args.double_space:
+                print()
+    else:
+        for tweet in output:
+            print(tweet)
+            if args.double_space:
+                print()
