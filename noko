@@ -3,29 +3,35 @@
 require 'optparse'
 require 'nokogiri'
 
+mode = :markdown
 attr = nil
-markdown = true
 strip = false
 
 OptionParser.new do |op|
-  op.on('-a ATTR') {|a| attr = a }
-  op.on('-t') { markdown = false }
+  op.on('-a ATTR') {|a| mode = :attr; attr = a }
+  op.on('-t') { mode = :text }
+  op.on('-h') { mode = :html }
   op.on('-s') { strip = true }
 end.parse!
 
-if markdown
+if mode == :markdown
   begin
     require 'reverse_markdown'
   rescue LoadError
     STDERR.puts 'could not load reverse_markdown, disabling'
-    markdown = false
+    mode = :text
   end
 end
 
 doc = Nokogiri::HTML(STDIN.read)
 ARGV.each do |sel|
   doc.css(sel).each do |elt|
-    text = attr ? elt[attr] : markdown ? ReverseMarkdown.convert(elt) : elt.text
+    text = case mode
+    when :attr; elt[attr]
+    when :markdown; ReverseMarkdown.convert(elt)
+    when :html; elt.to_html
+    when :text; elt.text
+    end
     puts strip ? text.strip : text
   end
 end
