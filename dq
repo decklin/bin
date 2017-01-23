@@ -18,10 +18,10 @@
 # * --list: print out all lines in the queue without running anything.
 #
 # * --max N: run the command at most the specified number of times, then
-#   exit with status 0.
+#     exit with status 0.
 #
 # * --quit: exit with status 1 when the queue is exhausted instead of
-#   waiting forever (in 1s sleeps) for more lines to be pushed.
+#     waiting forever (in 1s sleeps) for more lines to be pushed.
 #
 # Tips:
 #
@@ -62,6 +62,9 @@ class DQueue
     @db.busy_handler { sleep(1) }
     @db.execute(SCHEMA)
   end
+  def show_count
+    puts @db.execute('SELECT count(*) FROM queue')[0][0]
+  end
   def show_all
     @db.execute('SELECT line FROM queue').each do |row|
       puts row[0]
@@ -72,12 +75,12 @@ class DQueue
   end
   def pop
     line = nil
-    @db.execute('BEGIN TRANSACTION')
-    if row = @db.execute('SELECT id, line FROM queue ORDER BY id LIMIT 1').first
-      id, line = row
-      @db.execute('DELETE FROM queue WHERE id = ?', id)
+    @db.transaction do
+      if row = @db.execute('SELECT id, line FROM queue ORDER BY id LIMIT 1').first
+        id, line = row
+        @db.execute('DELETE FROM queue WHERE id = ?', id)
+      end
     end
-    @db.execute('COMMIT')
     line
   end
 end
@@ -85,32 +88,37 @@ end
 options = {
   :path => '.dq.sqlite',
   :iter => loop,
+  :mode => nil,
 }
 OptionParser.new do |op|
   op.on("-f", "--file FILE", "Database file") {|f| options[:path] = f }
-  op.on("-l", "--list", "List the queue") { options[:list] = true }
+  op.on("-c", "--list", "Show the size of the queue") { options[:mode] = :count }
+  op.on("-l", "--list", "List the queue") { options[:mode] = :list }
   op.on("-n", "--max N", "Pop at most N lines from the queue") {|n| options[:iter] = n.to_i.times }
   op.on("-1", "--once", "Shortcut for -n 1") {|n| options[:iter] = 1.times }
   op.on("-q", "--quit", "Exit when queue is empty") { options[:quit] = true }
 end.parse!
 
-begin
-  dq = DQueue.new(options[:path])
-  if options[:list]
-    dq.show_all
-  elsif ARGV.empty?
-    STDIN.each_line do |line|
-      dq.push(line.chomp)
-    end
-  else
-    options[:iter].each do
-      if line = dq.pop
-        system(*ARGV, line)
-      else
-        options[:quit] ? exit(1) : sleep(1)
+dq = DQueue.new(options[:path])
+case options[:mode]
+when :count; dq.show_count
+when :list; dq.show_all
+else
+  begin
+    if ARGV.empty?
+      STDIN.each_line do |line|
+        dq.push(line.chomp)
+      end
+    else
+      options[:iter].each do
+        if line = dq.pop
+          system(*ARGV, line)
+        else
+          options[:quit] ? exit(1) : sleep(1)
+        end
       end
     end
+  rescue Interrupt
+    exit
   end
-rescue Interrupt
-  exit
 end
