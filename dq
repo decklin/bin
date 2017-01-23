@@ -117,23 +117,22 @@ class DQueue
   end
 end
 
-options = {
-  :path => '.dq.sqlite',
-  :iter => loop,
-  :mode => nil,
-}
+path = '.dq.sqlite'
+iter = loop
+mode = :default
+quit = false
 OptionParser.new do |op|
-  op.on("-f", "--file FILE", "Database file") {|f| options[:path] = f }
-  op.on("-c", "--list", "Show the size of the queue") { options[:mode] = :count }
-  op.on("-l", "--list", "List the queue") { options[:mode] = :list }
-  op.on("-e", "--edit", "Edit the queue") {|f| options[:mode] = :edit }
-  op.on("-n", "--max N", "Pop at most N lines from the queue") {|n| options[:iter] = n.to_i.times }
-  op.on("-1", "--once", "Shortcut for -n 1") {|n| options[:iter] = 1.times }
-  op.on("-q", "--quit", "Exit when queue is empty") { options[:quit] = true }
+  op.on("-f", "--file FILE", "Database file") {|f| path = f }
+  op.on("-c", "--list", "Show the size of the queue") { mode = :count }
+  op.on("-l", "--list", "List the queue") { mode = :list }
+  op.on("-e", "--edit", "Edit the queue") {|f| mode = :edit }
+  op.on("-n", "--max N", "Pop at most N lines from the queue") {|n| iter = n.to_i.times }
+  op.on("-1", "--once", "Shortcut for -n 1") {|n| iter = 1.times }
+  op.on("-q", "--quit", "Exit when queue is empty") { quit = true }
 end.parse!
 
-dq = DQueue.new(options[:path])
-case options[:mode]
+dq = DQueue.new(path)
+case mode
 when :count; dq.show_count
 when :list; dq.show_all(STDOUT)
 when :edit; dq.edit
@@ -142,11 +141,11 @@ else
     if ARGV.empty?
       dq.push_from(STDIN)
     else
-      options[:iter].each do
+      iter.each do
         if line = dq.pop
           system(*ARGV, line)
         else
-          options[:quit] ? exit(1) : dq.wait
+          quit ? exit(1) : dq.wait
         end
       end
     end
