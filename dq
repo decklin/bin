@@ -17,6 +17,9 @@
 #
 # * --list: print out all lines in the queue without running anything.
 #
+# * --edit: write the queue out to a temp file, edit it with EDITOR, and
+#     replace the queue with the new file.
+#
 # * --max N: run the command at most the specified number of times, then
 #     exit with status 0.
 #
@@ -54,28 +57,57 @@
 
 require 'optparse'
 require 'sqlite3'
+require 'tempfile'
 
 class DQueue
-  SCHEMA = 'CREATE TABLE IF NOT EXISTS queue (id INTEGER PRIMARY KEY AUTOINCREMENT, line TEXT);'
+  TABLE = 'queue'
+  COLUMNS = 'id INTEGER PRIMARY KEY AUTOINCREMENT, line TEXT'
+  DEFAULT_EDITOR = 'vi'
+  DELAY = 1
   def initialize(db_path)
     @db = SQLite3::Database.new(db_path)
-    @db.busy_handler { sleep(1) }
-    @db.execute(SCHEMA)
+    @db.busy_handler { wait }
+    create_table!
+  end
+  def create_table!
+    @db.execute("CREATE TABLE IF NOT EXISTS #{TABLE} (#{COLUMNS});")
+  end
+  def drop_table!
+    @db.execute("DROP TABLE #{TABLE};")
+  end
+  def wait
+    sleep(DELAY)
   end
   def show_count
     puts @db.execute('SELECT count(*) FROM queue')[0][0]
   end
-  def show_all
+  def show_all(out_f)
     @db.execute('SELECT line FROM queue').each do |row|
-      puts row[0]
+      out_f.puts row[0]
     end
   end
-  def push(line)
-    @db.execute('INSERT INTO queue (line) VALUES (?)', line)
+  def edit
+    tmp = Tempfile.new('dq')
+    @db.transaction(:immediate) do
+      show_all(tmp)
+      tmp.close
+      system ENV.fetch('EDITOR', DEFAULT_EDITOR), tmp.path
+      File.open(tmp.path) do |f|
+        drop_table!
+        create_table!
+        push_from(f)
+      end
+    end
+    tmp.unlink
+  end
+  def push_from(in_f)
+    in_f.each_line do |line|
+      @db.execute('INSERT INTO queue (line) VALUES (?)', line.chomp)
+    end
   end
   def pop
     line = nil
-    @db.transaction do
+    @db.transaction(:immediate) do
       if row = @db.execute('SELECT id, line FROM queue ORDER BY id LIMIT 1').first
         id, line = row
         @db.execute('DELETE FROM queue WHERE id = ?', id)
@@ -94,6 +126,7 @@ OptionParser.new do |op|
   op.on("-f", "--file FILE", "Database file") {|f| options[:path] = f }
   op.on("-c", "--list", "Show the size of the queue") { options[:mode] = :count }
   op.on("-l", "--list", "List the queue") { options[:mode] = :list }
+  op.on("-e", "--edit", "Edit the queue") {|f| options[:mode] = :edit }
   op.on("-n", "--max N", "Pop at most N lines from the queue") {|n| options[:iter] = n.to_i.times }
   op.on("-1", "--once", "Shortcut for -n 1") {|n| options[:iter] = 1.times }
   op.on("-q", "--quit", "Exit when queue is empty") { options[:quit] = true }
@@ -102,19 +135,18 @@ end.parse!
 dq = DQueue.new(options[:path])
 case options[:mode]
 when :count; dq.show_count
-when :list; dq.show_all
+when :list; dq.show_all(STDOUT)
+when :edit; dq.edit
 else
   begin
     if ARGV.empty?
-      STDIN.each_line do |line|
-        dq.push(line.chomp)
-      end
+      dq.push_from(STDIN)
     else
       options[:iter].each do
         if line = dq.pop
           system(*ARGV, line)
         else
-          options[:quit] ? exit(1) : sleep(1)
+          options[:quit] ? exit(1) : dq.wait
         end
       end
     end
