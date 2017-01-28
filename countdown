@@ -1,7 +1,15 @@
 #!/usr/bin/env ruby
 
+$cols = (ENV['COLUMNS'] || `tput cols`.chomp).to_i
+
 def show(n)
-  "#{n} #{'.' * n}"
+  "#{n} #{dots(n, n.to_s.length + 1, $cols)}"
+end
+def dots(n, h, cols)
+  avail = cols - (h + n / cols)
+  chunks = n / avail
+  remain = n % avail
+  '#' * chunks + '.' * remain
 end
 def clear(n)
   "\r#{' ' * show(n).size}\r"
