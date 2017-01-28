@@ -3,48 +3,47 @@
 import sys
 import re
 import gtk
-import getopt
+import argparse
 
-colorpat = re.compile('#[0-9a-fA-F]+')
-selcolor = None
-short = False
+def pick_color(c, source, short):
+    sel = gtk.ColorSelectionDialog('colorsplat: %s (%s)' % (c, source))
+    sel.colorsel.set_current_color(gtk.gdk.color_parse(c))
 
-def pick_color(name, title):
-    sel = gtk.ColorSelectionDialog('colorsplat: %s' % title)
-    sel.colorsel.set_current_color(gtk.gdk.color_parse(name))
-
-    def ok(widget):
-        global selcolor, short
+    def ok(widget, data):
         cur = sel.colorsel.get_current_color()
         if short:
-            comp = [(int(c)>>8) for c in (cur.red, cur.green, cur.blue)]
-            selcolor = '#%02x%02x%02x' % tuple(comp)
+            data['color'] = '#%02x%02x%02x' % \
+                tuple((int(c)>>8) for c in (cur.red, cur.green, cur.blue))
         else:
-            selcolor = cur.to_string()
+            data['color'] = cur.to_string()
 
-    def cancel(widget):
-        global selcolor
-        selcolor = name
+    def cancel(widget, x):
+        data['color'] = c
 
-    sel.ok_button.connect('clicked', ok)
+    data = {}
+    sel.ok_button.connect('clicked', ok, data)
     sel.ok_button.connect('clicked', gtk.main_quit)
-    sel.cancel_button.connect('clicked', cancel)
+    sel.cancel_button.connect('clicked', cancel, data)
     sel.cancel_button.connect('clicked', gtk.main_quit)
 
     sel.show()
     gtk.main()
     sel.hide()
 
-    return selcolor
+    return data['color']
 
 if __name__ == '__main__':
-    opts, args = getopt.getopt(sys.argv[1:], '2')
-    for o, a in opts:
-        if o == '-2':
-            short = True
-    if args:
-        for name in args:
-            print pick_color(name, name)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-2', '--short', action='store_true', default=True)
+    parser.add_argument('-4', '--long', dest='short', action='store_false')
+    parser.add_argument('color', nargs='*')
+    args = parser.parse_args()
+
+    if args.color:
+        for c in args.color:
+            print pick_color(c, 'arg', args.short)
     else:
+        colorpat = re.compile('#[0-9a-fA-F]+')
+        replace = lambda m: pick_color(m.group(0), 'stdin', args.short)
         for line in sys.stdin:
-            print colorpat.sub(lambda m: pick_color(m.group(0), line), line),
+            print colorpat.sub(replace, line.strip())
