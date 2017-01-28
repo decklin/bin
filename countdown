@@ -19,15 +19,14 @@ def skew(target)
 end
 
 ARGV.map(&:to_i).each do |delay|
-  finish = Time.now.to_f + delay
-  delay.downto(1) do |n|
-    print show(n)
-    begin
+  begin
+    finish = Time.now.to_f + delay
+    delay.downto(1) do |n|
+      print show(n)
       sleep 1 - skew(finish - n)
-    rescue Interrupt
-      puts
-      exit
+      print clear(n)
     end
-    print clear(n)
+  rescue Interrupt
+    STDERR.puts "canceled with #{(finish - Time.now.to_f).round(1)}s left"
   end
 end
