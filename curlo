@@ -1,0 +1,8 @@
+#!/bin/sh
+
+for url; do
+    # TODO: ability to dump headers. can't use -i (ugh!), maybe -D.
+    # See https://github.com/bagder/curl/commit/80675818e0417be8c991513b328c5507e93b47e5
+    echo "fetching: $url"
+    curl -g -L -J -O "$url"
+done
