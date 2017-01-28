@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+
+# Convert a date/time into ye olde POSIX format
+
+require 'time'
+
+def try_clf(d)
+  Time.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
+rescue ArgumentError
+  nil
+end
+
+def try_chronic(d)
+  require 'chronic'
+  Chronic.parse(d)
+rescue ImportError
+  nil
+end
+
+def try_generic(d)
+  Time.parse(d)
+rescue ArgumentError
+  nil
+end
+
+ARGV.each do |d_str|
+  d = try_clf(d_str) || try_chronic(d_str) || try_generic(d_str)
+  if d
+    puts d.strftime('%Y%m%d%H%M.%S')
+  else
+    STDERR.puts 'All parsing methods failed'
+    puts d_str
+  end
+end
