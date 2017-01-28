@@ -1,9 +1,10 @@
 #!/bin/sh
 
-test -t 0 && tty='-t'
+test -t 0 && frame=-nw || frame=-c
 test -n "$*" || set -- -e nil
 
-# sudo likes to clear the environment
+# in case we haven't fixed sudo to preserve this env var, need
+# to be able to find our socket
 test -z "$TMPDIR" -a -e "$HOME/tmp" && export TMPDIR="$HOME/tmp"
 
-exec emacsclient "${tty:--c}" -a "" "$@"
+exec emacsclient "$frame" -a emacsnw "$@"
