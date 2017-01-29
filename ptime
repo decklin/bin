@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+
+require 'time'
+require 'optparse'
+require 'ostruct'
+
+def parse_args(&blk)
+  OpenStruct.new.tap do |o|
+    OptionParser.new.instance_exec(o, &blk).parse!
+  end
+end
+
+options = parse_args do |opts|
+  on('-i', '--iso') { opts.format = :iso }
+  on('-m', '--mmin') { opts.format = :mmin }
+  on('-p', '--posix') { opts.format = :posix }
+end
+
+def try_clf(d)
+  Time.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
+rescue ArgumentError
+  nil
+end
+
+def try_chronic(d)
+  require 'chronic'
+  Chronic.parse(d)
+rescue ImportError
+  nil
+end
+
+def try_generic(d)
+  Time.parse(d)
+rescue ArgumentError
+  nil
+end
+
+ARGV.each do |arg|
+  if t = try_clf(arg) || try_chronic(arg) || try_generic(arg)
+    case options.format
+    when :iso, nil; puts t.iso8601
+    when :mmin; puts ((Time.now - t) / 60).round
+    when :posix; puts t.strftime('%Y%m%d%H%M.%S')
+    end
+  else
+    STDERR.puts 'All parsing methods failed'
+    puts arg
+  end
+end
