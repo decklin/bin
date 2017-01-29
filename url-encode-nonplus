@@ -1,7 +1,0 @@
-#!/usr/bin/env ruby
-
-require 'cgi'
-
-ARGV.each do |arg|
-  puts CGI.escape(arg).gsub('+', '%20')
-end

@@ -13,7 +13,7 @@ curl -s "$banner_url" | sed -n 's/^The latest \([^ ]*\) \([^ ]*\) version of the
 for series in "$@"; do
     x="$(awk "/: $series/{print;exit}" $temp | confer -i $state_dir/$series)"
     if [ "$x" ]; then
-        curlicue -f "$creds" -- -s -d "status=$(url-encode-nonplus "$x")" "$twitter_url" >/dev/null
+        curlicue -f "$creds" -- -s -d "status=$(url-encode -p "$x")" "$twitter_url" >/dev/null
     fi
 done
 

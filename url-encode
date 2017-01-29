@@ -1,7 +1,21 @@
 #!/usr/bin/env ruby
 
 require 'cgi'
+require 'optparse'
+require 'ostruct'
+
+def parse_args(&blk)
+  OpenStruct.new.tap do |o|
+    OptionParser.new.instance_exec(o, &blk).parse!
+  end
+end
+
+options = parse_args do |opts|
+  on('-p', '--no-plus') { opts.no_plus = true }
+end
 
 ARGV.each do |arg|
-  puts CGI.escape(arg)
+  escaped = CGI.escape(arg)
+  escaped.gsub!('+', '%20') if options.no_plus
+  puts escaped
 end
