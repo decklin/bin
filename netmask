@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+
+require 'ipaddr'
+
+def mask(n)
+  32 - Math.log2(n).ceil
+end
+def fancybin(n)
+  n.to_s(2).rjust(32, '0').scan(/.{8}/).join(' ')
+end
+
+ip_addrs = ARGV.reject {|a| a == '-' }.map {|a| IPAddr.new(a) }
+ip_addrs.each do |a|
+  printf "%15s (%35s) /%d\n", a, fancybin(a.to_i), mask(a.to_i & -a.to_i)
+end
+ip_addrs.each_cons(2) do |a, b|
+  printf "%53s /%d\n", "#{a} - #{b}", mask(a.to_i ^ b.to_i)
+end
