@@ -1,0 +1,1640 @@
+#!/bin/sh
+
+copy_emoji() {
+    read emoji name aliases
+    echo "copying $name to pasteboard"
+    printf '%s' "$emoji" | pbcopy
+}
+
+main() {
+    selecta | copy_emoji
+}
+
+# this list generated from https://github.com/Ranks/emoji-alpha-codes
+
+main <<'EOF'
+😀   :grinning: (grinning face)
+😬   :grimacing: (grimacing face)
+😁   :grin: (grinning face with smiling eyes)
+😂   :joy: (face with tears of joy)
+😃   :smiley: (smiling face with open mouth)
+😄   :smile: (smiling face with open mouth and smiling eyes)
+😅   :sweat_smile: (smiling face with open mouth and cold sweat)
+😆   :laughing: :satisfied: (smiling face with open mouth and tightly-closed eyes)
+😇   :innocent: (smiling face with halo)
+😉   :wink: (winking face)
+😊   :blush: (smiling face with smiling eyes)
+🙂   :slight_smile: :slightly_smiling_face:
+🙃   :upside_down: :upside_down_face: (upside-down face)
+☺   :relaxed: (white smiling face)
+😋   :yum: (face savouring delicious food)
+😌   :relieved: (relieved face)
+😍   :heart_eyes: (smiling face with heart-shaped eyes)
+😘   :kissing_heart: (face throwing a kiss)
+😗   :kissing: (kissing face)
+😙   :kissing_smiling_eyes: (kissing face with smiling eyes)
+😚   :kissing_closed_eyes: (kissing face with closed eyes)
+😜   :stuck_out_tongue_winking_eye: (face with stuck-out tongue and winking eye)
+😝   :stuck_out_tongue_closed_eyes: (face with stuck-out tongue and tightly-closed eyes)
+😛   :stuck_out_tongue: (face with stuck-out tongue)
+🤑   :money_mouth: :money_mouth_face: (money-mouth face)
+🤓   :nerd: :nerd_face:
+😎   :sunglasses: (smiling face with sunglasses)
+🤗   :hugging: :hugging_face:
+😏   :smirk: (smirking face)
+😶   :no_mouth: (face without mouth)
+😐   :neutral_face:
+😑   :expressionless: (expressionless face)
+😒   :unamused: (unamused face)
+🙄   :rolling_eyes: :face_with_rolling_eyes:
+🤔   :thinking: :thinking_face:
+😳   :flushed: (flushed face)
+😞   :disappointed: (disappointed face)
+😟   :worried: (worried face)
+😠   :angry: (angry face)
+😡   :rage: (pouting face)
+😔   :pensive: (pensive face)
+😕   :confused: (confused face)
+🙁   :slight_frown: :slightly_frowning_face:
+☹   :frowning2: :white_frowning_face:
+😣   :persevere: (persevering face)
+😖   :confounded: (confounded face)
+😫   :tired_face:
+😩   :weary: (weary face)
+😤   :triumph: (face with look of triumph)
+😮   :open_mouth: (face with open mouth)
+😱   :scream: (face screaming in fear)
+😨   :fearful: (fearful face)
+😰   :cold_sweat: (face with open mouth and cold sweat)
+😯   :hushed: (hushed face)
+😦   :frowning: (frowning face with open mouth)
+😧   :anguished: (anguished face)
+😢   :cry: (crying face)
+😥   :disappointed_relieved: (disappointed but relieved face)
+😪   :sleepy: (sleepy face)
+😓   :sweat: (face with cold sweat)
+😭   :sob: (loudly crying face)
+😵   :dizzy_face:
+😲   :astonished: (astonished face)
+🤐   :zipper_mouth: :zipper_mouth_face: (zipper-mouth face)
+😷   :mask: (face with medical mask)
+🤒   :thermometer_face: :face_with_thermometer:
+🤕   :head_bandage: :face_with_head_bandage: (face with head-bandage)
+😴   :sleeping: (sleeping face)
+💤   :zzz: (sleeping symbol)
+💩   :poop: :shit: :hankey: :poo: (pile of poo)
+😈   :smiling_imp: (smiling face with horns)
+👿   :imp:
+👹   :japanese_ogre:
+👺   :japanese_goblin:
+💀   :skull: :skeleton:
+👻   :ghost:
+👽   :alien: (extraterrestrial alien)
+🤖   :robot: :robot_face:
+😺   :smiley_cat: (smiling cat face with open mouth)
+😸   :smile_cat: (grinning cat face with smiling eyes)
+😹   :joy_cat: (cat face with tears of joy)
+😻   :heart_eyes_cat: (smiling cat face with heart-shaped eyes)
+😼   :smirk_cat: (cat face with wry smile)
+😽   :kissing_cat: (kissing cat face with closed eyes)
+🙀   :scream_cat: (weary cat face)
+😿   :crying_cat_face:
+😾   :pouting_cat: (pouting cat face)
+🙌   :raised_hands: (person raising both hands in celebration)
+👏   :clap: (clapping hands sign)
+👋   :wave: (waving hand sign)
+👍   :thumbsup: :+1: :thumbup: (thumbs up sign)
+👎   :thumbsdown: :-1: :thumbdown: (thumbs down sign)
+👊   :punch: (fisted hand sign)
+✊   :fist: (raised fist)
+✌   :v: (victory hand)
+👌   :ok_hand: (ok hand sign)
+✋   :raised_hand:
+👐   :open_hands: (open hands sign)
+💪   :muscle: (flexed biceps)
+🙏   :pray: (person with folded hands)
+☝   :point_up: (white up pointing index)
+👆   :point_up_2: (white up pointing backhand index)
+👇   :point_down: (white down pointing backhand index)
+👈   :point_left: (white left pointing backhand index)
+👉   :point_right: (white right pointing backhand index)
+🖕   :middle_finger: :reversed_hand_with_middle_finger_extended:
+🖐   :hand_splayed: :raised_hand_with_fingers_splayed:
+🤘   :metal: :sign_of_the_horns:
+🖖   :vulcan: :raised_hand_with_part_between_middle_and_ring_fingers:
+✍   :writing_hand:
+💅   :nail_care: (nail polish)
+👄   :lips: (mouth)
+👅   :tongue:
+👂   :ear:
+👃   :nose:
+👁   :eye:
+👀   :eyes:
+👤   :bust_in_silhouette:
+👥   :busts_in_silhouette:
+🗣   :speaking_head: :speaking_head_in_silhouette:
+👶   :baby:
+👦   :boy:
+👧   :girl:
+👨   :man:
+👩   :woman:
+👱   :person_with_blond_hair:
+👴   :older_man:
+👵   :older_woman: :grandma:
+👲   :man_with_gua_pi_mao:
+👳   :man_with_turban:
+👮   :cop: (police officer)
+👷   :construction_worker:
+💂   :guardsman:
+🕵   :spy: :sleuth_or_spy:
+🎅   :santa: (father christmas)
+👼   :angel: (baby angel)
+👸   :princess:
+👰   :bride_with_veil:
+🚶   :walking: (pedestrian)
+🏃   :runner:
+💃   :dancer:
+👯   :dancers: (woman with bunny ears)
+👫   :couple: (man and woman holding hands)
+👬   :two_men_holding_hands:
+👭   :two_women_holding_hands:
+🙇   :bow: (person bowing deeply)
+💁   :information_desk_person:
+🙅   :no_good: (face with no good gesture)
+🙆   :ok_woman: (face with ok gesture)
+🙋   :raising_hand: (happy person raising one hand)
+🙎   :person_with_pouting_face:
+🙍   :person_frowning:
+💇   :haircut:
+💆   :massage: (face massage)
+💑   :couple_with_heart:
+👩‍❤️‍👩   :couple_ww: :couple_with_heart_ww: (couple (woman,woman))
+👨‍❤️‍👨   :couple_mm: :couple_with_heart_mm: (couple (man,man))
+💏   :couplekiss: (kiss)
+👩‍❤️‍💋‍👩   :kiss_ww: :couplekiss_ww: (kiss (woman,woman))
+👨‍❤️‍💋‍👨   :kiss_mm: :couplekiss_mm: (kiss (man,man))
+👪   :family:
+👨‍👩‍👧   :family_mwg: (family (man,woman,girl))
+👨‍👩‍👧‍👦   :family_mwgb: (family (man,woman,girl,boy))
+👨‍👩‍👦‍👦   :family_mwbb: (family (man,woman,boy,boy))
+👨‍👩‍👧‍👧   :family_mwgg: (family (man,woman,girl,girl))
+👩‍👩‍👦   :family_wwb: (family (woman,woman,boy))
+👩‍👩‍👧   :family_wwg: (family (woman,woman,girl))
+👩‍👩‍👧‍👦   :family_wwgb: (family (woman,woman,girl,boy))
+👩‍👩‍👦‍👦   :family_wwbb: (family (woman,woman,boy,boy))
+👩‍👩‍👧‍👧   :family_wwgg: (family (woman,woman,girl,girl))
+👨‍👨‍👦   :family_mmb: (family (man,man,boy))
+👨‍👨‍👧   :family_mmg: (family (man,man,girl))
+👨‍👨‍👧‍👦   :family_mmgb: (family (man,man,girl,boy))
+👨‍👨‍👦‍👦   :family_mmbb: (family (man,man,boy,boy))
+👨‍👨‍👧‍👧   :family_mmgg: (family (man,man,girl,girl))
+👚   :womans_clothes:
+👕   :shirt: (t-shirt)
+👖   :jeans:
+👔   :necktie:
+👗   :dress:
+👙   :bikini:
+👘   :kimono:
+💄   :lipstick:
+💋   :kiss: (kiss mark)
+👣   :footprints:
+👠   :high_heel: (high-heeled shoe)
+👡   :sandal: (womans sandal)
+👢   :boot: (womans boots)
+👞   :mans_shoe:
+👟   :athletic_shoe:
+👒   :womans_hat:
+🎩   :tophat: (top hat)
+⛑   :helmet_with_cross: :helmet_with_white_cross:
+🎓   :mortar_board: (graduation cap)
+👑   :crown:
+🎒   :school_satchel:
+👝   :pouch:
+👛   :purse:
+👜   :handbag:
+💼   :briefcase:
+👓   :eyeglasses:
+🕶   :dark_sunglasses:
+💍   :ring:
+🌂   :closed_umbrella:
+🐶   :dog: (dog face)
+🐱   :cat: (cat face)
+🐭   :mouse: (mouse face)
+🐹   :hamster: (hamster face)
+🐰   :rabbit: (rabbit face)
+🐻   :bear: (bear face)
+🐼   :panda_face:
+🐨   :koala:
+🐯   :tiger: (tiger face)
+🦁   :lion_face: :lion:
+🐮   :cow: (cow face)
+🐷   :pig: (pig face)
+🐽   :pig_nose:
+🐸   :frog: (frog face)
+🐙   :octopus:
+🐵   :monkey_face:
+🙈   :see_no_evil: (see-no-evil monkey)
+🙉   :hear_no_evil: (hear-no-evil monkey)
+🙊   :speak_no_evil: (speak-no-evil monkey)
+🐒   :monkey:
+🐔   :chicken:
+🐧   :penguin:
+🐦   :bird:
+🐤   :baby_chick:
+🐣   :hatching_chick:
+🐥   :hatched_chick: (front-facing baby chick)
+🐺   :wolf: (wolf face)
+🐗   :boar:
+🐴   :horse: (horse face)
+🦄   :unicorn: :unicorn_face:
+🐝   :bee: (honeybee)
+🐛   :bug:
+🐌   :snail:
+🐞   :beetle: (lady beetle)
+🐜   :ant:
+🕷   :spider:
+🦂   :scorpion:
+🦀   :crab:
+🐍   :snake:
+🐢   :turtle:
+🐠   :tropical_fish:
+🐟   :fish:
+🐡   :blowfish:
+🐬   :dolphin:
+🐳   :whale: (spouting whale)
+🐋   :whale2: (whale)
+🐊   :crocodile:
+🐆   :leopard:
+🐅   :tiger2: (tiger)
+🐃   :water_buffalo:
+🐂   :ox:
+🐄   :cow2: (cow)
+🐪   :dromedary_camel:
+🐫   :camel: (bactrian camel)
+🐘   :elephant:
+🐐   :goat:
+🐏   :ram:
+🐑   :sheep:
+🐎   :racehorse: (horse)
+🐖   :pig2: (pig)
+🐀   :rat:
+🐁   :mouse2: (mouse)
+🐓   :rooster:
+🦃   :turkey:
+🕊   :dove: :dove_of_peace:
+🐕   :dog2: (dog)
+🐩   :poodle:
+🐈   :cat2: (cat)
+🐇   :rabbit2: (rabbit)
+🐿   :chipmunk:
+🐾   :feet: :paw_prints:
+🐉   :dragon:
+🐲   :dragon_face:
+🌵   :cactus:
+🎄   :christmas_tree:
+🌲   :evergreen_tree:
+🌳   :deciduous_tree:
+🌴   :palm_tree:
+🌱   :seedling:
+🌿   :herb:
+☘   :shamrock:
+🍀   :four_leaf_clover:
+🎍   :bamboo: (pine decoration)
+🎋   :tanabata_tree:
+🍃   :leaves: (leaf fluttering in wind)
+🍂   :fallen_leaf:
+🍁   :maple_leaf:
+🌾   :ear_of_rice:
+🌺   :hibiscus:
+🌻   :sunflower:
+🌹   :rose:
+🌷   :tulip:
+🌼   :blossom:
+🌸   :cherry_blossom:
+💐   :bouquet:
+🍄   :mushroom:
+🌰   :chestnut:
+🎃   :jack_o_lantern: (jack-o-lantern)
+🐚   :shell: (spiral shell)
+🕸   :spider_web:
+🌎   :earth_americas: (earth globe americas)
+🌍   :earth_africa: (earth globe europe-africa)
+🌏   :earth_asia: (earth globe asia-australia)
+🌕   :full_moon: (full moon symbol)
+🌖   :waning_gibbous_moon: (waning gibbous moon symbol)
+🌗   :last_quarter_moon: (last quarter moon symbol)
+🌘   :waning_crescent_moon: (waning crescent moon symbol)
+🌑   :new_moon: (new moon symbol)
+🌒   :waxing_crescent_moon: (waxing crescent moon symbol)
+🌓   :first_quarter_moon: (first quarter moon symbol)
+🌔   :waxing_gibbous_moon: (waxing gibbous moon symbol)
+🌚   :new_moon_with_face:
+🌝   :full_moon_with_face:
+🌛   :first_quarter_moon_with_face:
+🌜   :last_quarter_moon_with_face:
+🌞   :sun_with_face:
+🌙   :crescent_moon:
+⭐   :star: (white medium star)
+🌟   :star2: (glowing star)
+💫   :dizzy: (dizzy symbol)
+✨   :sparkles:
+☄   :comet:
+☀   :sunny: (black sun with rays)
+🌤   :white_sun_small_cloud: :white_sun_with_small_cloud:
+⛅   :partly_sunny: (sun behind cloud)
+🌥   :white_sun_cloud: :white_sun_behind_cloud:
+🌦   :white_sun_rain_cloud: :white_sun_behind_cloud_with_rain:
+☁   :cloud:
+🌧   :cloud_rain: :cloud_with_rain:
+⛈   :thunder_cloud_rain: :thunder_cloud_and_rain:
+🌩   :cloud_lightning: :cloud_with_lightning:
+⚡   :zap: (high voltage sign)
+🔥   :fire: :flame:
+💥   :boom: (collision symbol)
+❄   :snowflake:
+🌨   :cloud_snow: :cloud_with_snow:
+☃   :snowman2: (snowman)
+⛄   :snowman: (snowman without snow)
+🌬   :wind_blowing_face:
+💨   :dash: (dash symbol)
+🌪   :cloud_tornado: :cloud_with_tornado:
+🌫   :fog:
+☂   :umbrella2: (umbrella)
+☔   :umbrella: (umbrella with rain drops)
+💧   :droplet:
+💦   :sweat_drops: (splashing sweat symbol)
+🌊   :ocean: (water wave)
+🍏   :green_apple:
+🍎   :apple: (red apple)
+🍐   :pear:
+🍊   :tangerine:
+🍋   :lemon:
+🍌   :banana:
+🍉   :watermelon:
+🍇   :grapes:
+🍓   :strawberry:
+🍈   :melon:
+🍒   :cherries:
+🍑   :peach:
+🍍   :pineapple:
+🍅   :tomato:
+🍆   :eggplant: (aubergine)
+🌶   :hot_pepper:
+🌽   :corn: (ear of maize)
+🍠   :sweet_potato: (roasted sweet potato)
+🍯   :honey_pot:
+🍞   :bread:
+🧀   :cheese: :cheese_wedge:
+🍗   :poultry_leg:
+🍖   :meat_on_bone:
+🍤   :fried_shrimp:
+🍳   :egg: (cooking)
+🍔   :hamburger:
+🍟   :fries: (french fries)
+🌭   :hotdog: :hot_dog:
+🍕   :pizza: (slice of pizza)
+🍝   :spaghetti:
+🌮   :taco:
+🌯   :burrito:
+🍜   :ramen: (steaming bowl)
+🍲   :stew: (pot of food)
+🍥   :fish_cake: (fish cake with swirl design)
+🍣   :sushi:
+🍱   :bento: (bento box)
+🍛   :curry: (curry and rice)
+🍙   :rice_ball:
+🍚   :rice: (cooked rice)
+🍘   :rice_cracker:
+🍢   :oden:
+🍡   :dango:
+🍧   :shaved_ice:
+🍨   :ice_cream:
+🍦   :icecream: (soft ice cream)
+🍰   :cake: (shortcake)
+🎂   :birthday: (birthday cake)
+🍮   :custard:
+🍬   :candy:
+🍭   :lollipop:
+🍫   :chocolate_bar:
+🍿   :popcorn:
+🍩   :doughnut:
+🍪   :cookie:
+🍺   :beer: (beer mug)
+🍻   :beers: (clinking beer mugs)
+🍷   :wine_glass:
+🍸   :cocktail: (cocktail glass)
+🍹   :tropical_drink:
+🍾   :champagne: :bottle_with_popping_cork:
+🍶   :sake: (sake bottle and cup)
+🍵   :tea: (teacup without handle)
+☕   :coffee: (hot beverage)
+🍼   :baby_bottle:
+🍴   :fork_and_knife:
+🍽   :fork_knife_plate: :fork_and_knife_with_plate:
+⚽   :soccer: (soccer ball)
+🏀   :basketball: (basketball and hoop)
+🏈   :football: (american football)
+⚾   :baseball:
+🎾   :tennis: (tennis racquet and ball)
+🏐   :volleyball:
+🏉   :rugby_football:
+🎱   :8ball: (billiards)
+⛳   :golf: (flag in hole)
+🏌   :golfer:
+🏓   :ping_pong: :table_tennis: (table tennis paddle and ball)
+🏸   :badminton: (badminton racquet)
+🏒   :hockey: (ice hockey stick and puck)
+🏑   :field_hockey: (field hockey stick and ball)
+🏏   :cricket: :cricket_bat_ball: (cricket bat and ball)
+🎿   :ski: (ski and ski boot)
+⛷   :skier:
+🏂   :snowboarder:
+⛸   :ice_skate:
+🏹   :bow_and_arrow: :archery:
+🎣   :fishing_pole_and_fish:
+🚣   :rowboat:
+🏊   :swimmer:
+🏄   :surfer:
+🛀   :bath:
+⛹   :basketball_player: :person_with_ball:
+🏋   :lifter: :weight_lifter:
+🚴   :bicyclist:
+🚵   :mountain_bicyclist:
+🏇   :horse_racing:
+🕴   :levitate: :man_in_business_suit_levitating:
+🏆   :trophy:
+🎽   :running_shirt_with_sash:
+🏅   :medal: :sports_medal:
+🎖   :military_medal:
+🎗   :reminder_ribbon:
+🏵   :rosette:
+🎫   :ticket:
+🎟   :tickets: :admission_tickets:
+🎭   :performing_arts:
+🎨   :art: (artist palette)
+🎪   :circus_tent:
+🎤   :microphone:
+🎧   :headphones: (headphone)
+🎼   :musical_score:
+🎹   :musical_keyboard:
+🎷   :saxophone:
+🎺   :trumpet:
+🎸   :guitar:
+🎻   :violin:
+🎬   :clapper: (clapper board)
+🎮   :video_game:
+👾   :space_invader: (alien monster)
+🎯   :dart: (direct hit)
+🎲   :game_die:
+🎰   :slot_machine:
+🎳   :bowling:
+🚗   :red_car: (automobile)
+🚕   :taxi:
+🚙   :blue_car: (recreational vehicle)
+🚌   :bus:
+🚎   :trolleybus:
+🏎   :race_car: :racing_car:
+🚓   :police_car:
+🚑   :ambulance:
+🚒   :fire_engine:
+🚐   :minibus:
+🚚   :truck: (delivery truck)
+🚛   :articulated_lorry:
+🚜   :tractor:
+🏍   :motorcycle: :racing_motorcycle:
+🚲   :bike: (bicycle)
+🚨   :rotating_light: (police cars revolving light)
+🚔   :oncoming_police_car:
+🚍   :oncoming_bus:
+🚘   :oncoming_automobile:
+🚖   :oncoming_taxi:
+🚡   :aerial_tramway:
+🚠   :mountain_cableway:
+🚟   :suspension_railway:
+🚃   :railway_car:
+🚋   :train: (tram car)
+🚝   :monorail:
+🚄   :bullettrain_side: (high-speed train)
+🚅   :bullettrain_front: (high-speed train with bullet nose)
+🚈   :light_rail:
+🚞   :mountain_railway:
+🚂   :steam_locomotive:
+🚆   :train2: (train)
+🚇   :metro:
+🚊   :tram:
+🚉   :station:
+🚁   :helicopter:
+🛩   :airplane_small: :small_airplane:
+✈   :airplane:
+🛫   :airplane_departure:
+🛬   :airplane_arriving:
+⛵   :sailboat:
+🛥   :motorboat:
+🚤   :speedboat:
+⛴   :ferry:
+🛳   :cruise_ship: :passenger_ship:
+🚀   :rocket:
+🛰   :satellite_orbital: (satellite)
+💺   :seat:
+⚓   :anchor:
+🚧   :construction: (construction sign)
+⛽   :fuelpump: (fuel pump)
+🚏   :busstop: (bus stop)
+🚦   :vertical_traffic_light:
+🚥   :traffic_light: (horizontal traffic light)
+🏁   :checkered_flag: (chequered flag)
+🚢   :ship:
+🎡   :ferris_wheel:
+🎢   :roller_coaster:
+🎠   :carousel_horse:
+🏗   :construction_site: :building_construction:
+🌁   :foggy:
+🗼   :tokyo_tower:
+🏭   :factory:
+⛲   :fountain:
+🎑   :rice_scene: (moon viewing ceremony)
+⛰   :mountain:
+🏔   :mountain_snow: :snow_capped_mountain:
+🗻   :mount_fuji:
+🌋   :volcano:
+🗾   :japan: (silhouette of japan)
+🏕   :camping:
+⛺   :tent:
+🏞   :park: :national_park:
+🛣   :motorway:
+🛤   :railway_track: :railroad_track:
+🌅   :sunrise:
+🌄   :sunrise_over_mountains:
+🏜   :desert:
+🏖   :beach: :beach_with_umbrella:
+🏝   :island: :desert_island:
+🌇   :city_sunset: :city_sunrise: (sunset over buildings)
+🌆   :city_dusk: (cityscape at dusk)
+🏙   :cityscape:
+🌃   :night_with_stars:
+🌉   :bridge_at_night:
+🌌   :milky_way:
+🌠   :stars: (shooting star)
+🎇   :sparkler: (firework sparkler)
+🎆   :fireworks:
+🌈   :rainbow:
+🏘   :homes: :house_buildings:
+🏰   :european_castle:
+🏯   :japanese_castle:
+🏟   :stadium:
+🗽   :statue_of_liberty:
+🏠   :house: (house building)
+🏡   :house_with_garden:
+🏚   :house_abandoned: :derelict_house_building:
+🏢   :office: (office building)
+🏬   :department_store:
+🏣   :post_office: (japanese post office)
+🏤   :european_post_office:
+🏥   :hospital:
+🏦   :bank:
+🏨   :hotel:
+🏪   :convenience_store:
+🏫   :school:
+🏩   :love_hotel:
+💒   :wedding:
+🏛   :classical_building:
+⛪   :church:
+🕌   :mosque:
+🕍   :synagogue:
+🕋   :kaaba:
+⛩   :shinto_shrine:
+⌚   :watch:
+📱   :iphone: (mobile phone)
+📲   :calling: (mobile phone with rightwards arrow at left)
+💻   :computer: (personal computer)
+⌨   :keyboard:
+🖥   :desktop: :desktop_computer:
+🖨   :printer:
+🖱   :mouse_three_button: :three_button_mouse:
+🖲   :trackball:
+🕹   :joystick:
+🗜   :compression:
+💽   :minidisc:
+💾   :floppy_disk:
+💿   :cd: (optical disc)
+📀   :dvd:
+📼   :vhs: (videocassette)
+📷   :camera:
+📸   :camera_with_flash:
+📹   :video_camera:
+🎥   :movie_camera:
+📽   :projector: :film_projector:
+🎞   :film_frames:
+📞   :telephone_receiver:
+☎   :telephone: (black telephone)
+📟   :pager:
+📠   :fax: (fax machine)
+📺   :tv: (television)
+📻   :radio:
+🎙   :microphone2: :studio_microphone:
+🎚   :level_slider:
+🎛   :control_knobs:
+⏱   :stopwatch:
+⏲   :timer: :timer_clock:
+⏰   :alarm_clock:
+🕰   :clock: :mantlepiece_clock:
+⏳   :hourglass_flowing_sand: (hourglass with flowing sand)
+⌛   :hourglass:
+📡   :satellite: (satellite antenna)
+🔋   :battery:
+🔌   :electric_plug:
+💡   :bulb: (electric light bulb)
+🔦   :flashlight: (electric torch)
+🕯   :candle:
+🗑   :wastebasket:
+🛢   :oil: :oil_drum:
+💸   :money_with_wings:
+💵   :dollar: (banknote with dollar sign)
+💴   :yen: (banknote with yen sign)
+💶   :euro: (banknote with euro sign)
+💷   :pound: (banknote with pound sign)
+💰   :moneybag: (money bag)
+💳   :credit_card:
+💎   :gem: (gem stone)
+⚖   :scales:
+🔧   :wrench:
+🔨   :hammer:
+⚒   :hammer_pick: :hammer_and_pick:
+🛠   :tools: :hammer_and_wrench:
+⛏   :pick:
+🔩   :nut_and_bolt:
+⚙   :gear:
+⛓   :chains:
+🔫   :gun: (pistol)
+💣   :bomb:
+🔪   :knife: (hocho)
+🗡   :dagger: :dagger_knife:
+⚔   :crossed_swords:
+🛡   :shield:
+🚬   :smoking: (smoking symbol)
+☠   :skull_crossbones: :skull_and_crossbones:
+⚰   :coffin:
+⚱   :urn: :funeral_urn:
+🏺   :amphora:
+🔮   :crystal_ball:
+📿   :prayer_beads:
+💈   :barber: (barber pole)
+⚗   :alembic:
+🔭   :telescope:
+🔬   :microscope:
+🕳   :hole:
+💊   :pill:
+💉   :syringe:
+🌡   :thermometer:
+🏷   :label:
+🔖   :bookmark:
+🚽   :toilet:
+🚿   :shower:
+🛁   :bathtub:
+🔑   :key:
+🗝   :key2: :old_key:
+🛋   :couch: :couch_and_lamp:
+🛌   :sleeping_accommodation:
+🛏   :bed:
+🚪   :door:
+🛎   :bellhop: :bellhop_bell:
+🖼   :frame_photo: :frame_with_picture:
+🗺   :map: :world_map:
+⛱   :beach_umbrella: :umbrella_on_ground:
+🗿   :moyai:
+🛍   :shopping_bags:
+🎈   :balloon:
+🎏   :flags: (carp streamer)
+🎀   :ribbon:
+🎁   :gift: (wrapped present)
+🎊   :confetti_ball:
+🎉   :tada: (party popper)
+🎎   :dolls: (japanese dolls)
+🎐   :wind_chime:
+🎌   :crossed_flags:
+🏮   :izakaya_lantern:
+✉   :envelope:
+📩   :envelope_with_arrow: (envelope with downwards arrow above)
+📨   :incoming_envelope:
+📧   :e-mail: :email: (e-mail symbol)
+💌   :love_letter:
+📮   :postbox:
+📪   :mailbox_closed: (closed mailbox with lowered flag)
+📫   :mailbox: (closed mailbox with raised flag)
+📬   :mailbox_with_mail: (open mailbox with raised flag)
+📭   :mailbox_with_no_mail: (open mailbox with lowered flag)
+📦   :package:
+📯   :postal_horn:
+📥   :inbox_tray:
+📤   :outbox_tray:
+📜   :scroll:
+📃   :page_with_curl:
+📑   :bookmark_tabs:
+📊   :bar_chart:
+📈   :chart_with_upwards_trend:
+📉   :chart_with_downwards_trend:
+📄   :page_facing_up:
+📅   :date: (calendar)
+📆   :calendar: (tear-off calendar)
+🗓   :calendar_spiral: :spiral_calendar_pad:
+📇   :card_index:
+🗃   :card_box: :card_file_box:
+🗳   :ballot_box: :ballot_box_with_ballot:
+🗄   :file_cabinet:
+📋   :clipboard:
+🗒   :notepad_spiral: :spiral_note_pad:
+📁   :file_folder:
+📂   :open_file_folder:
+🗂   :dividers: :card_index_dividers:
+🗞   :newspaper2: :rolled_up_newspaper: (rolled-up newspaper)
+📰   :newspaper:
+📓   :notebook:
+📕   :closed_book:
+📗   :green_book:
+📘   :blue_book:
+📙   :orange_book:
+📔   :notebook_with_decorative_cover:
+📒   :ledger:
+📚   :books:
+📖   :book: (open book)
+🔗   :link: (link symbol)
+📎   :paperclip:
+🖇   :paperclips: :linked_paperclips:
+✂   :scissors: (black scissors)
+📐   :triangular_ruler:
+📏   :straight_ruler:
+📌   :pushpin:
+📍   :round_pushpin:
+🚩   :triangular_flag_on_post:
+🏳   :flag_white: :waving_white_flag:
+🏴   :flag_black: :waving_black_flag:
+🔐   :closed_lock_with_key:
+🔒   :lock:
+🔓   :unlock: (open lock)
+🔏   :lock_with_ink_pen:
+🖊   :pen_ballpoint: :lower_left_ballpoint_pen:
+🖋   :pen_fountain: :lower_left_fountain_pen:
+✒   :black_nib:
+📝   :pencil: (memo)
+✏   :pencil2: (pencil)
+🖍   :crayon: :lower_left_crayon:
+🖌   :paintbrush: :lower_left_paintbrush:
+🔍   :mag: (left-pointing magnifying glass)
+🔎   :mag_right: (right-pointing magnifying glass)
+❤   :heart: (heavy black heart)
+💛   :yellow_heart:
+💚   :green_heart:
+💙   :blue_heart:
+💜   :purple_heart:
+💔   :broken_heart:
+❣   :heart_exclamation: :heavy_heart_exclamation_mark_ornament:
+💕   :two_hearts:
+💞   :revolving_hearts:
+💓   :heartbeat: (beating heart)
+💗   :heartpulse: (growing heart)
+💖   :sparkling_heart:
+💘   :cupid: (heart with arrow)
+💝   :gift_heart: (heart with ribbon)
+💟   :heart_decoration:
+☮   :peace: :peace_symbol:
+✝   :cross: :latin_cross:
+☪   :star_and_crescent:
+🕉   :om_symbol:
+☸   :wheel_of_dharma:
+✡   :star_of_david:
+🔯   :six_pointed_star: (six pointed star with middle dot)
+🕎   :menorah: (menorah with nine branches)
+☯   :yin_yang:
+☦   :orthodox_cross:
+🛐   :place_of_worship: :worship_symbol:
+⛎   :ophiuchus:
+♈   :aries:
+♉   :taurus:
+♊   :gemini:
+♋   :cancer:
+♌   :leo:
+♍   :virgo:
+♎   :libra:
+♏   :scorpius:
+♐   :sagittarius:
+♑   :capricorn:
+♒   :aquarius:
+♓   :pisces:
+🆔   :id: (squared id)
+⚛   :atom: :atom_symbol:
+🈳   :u7a7a: (squared cjk unified ideograph-7a7a)
+🈹   :u5272: (squared cjk unified ideograph-5272)
+☢   :radioactive: :radioactive_sign:
+☣   :biohazard: :biohazard_sign:
+📴   :mobile_phone_off:
+📳   :vibration_mode:
+🈶   :u6709: (squared cjk unified ideograph-6709)
+🈚   :u7121: (squared cjk unified ideograph-7121)
+🈸   :u7533: (squared cjk unified ideograph-7533)
+🈺   :u55b6: (squared cjk unified ideograph-55b6)
+🈷   :u6708: (squared cjk unified ideograph-6708)
+✴   :eight_pointed_black_star:
+🆚   :vs: (squared vs)
+🉑   :accept: (circled ideograph accept)
+💮   :white_flower:
+🉐   :ideograph_advantage: (circled ideograph advantage)
+㊙   :secret: (circled ideograph secret)
+㊗   :congratulations: (circled ideograph congratulation)
+🈴   :u5408: (squared cjk unified ideograph-5408)
+🈵   :u6e80: (squared cjk unified ideograph-6e80)
+🈲   :u7981: (squared cjk unified ideograph-7981)
+🅰   :a: (negative squared latin capital letter a)
+🅱   :b: (negative squared latin capital letter b)
+🆎   :ab: (negative squared ab)
+🆑   :cl: (squared cl)
+🅾   :o2: (negative squared latin capital letter o)
+🆘   :sos: (squared sos)
+⛔   :no_entry:
+📛   :name_badge:
+🚫   :no_entry_sign:
+❌   :x: (cross mark)
+⭕   :o: (heavy large circle)
+💢   :anger: (anger symbol)
+♨   :hotsprings: (hot springs)
+🚷   :no_pedestrians:
+🚯   :do_not_litter: (do not litter symbol)
+🚳   :no_bicycles:
+🚱   :non-potable_water: (non-potable water symbol)
+🔞   :underage: (no one under eighteen symbol)
+📵   :no_mobile_phones:
+❗   :exclamation: (heavy exclamation mark symbol)
+❕   :grey_exclamation: (white exclamation mark ornament)
+❓   :question: (black question mark ornament)
+❔   :grey_question: (white question mark ornament)
+‼   :bangbang: (double exclamation mark)
+⁉   :interrobang: (exclamation question mark)
+💯   :100: (hundred points symbol)
+🔅   :low_brightness: (low brightness symbol)
+🔆   :high_brightness: (high brightness symbol)
+🔱   :trident: (trident emblem)
+⚜   :fleur-de-lis:
+〽   :part_alternation_mark:
+⚠   :warning: (warning sign)
+🚸   :children_crossing:
+🔰   :beginner: (japanese symbol for beginner)
+♻   :recycle: (black universal recycling symbol)
+🈯   :u6307: (squared cjk unified ideograph-6307)
+💹   :chart: (chart with upwards trend and yen sign)
+❇   :sparkle:
+✳   :eight_spoked_asterisk:
+❎   :negative_squared_cross_mark:
+✅   :white_check_mark: (white heavy check mark)
+💠   :diamond_shape_with_a_dot_inside:
+🌀   :cyclone:
+➿   :loop: (double curly loop)
+🌐   :globe_with_meridians:
+Ⓜ   :m: (circled latin capital letter m)
+🏧   :atm: (automated teller machine)
+🈂   :sa: (squared katakana sa)
+🛂   :passport_control:
+🛃   :customs:
+🛄   :baggage_claim:
+🛅   :left_luggage:
+♿   :wheelchair: (wheelchair symbol)
+🚭   :no_smoking: (no smoking symbol)
+🚾   :wc: (water closet)
+🅿   :parking: (negative squared latin capital letter p)
+🚰   :potable_water: (potable water symbol)
+🚹   :mens: (mens symbol)
+🚺   :womens: (womens symbol)
+🚼   :baby_symbol:
+🚻   :restroom:
+🚮   :put_litter_in_its_place: (put litter in its place symbol)
+🎦   :cinema:
+📶   :signal_strength: (antenna with bars)
+🈁   :koko: (squared katakana koko)
+🆖   :ng: (squared ng)
+🆗   :ok: (squared ok)
+🆙   :up: (squared up with exclamation mark)
+🆒   :cool: (squared cool)
+🆕   :new: (squared new)
+🆓   :free: (squared free)
+0⃣   :zero: (keycap digit zero)
+1⃣   :one: (keycap digit one)
+2⃣   :two: (keycap digit two)
+3⃣   :three: (keycap digit three)
+4⃣   :four: (keycap digit four)
+5⃣   :five: (keycap digit five)
+6⃣   :six: (keycap digit six)
+7⃣   :seven: (keycap digit seven)
+8⃣   :eight: (keycap digit eight)
+9⃣   :nine: (keycap digit nine)
+🔟   :ten: (keycap ten)
+🔢   :1234: (input symbol for numbers)
+▶   :arrow_forward: (black right-pointing triangle)
+⏸   :pause_button: :double_vertical_bar:
+⏯   :play_pause: (black right-pointing double triangle with double vertical bar)
+⏹   :stop_button: (black square for stop)
+⏺   :record_button: (black circle for record)
+⏭   :track_next: :next_track: (black right-pointing double triangle with vertical bar)
+⏮   :track_previous: :previous_track: (black left-pointing double triangle with vertical bar)
+⏩   :fast_forward: (black right-pointing double triangle)
+⏪   :rewind: (black left-pointing double triangle)
+🔀   :twisted_rightwards_arrows:
+🔁   :repeat: (clockwise rightwards and leftwards open circle arrows)
+🔂   :repeat_one: (clockwise rightwards and leftwards open circle arrows with circled one overlay)
+◀   :arrow_backward: (black left-pointing triangle)
+🔼   :arrow_up_small: (up-pointing small red triangle)
+🔽   :arrow_down_small: (down-pointing small red triangle)
+⏫   :arrow_double_up: (black up-pointing double triangle)
+⏬   :arrow_double_down: (black down-pointing double triangle)
+➡   :arrow_right: (black rightwards arrow)
+⬅   :arrow_left: (leftwards black arrow)
+⬆   :arrow_up: (upwards black arrow)
+⬇   :arrow_down: (downwards black arrow)
+↗   :arrow_upper_right: (north east arrow)
+↘   :arrow_lower_right: (south east arrow)
+↙   :arrow_lower_left: (south west arrow)
+↖   :arrow_upper_left: (north west arrow)
+↕   :arrow_up_down: (up down arrow)
+↔   :left_right_arrow:
+🔄   :arrows_counterclockwise: (anticlockwise downwards and upwards open circle arrows)
+↪   :arrow_right_hook: (rightwards arrow with hook)
+↩   :leftwards_arrow_with_hook:
+⤴   :arrow_heading_up: (arrow pointing rightwards then curving upwards)
+⤵   :arrow_heading_down: (arrow pointing rightwards then curving downwards)
+#⃣   :hash: (keycap number sign)
+*⃣   :asterisk: :keycap_asterisk:
+ℹ   :information_source:
+🔤   :abc: (input symbol for latin letters)
+🔡   :abcd: (input symbol for latin small letters)
+🔠   :capital_abcd: (input symbol for latin capital letters)
+🔣   :symbols: (input symbol for symbols)
+🎵   :musical_note:
+🎶   :notes: (multiple musical notes)
+〰   :wavy_dash:
+➰   :curly_loop:
+✔   :heavy_check_mark:
+🔃   :arrows_clockwise: (clockwise downwards and upwards open circle arrows)
+➕   :heavy_plus_sign:
+➖   :heavy_minus_sign:
+➗   :heavy_division_sign:
+✖   :heavy_multiplication_x:
+💲   :heavy_dollar_sign:
+💱   :currency_exchange:
+©   :copyright: (copyright sign)
+®   :registered: (registered sign)
+™   :tm: (trade mark sign)
+🔚   :end: (end with leftwards arrow above)
+🔙   :back: (back with leftwards arrow above)
+🔛   :on: (on with exclamation mark with left right arrow abo)
+🔝   :top: (top with upwards arrow above)
+🔜   :soon: (soon with rightwards arrow above)
+☑   :ballot_box_with_check:
+🔘   :radio_button:
+⚪   :white_circle: (medium white circle)
+⚫   :black_circle: (medium black circle)
+🔴   :red_circle: (large red circle)
+🔵   :large_blue_circle:
+🔸   :small_orange_diamond:
+🔹   :small_blue_diamond:
+🔶   :large_orange_diamond:
+🔷   :large_blue_diamond:
+🔺   :small_red_triangle: (up-pointing red triangle)
+▪   :black_small_square:
+▫   :white_small_square:
+⬛   :black_large_square:
+⬜   :white_large_square:
+🔻   :small_red_triangle_down: (down-pointing red triangle)
+◼   :black_medium_square:
+◻   :white_medium_square:
+◾   :black_medium_small_square:
+◽   :white_medium_small_square:
+🔲   :black_square_button:
+🔳   :white_square_button:
+🔈   :speaker:
+🔉   :sound: (speaker with one sound wave)
+🔊   :loud_sound: (speaker with three sound waves)
+🔇   :mute: (speaker with cancellation stroke)
+📣   :mega: (cheering megaphone)
+📢   :loudspeaker: (public address loudspeaker)
+🔔   :bell:
+🔕   :no_bell: (bell with cancellation stroke)
+🃏   :black_joker: (playing card black joker)
+🀄   :mahjong: (mahjong tile red dragon)
+♠   :spades: (black spade suit)
+♣   :clubs: (black club suit)
+♥   :hearts: (black heart suit)
+♦   :diamonds: (black diamond suit)
+🎴   :flower_playing_cards:
+💭   :thought_balloon:
+🗯   :anger_right: :right_anger_bubble:
+💬   :speech_balloon:
+🕐   :clock1: (clock face one oclock)
+🕑   :clock2: (clock face two oclock)
+🕒   :clock3: (clock face three oclock)
+🕓   :clock4: (clock face four oclock)
+🕔   :clock5: (clock face five oclock)
+🕕   :clock6: (clock face six oclock)
+🕖   :clock7: (clock face seven oclock)
+🕗   :clock8: (clock face eight oclock)
+🕘   :clock9: (clock face nine oclock)
+🕙   :clock10: (clock face ten oclock)
+🕚   :clock11: (clock face eleven oclock)
+🕛   :clock12: (clock face twelve oclock)
+🕜   :clock130: (clock face one-thirty)
+🕝   :clock230: (clock face two-thirty)
+🕞   :clock330: (clock face three-thirty)
+🕟   :clock430: (clock face four-thirty)
+🕠   :clock530: (clock face five-thirty)
+🕡   :clock630: (clock face six-thirty)
+🕢   :clock730: (clock face seven-thirty)
+🕣   :clock830: (clock face eight-thirty)
+🕤   :clock930: (clock face nine-thirty)
+🕥   :clock1030: (clock face ten-thirty)
+🕦   :clock1130: (clock face eleven-thirty)
+🕧   :clock1230: (clock face twelve-thirty)
+👁‍🗨   :eye_in_speech_bubble:
+🇦🇨   :flag_ac: :ac: (ascension)
+🇦🇫   :flag_af: :af: (afghanistan)
+🇦🇱   :flag_al: :al: (albania)
+🇩🇿   :flag_dz: :dz: (algeria)
+🇦🇩   :flag_ad: :ad: (andorra)
+🇦🇴   :flag_ao: :ao: (angola)
+🇦🇮   :flag_ai: :ai: (anguilla)
+🇦🇬   :flag_ag: :ag: (antigua and barbuda)
+🇦🇷   :flag_ar: :ar: (argentina)
+🇦🇲   :flag_am: :am: (armenia)
+🇦🇼   :flag_aw: :aw: (aruba)
+🇦🇺   :flag_au: :au: (australia)
+🇦🇹   :flag_at: :at: (austria)
+🇦🇿   :flag_az: :az: (azerbaijan)
+🇧🇸   :flag_bs: :bs: (the bahamas)
+🇧🇭   :flag_bh: :bh: (bahrain)
+🇧🇩   :flag_bd: :bd: (bangladesh)
+🇧🇧   :flag_bb: :bb: (barbados)
+🇧🇾   :flag_by: :by: (belarus)
+🇧🇪   :flag_be: :be: (belgium)
+🇧🇿   :flag_bz: :bz: (belize)
+🇧🇯   :flag_bj: :bj: (benin)
+🇧🇲   :flag_bm: :bm: (bermuda)
+🇧🇹   :flag_bt: :bt: (bhutan)
+🇧🇴   :flag_bo: :bo: (bolivia)
+🇧🇦   :flag_ba: :ba: (bosnia and herzegovina)
+🇧🇼   :flag_bw: :bw: (botswana)
+🇧🇷   :flag_br: :br: (brazil)
+🇧🇳   :flag_bn: :bn: (brunei)
+🇧🇬   :flag_bg: :bg: (bulgaria)
+🇧🇫   :flag_bf: :bf: (burkina faso)
+🇧🇮   :flag_bi: :bi: (burundi)
+🇨🇻   :flag_cv: :cv: (cape verde)
+🇰🇭   :flag_kh: :kh: (cambodia)
+🇨🇲   :flag_cm: :cm: (cameroon)
+🇨🇦   :flag_ca: :ca: (canada)
+🇰🇾   :flag_ky: :ky: (cayman islands)
+🇨🇫   :flag_cf: :cf: (central african republic)
+🇹🇩   :flag_td: :td: (chad)
+🇨🇱   :flag_cl: :chile:
+🇨🇳   :flag_cn: :cn: (china)
+🇨🇴   :flag_co: :co: (colombia)
+🇰🇲   :flag_km: :km: (the comoros)
+🇨🇬   :flag_cg: :cg: (the republic of the congo)
+🇨🇩   :flag_cd: :congo: (the democratic republic of the congo)
+🇨🇷   :flag_cr: :cr: (costa rica)
+🇭🇷   :flag_hr: :hr: (croatia)
+🇨🇺   :flag_cu: :cu: (cuba)
+🇨🇾   :flag_cy: :cy: (cyprus)
+🇨🇿   :flag_cz: :cz: (the czech republic)
+🇩🇰   :flag_dk: :dk: (denmark)
+🇩🇯   :flag_dj: :dj: (djibouti)
+🇩🇲   :flag_dm: :dm: (dominica)
+🇩🇴   :flag_do: :do: (the dominican republic)
+🇪🇨   :flag_ec: :ec: (ecuador)
+🇪🇬   :flag_eg: :eg: (egypt)
+🇸🇻   :flag_sv: :sv: (el salvador)
+🇬🇶   :flag_gq: :gq: (equatorial guinea)
+🇪🇷   :flag_er: :er: (eritrea)
+🇪🇪   :flag_ee: :ee: (estonia)
+🇪🇹   :flag_et: :et: (ethiopia)
+🇫🇰   :flag_fk: :fk: (falkland islands)
+🇫🇴   :flag_fo: :fo: (faroe islands)
+🇫🇯   :flag_fj: :fj: (fiji)
+🇫🇮   :flag_fi: :fi: (finland)
+🇫🇷   :flag_fr: :fr: (france)
+🇵🇫   :flag_pf: :pf: (french polynesia)
+🇬🇦   :flag_ga: :ga: (gabon)
+🇬🇲   :flag_gm: :gm: (the gambia)
+🇬🇪   :flag_ge: :ge: (georgia)
+🇩🇪   :flag_de: :de: (germany)
+🇬🇭   :flag_gh: :gh: (ghana)
+🇬🇮   :flag_gi: :gi: (gibraltar)
+🇬🇷   :flag_gr: :gr: (greece)
+🇬🇱   :flag_gl: :gl: (greenland)
+🇬🇩   :flag_gd: :gd: (grenada)
+🇬🇺   :flag_gu: :gu: (guam)
+🇬🇹   :flag_gt: :gt: (guatemala)
+🇬🇳   :flag_gn: :gn: (guinea)
+🇬🇼   :flag_gw: :gw: (guinea-bissau)
+🇬🇾   :flag_gy: :gy: (guyana)
+🇭🇹   :flag_ht: :ht: (haiti)
+🇭🇳   :flag_hn: :hn: (honduras)
+🇭🇰   :flag_hk: :hk: (hong kong)
+🇭🇺   :flag_hu: :hu: (hungary)
+🇮🇸   :flag_is: :is: (iceland)
+🇮🇳   :flag_in: :in: (india)
+🇮🇩   :flag_id: :indonesia:
+🇮🇷   :flag_ir: :ir: (iran)
+🇮🇶   :flag_iq: :iq: (iraq)
+🇮🇪   :flag_ie: :ie: (ireland)
+🇮🇱   :flag_il: :il: (israel)
+🇮🇹   :flag_it: :it: (italy)
+🇨🇮   :flag_ci: :ci: (côte d’ivoire)
+🇯🇲   :flag_jm: :jm: (jamaica)
+🇯🇵   :flag_jp: :jp: (japan)
+🇯🇪   :flag_je: :je: (jersey)
+🇯🇴   :flag_jo: :jo: (jordan)
+🇰🇿   :flag_kz: :kz: (kazakhstan)
+🇰🇪   :flag_ke: :ke: (kenya)
+🇰🇮   :flag_ki: :ki: (kiribati)
+🇽🇰   :flag_xk: :xk: (kosovo)
+🇰🇼   :flag_kw: :kw: (kuwait)
+🇰🇬   :flag_kg: :kg: (kyrgyzstan)
+🇱🇦   :flag_la: :la: (laos)
+🇱🇻   :flag_lv: :lv: (latvia)
+🇱🇧   :flag_lb: :lb: (lebanon)
+🇱🇸   :flag_ls: :ls: (lesotho)
+🇱🇷   :flag_lr: :lr: (liberia)
+🇱🇾   :flag_ly: :ly: (libya)
+🇱🇮   :flag_li: :li: (liechtenstein)
+🇱🇹   :flag_lt: :lt: (lithuania)
+🇱🇺   :flag_lu: :lu: (luxembourg)
+🇲🇴   :flag_mo: :mo: (macau)
+🇲🇰   :flag_mk: :mk: (macedonia)
+🇲🇬   :flag_mg: :mg: (madagascar)
+🇲🇼   :flag_mw: :mw: (malawi)
+🇲🇾   :flag_my: :my: (malaysia)
+🇲🇻   :flag_mv: :mv: (maldives)
+🇲🇱   :flag_ml: :ml: (mali)
+🇲🇹   :flag_mt: :mt: (malta)
+🇲🇭   :flag_mh: :mh: (the marshall islands)
+🇲🇷   :flag_mr: :mr: (mauritania)
+🇲🇺   :flag_mu: :mu: (mauritius)
+🇲🇽   :flag_mx: :mx: (mexico)
+🇫🇲   :flag_fm: :fm: (micronesia)
+🇲🇩   :flag_md: :md: (moldova)
+🇲🇨   :flag_mc: :mc: (monaco)
+🇲🇳   :flag_mn: :mn: (mongolia)
+🇲🇪   :flag_me: :me: (montenegro)
+🇲🇸   :flag_ms: :ms: (montserrat)
+🇲🇦   :flag_ma: :ma: (morocco)
+🇲🇿   :flag_mz: :mz: (mozambique)
+🇲🇲   :flag_mm: :mm: (myanmar)
+🇳🇦   :flag_na: :na: (namibia)
+🇳🇷   :flag_nr: :nr: (nauru)
+🇳🇵   :flag_np: :np: (nepal)
+🇳🇱   :flag_nl: :nl: (the netherlands)
+🇳🇨   :flag_nc: :nc: (new caledonia)
+🇳🇿   :flag_nz: :nz: (new zealand)
+🇳🇮   :flag_ni: :ni: (nicaragua)
+🇳🇪   :flag_ne: :ne: (niger)
+🇳🇬   :flag_ng: :nigeria:
+🇳🇺   :flag_nu: :nu: (niue)
+🇰🇵   :flag_kp: :kp: (north korea)
+🇳🇴   :flag_no: :no: (norway)
+🇴🇲   :flag_om: :om: (oman)
+🇵🇰   :flag_pk: :pk: (pakistan)
+🇵🇼   :flag_pw: :pw: (palau)
+🇵🇸   :flag_ps: :ps: (palestinian authority)
+🇵🇦   :flag_pa: :pa: (panama)
+🇵🇬   :flag_pg: :pg: (papua new guinea)
+🇵🇾   :flag_py: :py: (paraguay)
+🇵🇪   :flag_pe: :pe: (peru)
+🇵🇭   :flag_ph: :ph: (the philippines)
+🇵🇱   :flag_pl: :pl: (poland)
+🇵🇹   :flag_pt: :pt: (portugal)
+🇵🇷   :flag_pr: :pr: (puerto rico)
+🇶🇦   :flag_qa: :qa: (qatar)
+🇷🇴   :flag_ro: :ro: (romania)
+🇷🇺   :flag_ru: :ru: (russia)
+🇷🇼   :flag_rw: :rw: (rwanda)
+🇸🇭   :flag_sh: :sh: (saint helena)
+🇰🇳   :flag_kn: :kn: (saint kitts and nevis)
+🇱🇨   :flag_lc: :lc: (saint lucia)
+🇻🇨   :flag_vc: :vc: (saint vincent and the grenadines)
+🇼🇸   :flag_ws: :ws: (samoa)
+🇸🇲   :flag_sm: :sm: (san marino)
+🇸🇹   :flag_st: :st: (são tomé and príncipe)
+🇸🇦   :flag_sa: :saudiarabia: :saudi: (saudi arabia)
+🇸🇳   :flag_sn: :sn: (senegal)
+🇷🇸   :flag_rs: :rs: (serbia)
+🇸🇨   :flag_sc: :sc: (the seychelles)
+🇸🇱   :flag_sl: :sl: (sierra leone)
+🇸🇬   :flag_sg: :sg: (singapore)
+🇸🇰   :flag_sk: :sk: (slovakia)
+🇸🇮   :flag_si: :si: (slovenia)
+🇸🇧   :flag_sb: :sb: (the solomon islands)
+🇸🇴   :flag_so: :so: (somalia)
+🇿🇦   :flag_za: :za: (south africa)
+🇰🇷   :flag_kr: :kr: (korea)
+🇪🇸   :flag_es: :es: (spain)
+🇱🇰   :flag_lk: :lk: (sri lanka)
+🇸🇩   :flag_sd: :sd: (sudan)
+🇸🇷   :flag_sr: :sr: (suriname)
+🇸🇿   :flag_sz: :sz: (swaziland)
+🇸🇪   :flag_se: :se: (sweden)
+🇨🇭   :flag_ch: :ch: (switzerland)
+🇸🇾   :flag_sy: :sy: (syria)
+🇹🇼   :flag_tw: :tw: (the republic of china)
+🇹🇯   :flag_tj: :tj: (tajikistan)
+🇹🇿   :flag_tz: :tz: (tanzania)
+🇹🇭   :flag_th: :th: (thailand)
+🇹🇱   :flag_tl: :tl: (timor-leste)
+🇹🇬   :flag_tg: :tg: (togo)
+🇹🇴   :flag_to: :to: (tonga)
+🇹🇹   :flag_tt: :tt: (trinidad and tobago)
+🇹🇳   :flag_tn: :tn: (tunisia)
+🇹🇷   :flag_tr: :tr: (turkey)
+🇹🇲   :flag_tm: :turkmenistan:
+🇹🇻   :flag_tv: :tuvalu:
+🇺🇬   :flag_ug: :ug: (uganda)
+🇺🇦   :flag_ua: :ua: (ukraine)
+🇦🇪   :flag_ae: :ae: (the united arab emirates)
+🇬🇧   :flag_gb: :gb: (great britain)
+🇺🇸   :flag_us: :us: (united states)
+🇻🇮   :flag_vi: :vi: (u.s. virgin islands)
+🇺🇾   :flag_uy: :uy: (uruguay)
+🇺🇿   :flag_uz: :uz: (uzbekistan)
+🇻🇺   :flag_vu: :vu: (vanuatu)
+🇻🇦   :flag_va: :va: (the vatican city)
+🇻🇪   :flag_ve: :ve: (venezuela)
+🇻🇳   :flag_vn: :vn: (vietnam)
+🇼🇫   :flag_wf: :wf: (wallis and futuna)
+🇪🇭   :flag_eh: :eh: (western sahara)
+🇾🇪   :flag_ye: :ye: (yemen)
+🇿🇲   :flag_zm: :zm: (zambia)
+🇿🇼   :flag_zw: :zw: (zimbabwe)
+🇷🇪   :flag_re: :re: (réunion)
+🇦🇽   :flag_ax: :ax: (åland islands)
+🇹🇦   :flag_ta: :ta: (tristan da cunha)
+🇮🇴   :flag_io: :io: (british indian ocean territory)
+🇧🇶   :flag_bq: :bq: (caribbean netherlands)
+🇨🇽   :flag_cx: :cx: (christmas island)
+🇨🇨   :flag_cc: :cc: (cocos (keeling) islands)
+🇬🇬   :flag_gg: :gg: (guernsey)
+🇮🇲   :flag_im: :im: (isle of man)
+🇾🇹   :flag_yt: :yt: (mayotte)
+🇳🇫   :flag_nf: :nf: (norfolk island)
+🇵🇳   :flag_pn: :pn: (pitcairn)
+🇧🇱   :flag_bl: :bl: (saint barthélemy)
+🇵🇲   :flag_pm: :pm: (saint pierre and miquelon)
+🇬🇸   :flag_gs: :gs: (south georgia)
+🇹🇰   :flag_tk: :tk: (tokelau)
+🇧🇻   :flag_bv: :bv: (bouvet island)
+🇭🇲   :flag_hm: :hm: (heard island and mcdonald islands)
+🇸🇯   :flag_sj: :sj: (svalbard and jan mayen)
+🇺🇲   :flag_um: :um: (united states minor outlying islands)
+🇮🇨   :flag_ic: :ic: (canary islands)
+🇪🇦   :flag_ea: :ea: (ceuta, melilla)
+🇨🇵   :flag_cp: :cp: (clipperton island)
+🇩🇬   :flag_dg: :dg: (diego garcia)
+🇦🇸   :flag_as: :as: (american samoa)
+🇦🇶   :flag_aq: :aq: (antarctica)
+🇻🇬   :flag_vg: :vg: (british virgin islands)
+🇨🇰   :flag_ck: :ck: (cook islands)
+🇨🇼   :flag_cw: :cw: (curaçao)
+🇪🇺   :flag_eu: :eu: (european union)
+🇬🇫   :flag_gf: :gf: (french guiana)
+🇹🇫   :flag_tf: :tf: (french southern territories)
+🇬🇵   :flag_gp: :gp: (guadeloupe)
+🇲🇶   :flag_mq: :mq: (martinique)
+🇲🇵   :flag_mp: :mp: (northern mariana islands)
+🇸🇽   :flag_sx: :sx: (sint maarten)
+🇸🇸   :flag_ss: :ss: (south sudan)
+🇹🇨   :flag_tc: :tc: (turks and caicos islands)
+🇲🇫   :flag_mf: :mf: (saint martin)
+🙌🏻   :raised_hands_tone1: (person raising both hands in celebration tone 1)
+🙌🏼   :raised_hands_tone2: (person raising both hands in celebration tone 2)
+🙌🏽   :raised_hands_tone3: (person raising both hands in celebration tone 3)
+🙌🏾   :raised_hands_tone4: (person raising both hands in celebration tone 4)
+🙌🏿   :raised_hands_tone5: (person raising both hands in celebration tone 5)
+👏🏻   :clap_tone1: (clapping hands sign tone 1)
+👏🏼   :clap_tone2: (clapping hands sign tone 2)
+👏🏽   :clap_tone3: (clapping hands sign tone 3)
+👏🏾   :clap_tone4: (clapping hands sign tone 4)
+👏🏿   :clap_tone5: (clapping hands sign tone 5)
+👋🏻   :wave_tone1: (waving hand sign tone 1)
+👋🏼   :wave_tone2: (waving hand sign tone 2)
+👋🏽   :wave_tone3: (waving hand sign tone 3)
+👋🏾   :wave_tone4: (waving hand sign tone 4)
+👋🏿   :wave_tone5: (waving hand sign tone 5)
+👍🏻   :thumbsup_tone1: :+1_tone1: :thumbup_tone1: (thumbs up sign tone 1)
+👍🏼   :thumbsup_tone2: :+1_tone2: :thumbup_tone2: (thumbs up sign tone 2)
+👍🏽   :thumbsup_tone3: :+1_tone3: :thumbup_tone3: (thumbs up sign tone 3)
+👍🏾   :thumbsup_tone4: :+1_tone4: :thumbup_tone4: (thumbs up sign tone 4)
+👍🏿   :thumbsup_tone5: :+1_tone5: :thumbup_tone5: (thumbs up sign tone 5)
+👎🏻   :thumbsdown_tone1: :-1_tone1: :thumbdown_tone1: (thumbs down sign tone 1)
+👎🏼   :thumbsdown_tone2: :-1_tone2: :thumbdown_tone2: (thumbs down sign tone 2)
+👎🏽   :thumbsdown_tone3: :-1_tone3: :thumbdown_tone3: (thumbs down sign tone 3)
+👎🏾   :thumbsdown_tone4: :-1_tone4: :thumbdown_tone4: (thumbs down sign tone 4)
+👎🏿   :thumbsdown_tone5: :-1_tone5: :thumbdown_tone5: (thumbs down sign tone 5)
+👊🏻   :punch_tone1: (fisted hand sign tone 1)
+👊🏼   :punch_tone2: (fisted hand sign tone 2)
+👊🏽   :punch_tone3: (fisted hand sign tone 3)
+👊🏾   :punch_tone4: (fisted hand sign tone 4)
+👊🏿   :punch_tone5: (fisted hand sign tone 5)
+✊🏻   :fist_tone1: (raised fist tone 1)
+✊🏼   :fist_tone2: (raised fist tone 2)
+✊🏽   :fist_tone3: (raised fist tone 3)
+✊🏾   :fist_tone4: (raised fist tone 4)
+✊🏿   :fist_tone5: (raised fist tone 5)
+✌🏻   :v_tone1: (victory hand tone 1)
+✌🏼   :v_tone2: (victory hand tone 2)
+✌🏽   :v_tone3: (victory hand tone 3)
+✌🏾   :v_tone4: (victory hand tone 4)
+✌🏿   :v_tone5: (victory hand tone 5)
+👌🏻   :ok_hand_tone1: (ok hand sign tone 1)
+👌🏼   :ok_hand_tone2: (ok hand sign tone 2)
+👌🏽   :ok_hand_tone3: (ok hand sign tone 3)
+👌🏾   :ok_hand_tone4: (ok hand sign tone 4)
+👌🏿   :ok_hand_tone5: (ok hand sign tone 5)
+✋🏻   :raised_hand_tone1: (raised hand tone 1)
+✋🏼   :raised_hand_tone2: (raised hand tone 2)
+✋🏽   :raised_hand_tone3: (raised hand tone 3)
+✋🏾   :raised_hand_tone4: (raised hand tone 4)
+✋🏿   :raised_hand_tone5: (raised hand tone 5)
+👐🏻   :open_hands_tone1: (open hands sign tone 1)
+👐🏼   :open_hands_tone2: (open hands sign tone 2)
+👐🏽   :open_hands_tone3: (open hands sign tone 3)
+👐🏾   :open_hands_tone4: (open hands sign tone 4)
+👐🏿   :open_hands_tone5: (open hands sign tone 5)
+💪🏻   :muscle_tone1: (flexed biceps tone 1)
+💪🏼   :muscle_tone2: (flexed biceps tone 2)
+💪🏽   :muscle_tone3: (flexed biceps tone 3)
+💪🏾   :muscle_tone4: (flexed biceps tone 4)
+💪🏿   :muscle_tone5: (flexed biceps tone 5)
+🙏🏻   :pray_tone1: (person with folded hands tone 1)
+🙏🏼   :pray_tone2: (person with folded hands tone 2)
+🙏🏽   :pray_tone3: (person with folded hands tone 3)
+🙏🏾   :pray_tone4: (person with folded hands tone 4)
+🙏🏿   :pray_tone5: (person with folded hands tone 5)
+☝🏻   :point_up_tone1: (white up pointing index tone 1)
+☝🏼   :point_up_tone2: (white up pointing index tone 2)
+☝🏽   :point_up_tone3: (white up pointing index tone 3)
+☝🏾   :point_up_tone4: (white up pointing index tone 4)
+☝🏿   :point_up_tone5: (white up pointing index tone 5)
+👆🏻   :point_up_2_tone1: (white up pointing backhand index tone 1)
+👆🏼   :point_up_2_tone2: (white up pointing backhand index tone 2)
+👆🏽   :point_up_2_tone3: (white up pointing backhand index tone 3)
+👆🏾   :point_up_2_tone4: (white up pointing backhand index tone 4)
+👆🏿   :point_up_2_tone5: (white up pointing backhand index tone 5)
+👇🏻   :point_down_tone1: (white down pointing backhand index tone 1)
+👇🏼   :point_down_tone2: (white down pointing backhand index tone 2)
+👇🏽   :point_down_tone3: (white down pointing backhand index tone 3)
+👇🏾   :point_down_tone4: (white down pointing backhand index tone 4)
+👇🏿   :point_down_tone5: (white down pointing backhand index tone 5)
+👈🏻   :point_left_tone1: (white left pointing backhand index tone 1)
+👈🏼   :point_left_tone2: (white left pointing backhand index tone 2)
+👈🏽   :point_left_tone3: (white left pointing backhand index tone 3)
+👈🏾   :point_left_tone4: (white left pointing backhand index tone 4)
+👈🏿   :point_left_tone5: (white left pointing backhand index tone 5)
+👉🏻   :point_right_tone1: (white right pointing backhand index tone 1)
+👉🏼   :point_right_tone2: (white right pointing backhand index tone 2)
+👉🏽   :point_right_tone3: (white right pointing backhand index tone 3)
+👉🏾   :point_right_tone4: (white right pointing backhand index tone 4)
+👉🏿   :point_right_tone5: (white right pointing backhand index tone 5)
+🖕🏻   :middle_finger_tone1: :reversed_hand_with_middle_finger_extended_tone1: (reversed hand with middle finger extended tone 1)
+🖕🏼   :middle_finger_tone2: :reversed_hand_with_middle_finger_extended_tone2: (reversed hand with middle finger extended tone 2)
+🖕🏽   :middle_finger_tone3: :reversed_hand_with_middle_finger_extended_tone3: (reversed hand with middle finger extended tone 3)
+🖕🏾   :middle_finger_tone4: :reversed_hand_with_middle_finger_extended_tone4: (reversed hand with middle finger extended tone 4)
+🖕🏿   :middle_finger_tone5: :reversed_hand_with_middle_finger_extended_tone5: (reversed hand with middle finger extended tone 5)
+🖐🏻   :hand_splayed_tone1: :raised_hand_with_fingers_splayed_tone1: (raised hand with fingers splayed tone 1)
+🖐🏼   :hand_splayed_tone2: :raised_hand_with_fingers_splayed_tone2: (raised hand with fingers splayed tone 2)
+🖐🏽   :hand_splayed_tone3: :raised_hand_with_fingers_splayed_tone3: (raised hand with fingers splayed tone 3)
+🖐🏾   :hand_splayed_tone4: :raised_hand_with_fingers_splayed_tone4: (raised hand with fingers splayed tone 4)
+🖐🏿   :hand_splayed_tone5: :raised_hand_with_fingers_splayed_tone5: (raised hand with fingers splayed tone 5)
+🤘🏻   :metal_tone1: :sign_of_the_horns_tone1: (sign of the horns tone 1)
+🤘🏼   :metal_tone2: :sign_of_the_horns_tone2: (sign of the horns tone 2)
+🤘🏽   :metal_tone3: :sign_of_the_horns_tone3: (sign of the horns tone 3)
+🤘🏾   :metal_tone4: :sign_of_the_horns_tone4: (sign of the horns tone 4)
+🤘🏿   :metal_tone5: :sign_of_the_horns_tone5: (sign of the horns tone 5)
+🖖🏻   :vulcan_tone1: :raised_hand_with_part_between_middle_and_ring_fingers_tone1: (raised hand with part between middle and ring fingers tone 1)
+🖖🏼   :vulcan_tone2: :raised_hand_with_part_between_middle_and_ring_fingers_tone2: (raised hand with part between middle and ring fingers tone 2)
+🖖🏽   :vulcan_tone3: :raised_hand_with_part_between_middle_and_ring_fingers_tone3: (raised hand with part between middle and ring fingers tone 3)
+🖖🏾   :vulcan_tone4: :raised_hand_with_part_between_middle_and_ring_fingers_tone4: (raised hand with part between middle and ring fingers tone 4)
+🖖🏿   :vulcan_tone5: :raised_hand_with_part_between_middle_and_ring_fingers_tone5: (raised hand with part between middle and ring fingers tone 5)
+✍🏻   :writing_hand_tone1: (writing hand tone 1)
+✍🏼   :writing_hand_tone2: (writing hand tone 2)
+✍🏽   :writing_hand_tone3: (writing hand tone 3)
+✍🏾   :writing_hand_tone4: (writing hand tone 4)
+✍🏿   :writing_hand_tone5: (writing hand tone 5)
+💅🏻   :nail_care_tone1: (nail polish tone 1)
+💅🏼   :nail_care_tone2: (nail polish tone 2)
+💅🏽   :nail_care_tone3: (nail polish tone 3)
+💅🏾   :nail_care_tone4: (nail polish tone 4)
+💅🏿   :nail_care_tone5: (nail polish tone 5)
+👂🏻   :ear_tone1: (ear tone 1)
+👂🏼   :ear_tone2: (ear tone 2)
+👂🏽   :ear_tone3: (ear tone 3)
+👂🏾   :ear_tone4: (ear tone 4)
+👂🏿   :ear_tone5: (ear tone 5)
+👃🏻   :nose_tone1: (nose tone 1)
+👃🏼   :nose_tone2: (nose tone 2)
+👃🏽   :nose_tone3: (nose tone 3)
+👃🏾   :nose_tone4: (nose tone 4)
+👃🏿   :nose_tone5: (nose tone 5)
+👶🏻   :baby_tone1: (baby tone 1)
+👶🏼   :baby_tone2: (baby tone 2)
+👶🏽   :baby_tone3: (baby tone 3)
+👶🏾   :baby_tone4: (baby tone 4)
+👶🏿   :baby_tone5: (baby tone 5)
+👦🏻   :boy_tone1: (boy tone 1)
+👦🏼   :boy_tone2: (boy tone 2)
+👦🏽   :boy_tone3: (boy tone 3)
+👦🏾   :boy_tone4: (boy tone 4)
+👦🏿   :boy_tone5: (boy tone 5)
+👧🏻   :girl_tone1: (girl tone 1)
+👧🏼   :girl_tone2: (girl tone 2)
+👧🏽   :girl_tone3: (girl tone 3)
+👧🏾   :girl_tone4: (girl tone 4)
+👧🏿   :girl_tone5: (girl tone 5)
+👨🏻   :man_tone1: (man tone 1)
+👨🏼   :man_tone2: (man tone 2)
+👨🏽   :man_tone3: (man tone 3)
+👨🏾   :man_tone4: (man tone 4)
+👨🏿   :man_tone5: (man tone 5)
+👩🏻   :woman_tone1: (woman tone 1)
+👩🏼   :woman_tone2: (woman tone 2)
+👩🏽   :woman_tone3: (woman tone 3)
+👩🏾   :woman_tone4: (woman tone 4)
+👩🏿   :woman_tone5: (woman tone 5)
+👱🏻   :person_with_blond_hair_tone1: (person with blond hair tone 1)
+👱🏼   :person_with_blond_hair_tone2: (person with blond hair tone 2)
+👱🏽   :person_with_blond_hair_tone3: (person with blond hair tone 3)
+👱🏾   :person_with_blond_hair_tone4: (person with blond hair tone 4)
+👱🏿   :person_with_blond_hair_tone5: (person with blond hair tone 5)
+👴🏻   :older_man_tone1: (older man tone 1)
+👴🏼   :older_man_tone2: (older man tone 2)
+👴🏽   :older_man_tone3: (older man tone 3)
+👴🏾   :older_man_tone4: (older man tone 4)
+👴🏿   :older_man_tone5: (older man tone 5)
+👵🏻   :older_woman_tone1: :grandma_tone1: (older woman tone 1)
+👵🏼   :older_woman_tone2: :grandma_tone2: (older woman tone 2)
+👵🏽   :older_woman_tone3: :grandma_tone3: (older woman tone 3)
+👵🏾   :older_woman_tone4: :grandma_tone4: (older woman tone 4)
+👵🏿   :older_woman_tone5: :grandma_tone5: (older woman tone 5)
+👲🏻   :man_with_gua_pi_mao_tone1: (man with gua pi mao tone 1)
+👲🏼   :man_with_gua_pi_mao_tone2: (man with gua pi mao tone 2)
+👲🏽   :man_with_gua_pi_mao_tone3: (man with gua pi mao tone 3)
+👲🏾   :man_with_gua_pi_mao_tone4: (man with gua pi mao tone 4)
+👲🏿   :man_with_gua_pi_mao_tone5: (man with gua pi mao tone 5)
+👳🏻   :man_with_turban_tone1: (man with turban tone 1)
+👳🏼   :man_with_turban_tone2: (man with turban tone 2)
+👳🏽   :man_with_turban_tone3: (man with turban tone 3)
+👳🏾   :man_with_turban_tone4: (man with turban tone 4)
+👳🏿   :man_with_turban_tone5: (man with turban tone 5)
+👮🏻   :cop_tone1: (police officer tone 1)
+👮🏼   :cop_tone2: (police officer tone 2)
+👮🏽   :cop_tone3: (police officer tone 3)
+👮🏾   :cop_tone4: (police officer tone 4)
+👮🏿   :cop_tone5: (police officer tone 5)
+👷🏻   :construction_worker_tone1: (construction worker tone 1)
+👷🏼   :construction_worker_tone2: (construction worker tone 2)
+👷🏽   :construction_worker_tone3: (construction worker tone 3)
+👷🏾   :construction_worker_tone4: (construction worker tone 4)
+👷🏿   :construction_worker_tone5: (construction worker tone 5)
+💂🏻   :guardsman_tone1: (guardsman tone 1)
+💂🏼   :guardsman_tone2: (guardsman tone 2)
+💂🏽   :guardsman_tone3: (guardsman tone 3)
+💂🏾   :guardsman_tone4: (guardsman tone 4)
+💂🏿   :guardsman_tone5: (guardsman tone 5)
+🎅🏻   :santa_tone1: (father christmas tone 1)
+🎅🏼   :santa_tone2: (father christmas tone 2)
+🎅🏽   :santa_tone3: (father christmas tone 3)
+🎅🏾   :santa_tone4: (father christmas tone 4)
+🎅🏿   :santa_tone5: (father christmas tone 5)
+👼🏻   :angel_tone1: (baby angel tone 1)
+👼🏼   :angel_tone2: (baby angel tone 2)
+👼🏽   :angel_tone3: (baby angel tone 3)
+👼🏾   :angel_tone4: (baby angel tone 4)
+👼🏿   :angel_tone5: (baby angel tone 5)
+👸🏻   :princess_tone1: (princess tone 1)
+👸🏼   :princess_tone2: (princess tone 2)
+👸🏽   :princess_tone3: (princess tone 3)
+👸🏾   :princess_tone4: (princess tone 4)
+👸🏿   :princess_tone5: (princess tone 5)
+👰🏻   :bride_with_veil_tone1: (bride with veil tone 1)
+👰🏼   :bride_with_veil_tone2: (bride with veil tone 2)
+👰🏽   :bride_with_veil_tone3: (bride with veil tone 3)
+👰🏾   :bride_with_veil_tone4: (bride with veil tone 4)
+👰🏿   :bride_with_veil_tone5: (bride with veil tone 5)
+🚶🏻   :walking_tone1: (pedestrian tone 1)
+🚶🏼   :walking_tone2: (pedestrian tone 2)
+🚶🏽   :walking_tone3: (pedestrian tone 3)
+🚶🏾   :walking_tone4: (pedestrian tone 4)
+🚶🏿   :walking_tone5: (pedestrian tone 5)
+🏃🏻   :runner_tone1: (runner tone 1)
+🏃🏼   :runner_tone2: (runner tone 2)
+🏃🏽   :runner_tone3: (runner tone 3)
+🏃🏾   :runner_tone4: (runner tone 4)
+🏃🏿   :runner_tone5: (runner tone 5)
+💃🏻   :dancer_tone1: (dancer tone 1)
+💃🏼   :dancer_tone2: (dancer tone 2)
+💃🏽   :dancer_tone3: (dancer tone 3)
+💃🏾   :dancer_tone4: (dancer tone 4)
+💃🏿   :dancer_tone5: (dancer tone 5)
+🙇🏻   :bow_tone1: (person bowing deeply tone 1)
+🙇🏼   :bow_tone2: (person bowing deeply tone 2)
+🙇🏽   :bow_tone3: (person bowing deeply tone 3)
+🙇🏾   :bow_tone4: (person bowing deeply tone 4)
+🙇🏿   :bow_tone5: (person bowing deeply tone 5)
+💁🏻   :information_desk_person_tone1: (information desk person tone 1)
+💁🏼   :information_desk_person_tone2: (information desk person tone 2)
+💁🏽   :information_desk_person_tone3: (information desk person tone 3)
+💁🏾   :information_desk_person_tone4: (information desk person tone 4)
+💁🏿   :information_desk_person_tone5: (information desk person tone 5)
+🙅🏻   :no_good_tone1: (face with no good gesture tone 1)
+🙅🏼   :no_good_tone2: (face with no good gesture tone 2)
+🙅🏽   :no_good_tone3: (face with no good gesture tone 3)
+🙅🏾   :no_good_tone4: (face with no good gesture tone 4)
+🙅🏿   :no_good_tone5: (face with no good gesture tone 5)
+🙆🏻   :ok_woman_tone1: (face with ok gesture tone1)
+🙆🏼   :ok_woman_tone2: (face with ok gesture tone2)
+🙆🏽   :ok_woman_tone3: (face with ok gesture tone3)
+🙆🏾   :ok_woman_tone4: (face with ok gesture tone4)
+🙆🏿   :ok_woman_tone5: (face with ok gesture tone5)
+🙋🏻   :raising_hand_tone1: (happy person raising one hand tone1)
+🙋🏼   :raising_hand_tone2: (happy person raising one hand tone2)
+🙋🏽   :raising_hand_tone3: (happy person raising one hand tone3)
+🙋🏾   :raising_hand_tone4: (happy person raising one hand tone4)
+🙋🏿   :raising_hand_tone5: (happy person raising one hand tone5)
+🙎🏻   :person_with_pouting_face_tone1:
+🙎🏼   :person_with_pouting_face_tone2:
+🙎🏽   :person_with_pouting_face_tone3:
+🙎🏾   :person_with_pouting_face_tone4:
+🙎🏿   :person_with_pouting_face_tone5:
+🙍🏻   :person_frowning_tone1: (person frowning tone 1)
+🙍🏼   :person_frowning_tone2: (person frowning tone 2)
+🙍🏽   :person_frowning_tone3: (person frowning tone 3)
+🙍🏾   :person_frowning_tone4: (person frowning tone 4)
+🙍🏿   :person_frowning_tone5: (person frowning tone 5)
+💇🏻   :haircut_tone1: (haircut tone 1)
+💇🏼   :haircut_tone2: (haircut tone 2)
+💇🏽   :haircut_tone3: (haircut tone 3)
+💇🏾   :haircut_tone4: (haircut tone 4)
+💇🏿   :haircut_tone5: (haircut tone 5)
+💆🏻   :massage_tone1: (face massage tone 1)
+💆🏼   :massage_tone2: (face massage tone 2)
+💆🏽   :massage_tone3: (face massage tone 3)
+💆🏾   :massage_tone4: (face massage tone 4)
+💆🏿   :massage_tone5: (face massage tone 5)
+🚣🏻   :rowboat_tone1: (rowboat tone 1)
+🚣🏼   :rowboat_tone2: (rowboat tone 2)
+🚣🏽   :rowboat_tone3: (rowboat tone 3)
+🚣🏾   :rowboat_tone4: (rowboat tone 4)
+🚣🏿   :rowboat_tone5: (rowboat tone 5)
+🏊🏻   :swimmer_tone1: (swimmer tone 1)
+🏊🏼   :swimmer_tone2: (swimmer tone 2)
+🏊🏽   :swimmer_tone3: (swimmer tone 3)
+🏊🏾   :swimmer_tone4: (swimmer tone 4)
+🏊🏿   :swimmer_tone5: (swimmer tone 5)
+🏄🏻   :surfer_tone1: (surfer tone 1)
+🏄🏼   :surfer_tone2: (surfer tone 2)
+🏄🏽   :surfer_tone3: (surfer tone 3)
+🏄🏾   :surfer_tone4: (surfer tone 4)
+🏄🏿   :surfer_tone5: (surfer tone 5)
+🛀🏻   :bath_tone1: (bath tone 1)
+🛀🏼   :bath_tone2: (bath tone 2)
+🛀🏽   :bath_tone3: (bath tone 3)
+🛀🏾   :bath_tone4: (bath tone 4)
+🛀🏿   :bath_tone5: (bath tone 5)
+⛹🏻   :basketball_player_tone1: :person_with_ball_tone1: (person with ball tone 1)
+⛹🏼   :basketball_player_tone2: :person_with_ball_tone2: (person with ball tone 2)
+⛹🏽   :basketball_player_tone3: :person_with_ball_tone3: (person with ball tone 3)
+⛹🏾   :basketball_player_tone4: :person_with_ball_tone4: (person with ball tone 4)
+⛹🏿   :basketball_player_tone5: :person_with_ball_tone5: (person with ball tone 5)
+🏋🏻   :lifter_tone1: :weight_lifter_tone1: (weight lifter tone 1)
+🏋🏼   :lifter_tone2: :weight_lifter_tone2: (weight lifter tone 2)
+🏋🏽   :lifter_tone3: :weight_lifter_tone3: (weight lifter tone 3)
+🏋🏾   :lifter_tone4: :weight_lifter_tone4: (weight lifter tone 4)
+🏋🏿   :lifter_tone5: :weight_lifter_tone5: (weight lifter tone 5)
+🚴🏻   :bicyclist_tone1: (bicyclist tone 1)
+🚴🏼   :bicyclist_tone2: (bicyclist tone 2)
+🚴🏽   :bicyclist_tone3: (bicyclist tone 3)
+🚴🏾   :bicyclist_tone4: (bicyclist tone 4)
+🚴🏿   :bicyclist_tone5: (bicyclist tone 5)
+🚵🏻   :mountain_bicyclist_tone1: (mountain bicyclist tone 1)
+🚵🏼   :mountain_bicyclist_tone2: (mountain bicyclist tone 2)
+🚵🏽   :mountain_bicyclist_tone3: (mountain bicyclist tone 3)
+🚵🏾   :mountain_bicyclist_tone4: (mountain bicyclist tone 4)
+🚵🏿   :mountain_bicyclist_tone5: (mountain bicyclist tone 5)
+🏇🏻   :horse_racing_tone1: (horse racing tone 1)
+🏇🏼   :horse_racing_tone2: (horse racing tone 2)
+🏇🏽   :horse_racing_tone3: (horse racing tone 3)
+🏇🏾   :horse_racing_tone4: (horse racing tone 4)
+🏇🏿   :horse_racing_tone5: (horse racing tone 5)
+🕵🏻   :spy_tone1: :sleuth_or_spy_tone1: (sleuth or spy tone 1)
+🕵🏼   :spy_tone2: :sleuth_or_spy_tone2: (sleuth or spy tone 2)
+🕵🏽   :spy_tone3: :sleuth_or_spy_tone3: (sleuth or spy tone 3)
+🕵🏾   :spy_tone4: :sleuth_or_spy_tone4: (sleuth or spy tone 4)
+🕵🏿   :spy_tone5: :sleuth_or_spy_tone5: (sleuth or spy tone 5)
+🏻   :tone1: (emoji modifier Fitzpatrick type-1-2)
+🏼   :tone2: (emoji modifier Fitzpatrick type-3)
+🏽   :tone3: (emoji modifier Fitzpatrick type-4)
+🏾   :tone4: (emoji modifier Fitzpatrick type-5)
+🏿   :tone5: (emoji modifier Fitzpatrick type-6)
+EOF
