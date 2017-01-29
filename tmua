@@ -1,0 +1,13 @@
+#!/bin/sh
+
+session="${TMUA_SESSION:-default}"
+
+if ! tmux has-session -t "$session" >/dev/null 2>&1; then
+    if test -e ~/.tmux-sessions/"$session"; then
+        . ~/.tmux-sessions/"$session"
+    else
+        tmux new-session -d -s "$session"
+    fi
+fi
+
+exec tmux -u attach-session -t "$session"
