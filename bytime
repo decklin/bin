@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+if i = ARGV.index('--')
+  cmd = ARGV.slice!(0, i)
+  ARGV.shift
+else
+  cmd = [ARGV.shift]
+end
+
+system *cmd, *ARGV.sort_by {|path| File.mtime(path) }
