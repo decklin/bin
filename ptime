@@ -17,6 +17,7 @@ options = parse_args do |opts|
   on('-m', '--minutes') { opts.mode = :min }
   on('-p', '--posix') { opts.mode = :str; opts.format = '%Y%m%d%H%M.%S' }
   on('-r', '--reference') { opts.reference = true }
+  on('-v', '--verbose') { opts.verbose = true }
 end
 
 def try_clf(d)
@@ -45,11 +46,13 @@ end
 ARGV.each do |arg|
   t = options.reference ? File.mtime(arg) : parse_time(arg)
   if t
-    case options.mode
-    when :iso; puts t.iso8601
-    when :str; puts t.strftime(options.format)
-    when :min; puts ((Time.now - t) / 60).round
+    s = case options.mode
+    when :iso; t.iso8601
+    when :str; t.strftime(options.format)
+    when :min; ((Time.now - t) / 60).round.to_s
     end
+    s += "\t#{arg}" if options.verbose
+    puts s
   else
     STDERR.puts 'All parsing methods failed'
     puts arg
