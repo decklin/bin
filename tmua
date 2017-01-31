@@ -1,10 +1,24 @@
 #!/bin/sh
 
 session="${TMUA_SESSION:-default}"
+sessions_dir=~/.tmux-sessions
+
+# macOS (10.7 and later) specific hack: /etc/profile will *move* the default
+# system directories to the head of PATH, in front of anything already
+# prepended in this shell, when we start a child shell inside the tmux session.
+# To prevent this, reset PATH before starting tmux initially. (Note that tmux
+# must therefore be installed somewhere in the default PATH, and your session
+# file will be sourced with that PATH set).
+
+path_breaker='/usr/libexec/path_helper'
+if test -x "$path_breaker" && grep -q "$path_breaker" /etc/profile; then
+    unset PATH
+    . /etc/profile
+fi
 
 if ! tmux has-session -t "$session" >/dev/null 2>&1; then
-    if test -e ~/.tmux-sessions/"$session"; then
-        . ~/.tmux-sessions/"$session"
+    if test -e "$sessions_dir/$session"; then
+        . "$sessions_dir/$session"
     else
         tmux new-session -d -s "$session"
     fi
