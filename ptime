@@ -11,9 +11,12 @@ def parse_args(&blk)
 end
 
 options = parse_args do |opts|
-  on('-i', '--iso') { opts.format = :iso }
-  on('-m', '--mmin') { opts.format = :mmin }
-  on('-p', '--posix') { opts.format = :posix }
+  opts.mode = :iso
+  on('-i', '--iso') { opts.mode = :iso }
+  on('-f', '--format F') {|arg| opts.mode = :str; opts.format = arg }
+  on('-m', '--minutes') { opts.mode = :min }
+  on('-p', '--posix') { opts.mode = :str; opts.format = '%Y%m%d%H%M.%S' }
+  on('-r', '--reference') { opts.reference = true }
 end
 
 def try_clf(d)
@@ -35,12 +38,17 @@ rescue ArgumentError
   nil
 end
 
+def parse_time(d)
+  try_clf(d) || try_chronic(d) || try_generic(d)
+end
+
 ARGV.each do |arg|
-  if t = try_clf(arg) || try_chronic(arg) || try_generic(arg)
-    case options.format
-    when :iso, nil; puts t.iso8601
-    when :mmin; puts ((Time.now - t) / 60).round
-    when :posix; puts t.strftime('%Y%m%d%H%M.%S')
+  t = options.reference ? File.mtime(arg) : parse_time(arg)
+  if t
+    case options.mode
+    when :iso; puts t.iso8601
+    when :str; puts t.strftime(options.format)
+    when :min; puts ((Time.now - t) / 60).round
     end
   else
     STDERR.puts 'All parsing methods failed'
