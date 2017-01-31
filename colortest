@@ -1,58 +1,70 @@
 #!/bin/sh
 
 color_escape () {
-    printf '\e[%sm' "$@"
+    printf '\e[%sm' "$1"
 }
 
-set_color() {
+get_at() {
     case $1 in
-        black)      FG=30;;
-        red)        FG=31;;
-        green)      FG=32;;
-        yellow)     FG=33;;
-        blue)       FG=34;;
-        magenta)    FG=35;;
-        cyan)       FG=36;;
-        white)      FG=37;;
-        default)    FG=39;;
+        normal)     echo 00;;
+        bold)       echo 01;;
+        italic)     echo 03;;
+        blink)      echo 05;;
+        underscore) echo 04;;
+        reverse)    echo 07;;
+        concealed)  echo 08;;
     esac
-    case $2 in
-        black)      BG=40;;
-        red)        BG=41;;
-        green)      BG=42;;
-        yellow)     BG=43;;
-        blue)       BG=44;;
-        magenta)    BG=45;;
-        cyan)       BG=46;;
-        white)      BG=47;;
-        default)    BG=49;;
-    esac
-    case $3 in
-        normal)     AT=00;;
-        bold)       AT=01;;
-        italic)     AT=03;;
-        blink)      AT=05;;
-        underscore) AT=04;;
-        reverse)    AT=07;;
-        concealed)  AT=08;;
-    esac
-    color_escape "$AT;$BG;$FG"
 }
-
-reset_color () {
-    color_escape 0
+get_bg() {
+    case $1 in
+        black)   echo 40;;
+        red)     echo 41;;
+        green)   echo 42;;
+        yellow)  echo 43;;
+        blue)    echo 44;;
+        magenta) echo 45;;
+        cyan)    echo 46;;
+        white)   echo 47;;
+        default) echo 49;;
+    esac
+}
+get_fg() {
+    case $1 in
+        black)   echo 30;;
+        red)     echo 31;;
+        green)   echo 32;;
+        yellow)  echo 33;;
+        blue)    echo 34;;
+        magenta) echo 35;;
+        cyan)    echo 36;;
+        white)   echo 37;;
+        default) echo 39;;
+    esac
 }
 
 test -z "$*" && set -- normal bold italic blink underscore reverse concealed
 
-for at; do
-    for bg in default black red green yellow blue magenta cyan white default; do
-        for fg in black red green yellow blue magenta cyan white default; do
-            set_color "$fg" "$bg" "$at"
-            printf '%s' "$fg "
-            reset_color
-            printf 'ok '
+for attribute; do
+    echo "# $attribute (with background colors): "
+    for background in default black red green yellow blue magenta cyan white default; do
+        printf '         '
+        for foreground in black red green yellow blue magenta cyan white default; do
+            color_escape "$(get_at "$attribute");$(get_bg "$background");$(get_fg "$foreground")"
+            printf '%s' "$foreground"
+            color_escape '0'
+            test "$foreground" = default || printf ' - '
         done
         echo
     done
+    if test "$(tput colors)" -ge 256; then
+        echo "# $attribute (256 colors): "
+        for i in `seq 16 255`; do
+            test "$((($i+3) % 6))" -eq 1 && printf '     '
+            color_escape "$(get_at "$attribute");38;5;$i"
+            printf 'color=%3d' "$i"
+            color_escape '0'
+            test "$((($i+3) % 6))" -ne 0 && printf ' -- ' || printf '\n'
+        done
+    fi
+    test $# -eq 1 || echo
 done
