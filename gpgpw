@@ -7,7 +7,11 @@ SEP = '/'
 
 class Hash
   def get_in(keys)
-    keys.reduce(self, &:[])
+    if respond_to? :dig # available in Ruby >= 2.3
+      dig(*keys)
+    else
+      keys.reduce(self, &:[])
+    end
   end
   def to_completion_proc
     proc do |str|
