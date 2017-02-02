@@ -1,0 +1,3 @@
+#!/bin/sh
+
+find "${@:-.}" -type d -name .git -print -o \( -name .bundle -o -name cache \) -prune | sed 's@/\.git@@'
