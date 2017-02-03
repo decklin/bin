@@ -1,0 +1,44 @@
+#!/usr/bin/ruby
+
+# Replaces with U+FFFD REPLACEMENT CHARACTER, the diamond thing with a ? in it
+
+def utf8(str, src_encoding=nil)
+  str.encode('UTF-8', src_encoding, :invalid => :replace, :undef => :replace)
+end
+
+# We can't use getoptlong or optparse! We can only do this.
+
+fix_encoding = false
+while ARGV.first.start_with?('-')
+  opt = ARGV.shift
+  case opt
+  when '-f', '--fix'
+    fix_encoding = ARGV.shift
+  else
+    STDERR.puts "unknown option: #{opt}"
+    exit 2
+  end
+end
+
+ARGV.each do |path|
+  unless path.valid_encoding?
+    puts "Invalid encoding: #{utf8(path).inspect}"
+    if fix_encoding
+      puts "  - renaming to: #{utf8(path, fix_encoding)}"
+      File.rename(path, utf8(path, fix_encoding))
+    else
+      relevant_path = File.dirname(path).valid_encoding? ? File.basename(path) : path
+      maybe = Hash.new {|h, k| h[k] = Array.new }
+      Encoding.list.each do |encoding|
+        begin
+          dec = utf8(relevant_path, encoding)
+          maybe[dec] << encoding unless dec.include? "\uFFFD"
+        rescue Encoding::ConverterNotFoundError
+        end
+      end
+      maybe.sort_by {|s, e| e.size }.last(10).reverse_each do |str, encodings|
+        puts "  - valid as: #{str.inspect} (#{encodings.join(', ')})"
+      end
+    end
+  end
+end
