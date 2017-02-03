@@ -13,9 +13,12 @@ end
 options = parse_args do |opts|
   opts.mode = :iso
   on('-i', '--iso') { opts.mode = :iso }
-  on('-f', '--format F') {|arg| opts.mode = :str; opts.format = arg }
-  on('-m', '--minutes') { opts.mode = :min }
-  on('-p', '--posix') { opts.mode = :str; opts.format = '%Y%m%d%H%M.%S' }
+  on('-f', '--format F') {|arg| opts.mode = :format; opts.format = arg }
+  on('-m', '--minutes') { opts.mode = :diff; opts.unit = 60 }
+  on('-h', '--hours') { opts.mode = :diff; opts.unit = 3600 }
+  on('-d', '--days') { opts.mode = :diff; opts.unit = 86400 }
+  on('-o', '--round R') {|arg| opts.round = arg }
+  on('-p', '--posix') { opts.mode = :format; opts.format = '%Y%m%d%H%M.%S' }
   on('-r', '--reference') { opts.reference = true }
   on('-v', '--verbose') { opts.verbose = true }
 end
@@ -47,9 +50,20 @@ ARGV.each do |arg|
   t = options.reference ? File.mtime(arg) : parse_time(arg)
   if t
     s = case options.mode
-    when :iso; t.iso8601
-    when :str; t.strftime(options.format)
-    when :min; ((Time.now - t) / 60).round.to_s
+    when :iso
+      t.iso8601
+    when :format
+      t.strftime(options.format)
+    when :diff
+      diff = ((Time.now - t) / options.unit.to_f).abs
+      case options.round
+      when 'down', 'floor'
+        diff.floor
+      when 'up', 'ceil'
+        diff.ceil
+      else
+        diff.round(options.round.to_i)
+      end
     end
     s += "\t#{arg}" if options.verbose
     puts s
