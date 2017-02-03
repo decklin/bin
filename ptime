@@ -32,7 +32,7 @@ end
 def try_chronic(d)
   require 'chronic'
   Chronic.parse(d)
-rescue ImportError
+rescue LoadError
   nil
 end
 
