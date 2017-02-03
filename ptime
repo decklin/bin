@@ -23,6 +23,12 @@ options = parse_args do |opts|
   on('-v', '--verbose') { opts.verbose = true }
 end
 
+def try_generic(d)
+  Time.parse(d)
+rescue ArgumentError
+  nil
+end
+
 def try_clf(d)
   Time.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
 rescue ArgumentError
@@ -36,14 +42,8 @@ rescue LoadError
   nil
 end
 
-def try_generic(d)
-  Time.parse(d)
-rescue ArgumentError
-  nil
-end
-
 def parse_time(d)
-  try_clf(d) || try_chronic(d) || try_generic(d)
+  try_generic(d) || try_clf(d) || try_chronic(d)
 end
 
 ARGV.each do |arg|
