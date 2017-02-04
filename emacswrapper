@@ -8,4 +8,5 @@ test -z "$TMPDIR" -a -e "$HOME/tmp" && export TMPDIR="$HOME/tmp"
 # back to a new emacs, we only need the option on a tty
 test -t 0 && tty=-nw
 
-emacsclient "${tty:--c}" -a false "$@" || emacs ${tty:+-nw} "$@"
+emacsclient -e t >/dev/null 2>&1 && exec emacsclient "${tty:--c}" "$@"
+exec emacs ${tty:+-nw} "$@"
