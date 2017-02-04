@@ -1,27 +1,49 @@
 #!/bin/sh
 
-session="${TMUA_SESSION:-default}"
-sessions_dir=~/.tmux-sessions
+# No (local) default values for options here, in case we're remoting
 
-# macOS (10.7 and later) specific hack: /etc/profile will *move* the default
-# system directories to the head of PATH, in front of anything already
-# prepended in this shell, when we start a child shell inside the tmux session.
-# To prevent this, reset PATH before starting tmux initially. (Note that tmux
-# must therefore be installed somewhere in the default PATH, and your session
-# file will be sourced with that PATH set).
+while getopts d:ps:r: opt; do
+    case $opt in
+        d) sess_dir="$OPTARG";;
+        s) session="$OPTARG";;
+        r) remote_host="$OPTARG";;
+    esac
+done; shift $(($OPTIND - 1))
 
-path_breaker='/usr/libexec/path_helper'
-if test -x "$path_breaker" && grep -q "$path_breaker" /etc/profile; then
-    unset PATH
-    . /etc/profile
-fi
+if test -n "$remote_host"; then
+    # Generate a command to run on the remote side of ssh that sources
+    # our profile (for PATH to tmua and TMUA_SESSION for default
+    # session), tries the given commands in order, and falls back to a
+    # login shell if none of those are available.
+    remote_sess="${session:-default}"
+    remote_cmd=". ~/.profile"
 
-if ! tmux has-session -t "$session" >/dev/null 2>&1; then
-    if test -e "$sessions_dir/$session"; then
-        . "$sessions_dir/$session"
-    else
-        tmux new-session -d -s "$session"
+    # We can override the default remote session/dir (TODO: the tmux
+    # fallback command could warn you if list-sessions says you have
+    # some sessions but none with that name (e.g. you started tmux
+    # previously with no arguments and it created a session named "0").
+    # WARNING: you cannot use spaces in the remote session directory or
+    # session name. No way around this, unfortunately.
+    for cmd in "tmua ${sess_dir:+-d $sess_dir }-s \${TMUA_SESSION:-$remote_sess}" \
+               "tmux new-session -A -s $remote_sess"; do
+        bin="${cmd%% *}"
+        remote_cmd="$remote_cmd; command -v $bin >/dev/null && exec $cmd; echo remote: $bin not found"
+    done
+    remote_cmd="$remote_cmd; echo remote: falling back to login shell; exec \${SHELL:-sh} -l"
+    exec ssh -t "$remote_host" "$remote_cmd"
+else
+    # We're not remoting, so now we can set local defaults.
+    test -n "$sess_dir" || sess_dir=~/.tmux-sessions
+    test -n "$session" || session="$TMUA_SESSION"
+
+    # Create our local session if needed, run custom setup script if it
+    # exists, and attach to it.
+    if ! tmux has-session -t "$session" >/dev/null 2>&1; then
+        if test -e "$sess_dir/$session"; then
+            . "$sess_dir/$session"
+        else
+            tmux new-session -d -s "$session"
+        fi
     fi
+    exec tmux -u attach-session -t "$session"
 fi
-
-exec tmux -u attach-session -t "$session"
