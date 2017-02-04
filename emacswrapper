@@ -1,10 +1,11 @@
 #!/bin/sh
 
-test -t 0 && frame=-nw || frame=-c
-test -n "$*" || set -- -e nil
-
-# in case we haven't fixed sudo to preserve this env var, need
+# In case we haven't fixed sudo to preserve this env var, need
 # to be able to find our socket
 test -z "$TMPDIR" -a -e "$HOME/tmp" && export TMPDIR="$HOME/tmp"
 
-exec emacsclient "$frame" -a emacsnw "$@"
+# For emacsclient, we always want to create a frame; if we fall
+# back to a new emacs, we only need the option on a tty
+test -t 0 && tty=-nw
+
+emacsclient "${tty:--c}" -a false "$@" || emacs ${tty:+-nw} "$@"
