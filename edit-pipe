@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+
+# Like vipe, but:
+#
+#  - If the environment variable EDIT_PIPE_LOOKUP_TTY is set, will look
+#    up the parent shell's tty by running `ps` instead of using /dev/tty
+#    (emacsclient won't work with the latter, and in fact will crash its
+#    server process, so this is the only thing we can do).
+#
+#  - Does not split EDITOR on whitespace. I feel strongly about this.
+#    Also does not consider VISUAL at all; it's no longer the 1980s.
+#
+#  - Will always output the contents of the temp file, even if the
+#    editor fails to run, or exits with a nonzero status (e.g. vi was
+#    quit using :cq). If you want to deliberately avoid output, delete
+#    all the contents.
+#
+#  - Is implemented in Ruby, which doesn't really matter, but Ruby's
+#    standard library makes nicer temp file names. Uses IO::copy_stream,
+#    which in theory is more efficient for very large inputs than
+#    reading all the data into memory at once (of course, you still need
+#    enough memory to load the entire input in your editor!)
+#
+# I recommend the alias `ep`.
+
+require 'tempfile'
+
+def lookup_tty(pid)
+  '/dev/' + IO.popen([{}, 'ps', '-o', 'tty=', pid.to_s]) {|ps| ps.read }.strip
+end
+
+editor = ENV.fetch('EDITOR', 'vi')
+tty = ENV['EDIT_PIPE_LOOKUP_TTY'] ? lookup_tty(Process.ppid) : '/dev/tty'
+
+tmp = Tempfile.new('edit-pipe-')
+IO.copy_stream($stdin, tmp)
+tmp.close
+
+orig_stdout = $stdout.dup
+begin
+  $stdin.reopen(File.open(tty, 'r'))
+  $stdout.reopen(File.open(tty, 'w'))
+  case system editor, tmp.path
+  when false; raise 'editor returned non-success exit status'
+  when nil; raise 'editor could not be started'
+  end
+rescue => err
+  $stderr.puts "failed to run #{editor.inspect} on #{tty.inspect}: #{err}"
+  exit 1
+ensure
+  IO.copy_stream(tmp.path, orig_stdout)
+  tmp.unlink
+end
