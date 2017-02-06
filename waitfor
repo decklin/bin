@@ -1,0 +1,30 @@
+#!/bin/sh
+
+interval=60
+waiting_for=success
+while getopts di:qv opt; do
+    case $opt in
+        d) display_date=yes;;
+        i) interval="$OPTARG";;
+        q) quiet=yes;;
+        v) waiting_for=failure;;
+    esac
+done; shift $(($OPTIND - 1))
+
+run() {
+    if test -n "$quiet"; then
+        "$@" >/dev/null 2>&1
+    else
+        "$@"
+    fi
+}
+
+delay() {
+    test -n "$display_date" && date
+    sleep "$interval"
+}
+
+case $waiting_for in
+    success) until run "$@"; do delay; done;;
+    failure) while run "$@"; do delay; done;;
+esac
