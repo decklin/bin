@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+# Reformat aws ec2 describe-instances output for human consumption
+
+require 'json'
+require 'ostruct'
+
+class ColumnOutput
+  def initialize
+    @out = STDOUT.tty? ? IO.popen('column -t', 'w') : STDOUT
+    yield self
+    @out.close
+  end
+  def <<(cols)
+    @out.puts cols.map {|c| (c.nil? || c.empty?) ? '-' : c }.join("\t")
+  end
+end
+
+begin
+  data = JSON.parse(`aws ec2 describe-instances`)
+rescue => err
+  $stderr.puts "error running aws: #{err}"
+  exit 1
+end
+
+ColumnOutput.new do |output|
+  instances = data['Reservations'].flat_map {|r| r['Instances'] }.map do |i|
+    tags = i['Tags'] || {}
+    name = tags.find {|t| t['Key'] == 'Name' }['Value'] rescue 'NONAME'
+    tags.reject! {|t| t['Key'] == 'Name' }
+    OpenStruct.new.tap do |o|
+      o.id = i['InstanceId']
+      o.type = i['InstanceType']
+      o.image = i['ImageId']
+      o.state = i['State']['Name'].sub(/(ning|inated|ting-down)$/, '')
+      o.zone = i['Placement']['AvailabilityZone']
+      o.groups = i['SecurityGroups'].map {|g| g['GroupName'] }.join(',') rescue nil
+      o.ip = i['PrivateIpAddress']
+      o.dns = i['PublicDnsName'].sub('.amazonaws.com', '') rescue nil
+      o.name = name
+      o.tags = tags
+    end
+  end
+  instances.sort_by(&:name).each do |i|
+    output << [i.id, i.type, i.image, i.state, i.zone, i.groups, i.ip, i.dns, i.name, i.tags]
+  end
+end
