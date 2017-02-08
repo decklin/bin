@@ -1,0 +1,40 @@
+#!/bin/sh
+
+# A multiple-pane launcher for tmux. Give it an initial command,
+# possibly with some args, and each line read from stdin will be added
+# as the final argument to the command. As with dq, if you need to put
+# that arg somewhere in the middle of your command , use sh -c:
+#
+#     ls | tmulp sh -c 'echo "$1"; sleep 5' -
+#
+# Note the very important dash arg to set $0 so that your data is $1.
+
+layout=even-vertical
+while getopts l:sv opt; do
+    case $opt in
+        l) layout="$OPTARG";;
+        s) sync=yes;;
+        v) verbose=yes;;
+        ?) echo "$0: unknown option $opt" 1>&2; exit 2;;
+    esac
+done; shift $(($OPTIND - 1))
+
+if test $# -eq 0; then
+    echo "$0: usage: tmulp COMMAND [INITIAL_ARG...]"
+    exit 2
+fi
+
+open_pane() {
+    test -n "$verbose" && echo "creating pane for: $*" 1>&2
+    tmux split-window -t "$window" -d -l 2 "$@"
+}
+
+fifo=$(mktemp -u)
+mkfifo "$fifo"
+cleanup() { rm -f "$fifo"; }
+trap 'cleanup; exit' INT TERM; trap cleanup EXIT
+
+window=$(tmux new-window -P cat "$fifo")
+while read -r line; do open_pane "$@" "$line"; done > "$fifo"
+test -n "$sync" && tmux set-option -t "$window" synchronize-panes on
+tmux select-layout -t "$window" "$layout"
