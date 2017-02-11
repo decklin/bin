@@ -10,8 +10,17 @@ end
 
 configure do
   set :static, true
-  set :public, 'public'
+  set :public_dir, 'public'
   set :bind, 'localhost'
+end
+
+helpers do
+  def h(s)
+    Rack::Utils.escape_html(s)
+  end
+  def a(s)
+    s =~ %r[^https?://] ? "<a href='#{s}'>#{s}</a>" : s
+  end
 end
 
 get '/' do
@@ -34,7 +43,7 @@ end
 
 post '/:id' do
   l = List.new(params[:id])
-  l.save(l.load - params[:del].to_a + [params[:add]])
+  l.save(l.load - [params[:del]].flatten + [params[:add]])
   redirect request.url, 303
 end
 
@@ -43,17 +52,21 @@ __END__
 @@ layout
 <!DOCTYPE html>
 <title>Groceries</title>
-<style>body { font-family: sans-serif; word-wrap: break-word }</style>
-<link rel="shortcut icon" href="/grocery_icon.png">
-<meta name="viewport" content="width=device-width">
-<form method="post"><%= yield %></form>
-
+<style type=text/css>
+html { font: 16px -apple-system, BlinkSystemFont, sans-serif; word-wrap: break-word }
+ul { list-style: circle; padding: 0; }
+input { font-size: inherit; }
+</style>
+<link rel='shortcut icon' href=/grocery_icon.png>
+<meta name=viewport content='width=device-width'>
+<form method=POST><%= yield %></form>
 @@ welcome
-<p>Create/view a list: <input type="text" name="id"> <input type="submit">
+<p>Create/view a list: <input type=text name=id> <input type=submit>
 <p>Or upload a text file: <kbd>curl -T list <%= request.url %></kbd>
-
 @@ tickyboxes
-<% @items.map {|i| i.gsub('"', '&quot;') }.each do |q| %>
-<input type="checkbox" name="del[]" value="<%= q %>">
-<% if q =~ %r[^https?://] %><a href="<%= q %>"><%= q %></a><% else %><%= q %><% end %><br><% end %>
-<p><input type="text" name="add" autofocus><p><input type="submit">
+<ul>
+<% @items.each do |i| %>
+<li><label><input type=checkbox name='del[]' value='<%= h(i) %>'><%= a(h(i)) %></label>
+<% end %>
+</ul>
+<p><input type=text name=add autofocus><p><input type=submit>
