@@ -21,6 +21,11 @@ helpers do
   def a(s)
     s =~ %r[^https?://] ? "<a href='#{s}'>#{s}</a>" : s
   end
+  def save_and_redir
+    list = List.new(params[:id])
+    list.save(yield(list))
+    redirect request.url, 303
+  end
 end
 
 get '/' do
@@ -28,7 +33,7 @@ get '/' do
 end
 
 post '/' do
-  redirect request.url + params[:id], 303
+  redirect "/#{params[:id]}", 303
 end
 
 get '/:id' do
@@ -37,14 +42,11 @@ get '/:id' do
 end
 
 put '/:id' do
-  List.new(params[:id]).save(request.body.read.split($/))
-  redirect request.url, 303
+  save_and_redir { request.body.read.split($/) }
 end
 
 post '/:id' do
-  l = List.new(params[:id])
-  l.save(l.load - [params[:del]].flatten + [params[:add]])
-  redirect request.url, 303
+  save_and_redir {|list| list.load - [params[:del]].flatten + [params[:add]] }
 end
 
 __END__
