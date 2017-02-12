@@ -1,6 +1,7 @@
 #!/bin/sh
 
-read lat lon < $HOME/lib/geoloc
+# TODO: clocation, if available
+read lat lon < ~/lib/geoloc
 
 while getopts v opt; do
     case $opt in

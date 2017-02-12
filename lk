@@ -4,8 +4,8 @@ banner_url="https://www.kernel.org/finger_banner"
 twitter_url="https://api.twitter.com/1.1/statuses/update.json"
 
 account="$1"; shift
-state_dir="$HOME/var/lk"
-creds="$HOME/lib/lk/$account.creds"
+state_dir=~/var/lk
+creds=~/lib/lk/"$account.creds"
 
 temp=`mktemp` || exit 1
 curl -s "$banner_url" | sed -n 's/^The latest \([^ ]*\) \([^ ]*\) version of the Linux kernel is: *\([^ ]*\) */\1: \3/p' > "$temp"

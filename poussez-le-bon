@@ -5,8 +5,8 @@
 # the Oblique Strategies deck if I haven't committed to anything in some
 # number of days (and therefore probably need some inspiration).
 
-repos_dir="$HOME/pub/git"
-fortune_dir="$HOME/lib/oblique"
+repos_dir=~/pub/git
+fortune_dir=~/lib/oblique
 mail_subj='oblique strategy'
 mail_dest='mobile'
 
