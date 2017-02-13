@@ -28,13 +28,13 @@ fi
 setup_fifo() {
     fifo=$(mktemp -u)
     mkfifo "$fifo"
-    cleanup() { rm -f "$fifo"; }
-    trap 'cleanup; exit' INT TERM; trap cleanup EXIT
+    cleanup() { rm -f "$fifo" && trap - INT TERM EXIT; }
+    trap 'cleanup; exit' INT TERM; trap 'cleanup' EXIT
 }
 
 create_pane() {
     if test -p "$fifo"; then
-        tmux split-window -t "$window" "$@" >"$fifo" && cleanup && trap - INT TERM EXIT
+        tmux split-window -t "$window" "$@" && : >"$fifo" && cleanup
     else
         tmux list-panes -t "$window" -F '#{pane_height} #{pane_id}' | sort -n | tail -1 |
             (read h p; tmux split-window -t "$p" -l "$(($h - min_lines - 1))" -d "$@")
