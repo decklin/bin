@@ -32,6 +32,8 @@ cleanup() { rm -f "$fifo"; }
 trap 'cleanup; exit' INT TERM; trap cleanup EXIT
 
 window=$(tmux new-window -P cat "$fifo")
+test -n "$sync" && tmux set-option -t "$window" synchronize-panes on
+
 while read -r line; do
     if tmux split-window -t "$window" -d -l "$min_lines" "$@" "$line"; then
         test -z "$verbose" || echo "created pane for: $* $line"
@@ -41,5 +43,4 @@ while read -r line; do
 done
 : >"$fifo"
 
-test -n "$sync" && tmux set-option -t "$window" synchronize-panes on
 tmux select-layout -t "$window" "$layout"
