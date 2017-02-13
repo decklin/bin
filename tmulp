@@ -26,17 +26,20 @@ if test $# -eq 0; then
     exit 2
 fi
 
-open_pane() {
-    test -n "$verbose" && echo "creating pane for: $*" 1>&2
-    tmux split-window -t "$window" -d -l "$min_lines" "$@"
-}
-
 fifo=$(mktemp -u)
 mkfifo "$fifo"
 cleanup() { rm -f "$fifo"; }
 trap 'cleanup; exit' INT TERM; trap cleanup EXIT
 
 window=$(tmux new-window -P cat "$fifo")
-while read -r line; do open_pane "$@" "$line"; done > "$fifo"
+while read -r line; do
+    if tmux split-window -t "$window" -d -l "$min_lines" "$@" "$line"; then
+        test -z "$verbose" || echo "created pane for: $* $line"
+    else
+        echo "error! failed to create pane for: $* $line" 1>&2
+    fi
+done
+: >"$fifo"
+
 test -n "$sync" && tmux set-option -t "$window" synchronize-panes on
 tmux select-layout -t "$window" "$layout"
