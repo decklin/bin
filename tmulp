@@ -26,6 +26,13 @@ if test $# -eq 0; then
     exit 2
 fi
 
+setup_fifo() {
+    fifo=$(mktemp -u)
+    mkfifo "$fifo"
+    cleanup() { rm -f "$fifo"; }
+    trap 'cleanup; exit' INT TERM; trap cleanup EXIT
+}
+
 create_pane() {
     if test -p "$fifo"; then
         tmux split-window -t "$window" "$@" >"$fifo" && cleanup && trap - INT TERM EXIT
@@ -35,10 +42,7 @@ create_pane() {
     fi
 }
 
-fifo=$(mktemp -u)
-mkfifo "$fifo"
-cleanup() { rm -f "$fifo"; }
-trap 'cleanup; exit' INT TERM; trap cleanup EXIT
+setup_fifo
 
 window=$(tmux new-window -P cat "$fifo")
 test -n "$sync" && tmux set-option -t "$window" synchronize-panes on
