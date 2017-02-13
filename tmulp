@@ -26,6 +26,15 @@ if test $# -eq 0; then
     exit 2
 fi
 
+create_pane() {
+    if test -p "$fifo"; then
+        tmux split-window -t "$window" "$@" >"$fifo" && cleanup && trap - INT TERM EXIT
+    else
+        tmux list-panes -t "$window" -F '#{pane_height} #{pane_id}' | sort -n | tail -1 |
+            (read h p; tmux split-window -t "$p" -l "$(($h - min_lines - 1))" -d "$@")
+    fi
+}
+
 fifo=$(mktemp -u)
 mkfifo "$fifo"
 cleanup() { rm -f "$fifo"; }
@@ -35,12 +44,11 @@ window=$(tmux new-window -P cat "$fifo")
 test -n "$sync" && tmux set-option -t "$window" synchronize-panes on
 
 while read -r line; do
-    if tmux split-window -t "$window" -d -l "$min_lines" "$@" "$line"; then
+    if create_pane "$@" "$line"; then
         test -z "$verbose" || echo "created pane for: $* $line"
     else
         echo "error! failed to create pane for: $* $line" 1>&2
     fi
 done
-: >"$fifo"
 
 tmux select-layout -t "$window" "$layout"
