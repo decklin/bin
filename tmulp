@@ -10,9 +10,11 @@
 # Note the very important dash arg to set $0 so that your data is $1.
 
 layout=even-vertical
-while getopts l:sv opt; do
+min_lines=2
+while getopts l:m:sv opt; do
     case $opt in
         l) layout="$OPTARG";;
+        m) min_lines="$OPTARG";;
         s) sync=yes;;
         v) verbose=yes;;
         ?) echo "$0: unknown option $opt" 1>&2; exit 2;;
@@ -26,7 +28,7 @@ fi
 
 open_pane() {
     test -n "$verbose" && echo "creating pane for: $*" 1>&2
-    tmux split-window -t "$window" -d -l 2 "$@"
+    tmux split-window -t "$window" -d -l "$min_lines" "$@"
 }
 
 fifo=$(mktemp -u)
