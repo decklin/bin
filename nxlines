@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+n_lines = ARGV.shift.to_i
+
+$stdin.each_line.each_slice(n_lines) do |lines|
+  IO.popen(ARGV, 'w') do |cmd|
+    cmd.puts lines
+  end
+end
