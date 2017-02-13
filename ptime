@@ -23,27 +23,32 @@ options = parse_args do |opts|
   on('-v', '--verbose') { opts.verbose = true }
 end
 
-def try_generic(d)
-  Time.parse(d)
-rescue ArgumentError
-  nil
+class Time
+  def self.ncsa_clf(str)
+    strptime(str, '%d/%b/%Y:%H:%M:%S %z')
+  end
 end
 
-def try_clf(d)
-  Time.strptime(d, '%d/%b/%Y:%H:%M:%S %z')
-rescue ArgumentError
-  nil
+def parse_time(str)
+  t = nil
+  # If we know Chronic is required, skip the faster strategies
+  unless str =~ /today|yesterday|ago|hence|before|from|this|last/
+    %i[rfc2822 httpdate xmlschema ncsa_clf parse].each do |m|
+      begin
+        t ||= Time.send(m, str)
+        break
+      rescue ArgumentError
+      end
+    end
+  end
+  t ||= try_chronic(str)
 end
 
-def try_chronic(d)
+def try_chronic(str)
   require 'chronic'
-  Chronic.parse(d)
+  Chronic.parse(str)
 rescue LoadError
   nil
-end
-
-def parse_time(d)
-  try_generic(d) || try_clf(d) || try_chronic(d)
 end
 
 ARGV.each do |arg|
