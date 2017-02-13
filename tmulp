@@ -9,7 +9,6 @@
 #
 # Note the very important dash arg to set $0 so that your data is $1.
 
-layout=even-vertical
 min_lines=2
 while getopts l:m:sv opt; do
     case $opt in
@@ -45,7 +44,7 @@ create_pane() {
 setup_fifo
 
 window=$(tmux new-window -P cat "$fifo")
-test -n "$sync" && tmux set-option -t "$window" synchronize-panes on
+test -z "$sync" || tmux set-option -t "$window" synchronize-panes on
 
 while read -r line; do
     if create_pane "$@" "$line"; then
@@ -55,4 +54,4 @@ while read -r line; do
     fi
 done
 
-tmux select-layout -t "$window" "$layout"
+test -z "$layout" || tmux select-layout -t "$window" "$layout"
