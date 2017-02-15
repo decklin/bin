@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+# Almost everything here is from edit-pipe, just cut down a lot
+
+def lookup_tty(pid)
+  '/dev/' + IO.popen([{}, 'ps', '-o', 'tty=', pid.to_s]) {|ps| ps.read }.strip
+end
+
+editor = ENV.fetch('EDITOR', 'vi')
+tty = ENV['NXEDIT_LOOKUP_TTY'] ? lookup_tty(Process.ppid) : '/dev/tty'
+args = $stdin.read.split($/)
+
+$stdin.reopen(File.open(tty, 'r'))
+$stdout.reopen(File.open(tty, 'w'))
+begin
+  case system editor, *args
+  when false; exit $?.exitstatus
+  when nil; raise 'exec failed'
+  end
+rescue => err
+  $stderr.puts "failed to run #{editor.inspect} on #{tty.inspect}: #{err}"
+  exit 1
+end
