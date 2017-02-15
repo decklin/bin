@@ -6,7 +6,7 @@ name_and_size() {
 
 image_list() {
     for i; do
-        echo "<p>$(name_and_size "$i" | html-escape)<br><img src='$i'>"
+        echo "<p>$(name_and_size "$i" | cheaphtml)<br><img src='$i'>"
     done
 }
 

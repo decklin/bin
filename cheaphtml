@@ -1,11 +1,18 @@
 #!/usr/bin/python
 
+import argparse
 import sys
+import re
 import cgi
 
-s = sys.stdin.read().rstrip('\n')
-s = cgi.escape(s)
-s = s.replace('\n', '<br>\n')
-s = s.replace('<br>\n<br>\n', '\n\n<p>')
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--paragraphs', action='store_true')
+    args = parser.parse_args()
 
-print '<p>' + s
+    data = sys.stdin.read()
+    if args.paragraphs:
+        for p in re.split(r'\n{2,}', data.strip('\n')):
+            print '<p>' + cgi.escape(p).replace('\n', '<br>\n')
+    else:
+        sys.stdout.write(cgi.escape(data))
