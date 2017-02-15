@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+
+module Enumerable
+  def mean
+    reduce(&:+) / size.to_f
+  end
+  def zip_self
+    :zip.to_proc[*self]
+  end
+end
+
+Color = Struct.new(:hash, :alpha, :nibbles, :parts) do
+  def self.parse(spec)
+    new.tap do |c|
+      if spec.start_with? '#'
+        spec.slice!(0)
+        c.hash = true
+      end
+      if spec =~ /\H/
+        raise "color #{spec} contains non-hex characters"
+      end
+
+      case spec.size
+      when 3 # web shorthand for 8-bit
+        c.nibbles = 2
+        parts = spec.scan(/\h{1}/)
+      when 6, 8 # 8-bit
+        c.nibbles = 2
+        parts = spec.scan(/\h{2}/)
+      when 9 # 12-bits, probably only X11, can't do alpha
+        c.nibbles = 3
+        parts = spec.scan(/\h{3}/)
+      when 12, 16 # 16-bit
+        c.nibbles = 4
+        parts = spec.scan(/\h{4}/)
+      else
+        raise "color #{spec} is #{spec.size} characters"
+      end
+
+      if parts.size == 3
+        parts << 'ffff'
+      else
+        c.alpha = true
+      end
+
+      # Treat all shorter-than-16-bit values as scaled, not just web
+      # shorthand. If you want truncated, explicitly add zeros.
+
+      c.parts = parts.map do |p|
+        p += p.slice(0, 4 - p.size) while p.size < 4
+        p.hex
+      end
+    end
+  end
+
+  def self.mean(colors)
+    new(colors.any? {|c| c.hash },
+        colors.any? {|c| c.alpha },
+        colors.map {|c| c.nibbles }.max,
+        colors.map {|c| c.parts }.zip_self.map {|bs| bs.mean.to_i })
+  end
+
+  def to_s
+    "#{'#' if hash}#{parts.slice(0, alpha ? 4 : 3).map {|b| ('%x' % b).slice(0, nibbles) }.join}"
+  end
+end
+
+ARGF.each_line do |line|
+  begin
+    puts Color.mean(line.chomp.split.map {|s| Color.parse(s) })
+  rescue => err
+    STDERR.puts "error: #{err}"
+    exit 1
+  end
+end
