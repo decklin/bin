@@ -1,0 +1,34 @@
+#!/bin/sh
+
+vol_name=$1
+size_mib=$2
+shift 2
+
+blocks=$(($size_mib * 2048))
+mount_point="/Volumes/$vol_name"
+
+if test -e "$mount_point"; then
+    echo "Nope, $mount_point already exists!" 2>&1
+    exit 1
+fi
+
+echo "Creating: $size_mib MiB RAM disk on $mount_point"
+disk="$(hdiutil attach -nomount "ram://$blocks")"
+case $disk in
+    /dev/disk*)
+        # Apple's hdiutil prints into a buffer and fills it with spaces, then a tab. Yes really.
+        disk="${disk%% *}";;
+    *)
+        echo "Unrecognized output from hdiutil, aborting: $disk" 1>&2
+        exit 1;;
+esac
+diskutil erasevolume HFS+ "$vol_name" "$disk"
+
+echo "Running: $*"
+if "$@"; then
+    echo "Success!"
+    umount "$mount_point"
+    hdiutil detach "$disk"
+else
+    echo "Failed! You'll need to unmount $mount_point and detach $disk after investigating."
+fi
