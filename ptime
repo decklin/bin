@@ -11,14 +11,15 @@ def parse_args(&blk)
 end
 
 options = parse_args do |opts|
-  opts.mode = :iso
-  on('-i', '--iso') { opts.mode = :iso }
-  on('-f', '--format F') {|arg| opts.mode = :format; opts.format = arg }
-  on('-m', '--minutes') { opts.mode = :diff; opts.unit = 60 }
-  on('-h', '--hours') { opts.mode = :diff; opts.unit = 3600 }
-  on('-d', '--days') { opts.mode = :diff; opts.unit = 86400 }
+  opts.output = :strftime
+  opts.format = '%F %T %Z'
+  on('-i', '--iso') { opts.output = :iso8601 }
+  on('-f', '--format F') {|arg| opts.output = :strftime; opts.format = arg }
+  on('-m', '--minutes') { opts.output = :diff; opts.unit = 60 }
+  on('-h', '--hours') { opts.output = :diff; opts.unit = 3600 }
+  on('-d', '--days') { opts.output = :diff; opts.unit = 86400 }
   on('-o', '--round R') {|arg| opts.round = arg }
-  on('-p', '--posix') { opts.mode = :format; opts.format = '%Y%m%d%H%M.%S' }
+  on('-p', '--posix') { opts.output = :strftime; opts.format = '%Y%m%d%H%M.%S' }
   on('-r', '--reference') { opts.reference = true }
   on('-v', '--verbose') { opts.verbose = true }
 end
@@ -54,10 +55,10 @@ end
 ARGV.each do |arg|
   t = options.reference ? File.mtime(arg) : parse_time(arg)
   if t
-    s = case options.mode
-    when :iso
+    out = case options.output
+    when :iso8601
       t.iso8601
-    when :format
+    when :strftime
       t.strftime(options.format)
     when :diff
       diff = ((Time.now - t) / options.unit.to_f).abs
@@ -70,8 +71,8 @@ ARGV.each do |arg|
         diff.round(options.round.to_i)
       end
     end
-    s += "\t#{arg}" if options.verbose
-    puts s
+    out += "\t#{arg}" if options.verbose
+    puts out
   else
     STDERR.puts 'All parsing methods failed'
     puts arg
