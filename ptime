@@ -4,6 +4,8 @@ require 'time'
 require 'optparse'
 require 'ostruct'
 
+EPOCH_MAX = 1 << 31
+
 def parse_args(&blk)
   OpenStruct.new.tap do |o|
     OptionParser.new.instance_exec(o, &blk).parse!
@@ -11,6 +13,7 @@ def parse_args(&blk)
 end
 
 options = parse_args do |opts|
+  opts.source = :parse
   opts.output = :strftime
   opts.format = '%F %T %Z'
   on('-i', '--iso') { opts.output = :iso8601 }
@@ -20,7 +23,8 @@ options = parse_args do |opts|
   on('-d', '--days') { opts.output = :diff; opts.unit = 86400 }
   on('-o', '--round R') {|arg| opts.round = arg }
   on('-p', '--posix') { opts.output = :strftime; opts.format = '%Y%m%d%H%M.%S' }
-  on('-r', '--reference') { opts.reference = true }
+  on('-r', '--reference') { opts.source = :mtime }
+  on('-e', '--epoch') { opts.source = :epoch }
   on('-v', '--verbose') { opts.verbose = true }
 end
 
@@ -53,7 +57,16 @@ rescue LoadError
 end
 
 ARGV.each do |arg|
-  t = options.reference ? File.mtime(arg) : parse_time(arg)
+  t = case options.source
+  when :parse
+    parse_time(arg)
+  when :mtime
+    File.mtime(arg)
+  when :epoch
+    s = arg.to_f
+    s /= 1000 while s >= EPOCH_MAX
+    Time.at(s)
+  end
   if t
     out = case options.output
     when :iso8601
