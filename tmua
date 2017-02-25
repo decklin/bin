@@ -2,8 +2,9 @@
 
 # No (local) default values for options here, in case we're remoting
 
-while getopts d:ps:r: opt; do
+while getopts bd:ps:r: opt; do
     case $opt in
+        b) background=yes;;
         d) sess_dir="$OPTARG";;
         s) session="$OPTARG";;
         r) remote_host="$OPTARG";;
@@ -45,5 +46,5 @@ else
             tmux new-session -d -s "$session"
         fi
     fi
-    exec tmux -u attach-session -t "$session"
+    test -n "$background" || exec tmux -u attach-session -t "$session"
 fi
