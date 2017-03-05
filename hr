@@ -1,0 +1,30 @@
+#!/bin/sh
+
+get_cols() { echo $((${COLUMNS:-`tput cols`} - 1)); }
+get_lines() { echo $((${LINES:-`tput lines`} - 1)); }
+
+repeat_str() {
+    printf '%0*s' "$1" | tr 0 "$2"
+}
+print_hr() {
+    printf '%s\n' "$(repeat_str "$(get_cols)" -)"
+}
+print_blank_lines() {
+    repeat_str "${1:-$(get_lines)}" '\n'
+}
+print_center_str() {
+    printf '%*s\n' $(((`get_cols` + ${#1}) / 2)) "$1"
+}
+
+print_hr
+case $1 in
+    '') print_blank_lines;;
+    -*) n=${1#-}
+        case $n in
+            '') exit;;
+            *[!0-9]*) print_center_str "$*";;
+            *) print_blank_lines "$n";;
+        esac;;
+    *) print_center_str "$*";;
+esac
+print_hr
