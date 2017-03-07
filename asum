@@ -1,0 +1,74 @@
+#!/bin/sh
+
+column=0
+calc=sum
+while getopts c:C:e:E:F:agpsD:KMG opt; do
+    case $opt in
+        c) column=$OPTARG;;
+        C) summand=$OPTARG;;
+        e) pattern=$OPTARG;;
+        E) filter=$OPTARG;;
+        F) field_sep=$OPTARG;;
+        a) calc=mean.arithmetic;;
+        g) calc=mean.geometric;;
+        p) calc=stdev.population;;
+        s) calc=stdev.sample;;
+        D) div=$OPTARG;;
+        K) div=2^10;;
+        M) div=2^20;;
+        G) div=2^30;;
+        ?) echo "unknown option: $opt" 1>&2; exit 2;;
+    esac
+done; shift $((OPTIND - 1))
+
+# Note that it's OK to specify neither a full filter (-E) nor a simple
+# pattern (-e). In that case we operate on every line (it's just awk).
+if test -z "$filter" -a -n "$pattern"; then
+    filter="/$pattern/"
+fi
+if test -z "$summand"; then
+    summand="\$$column"
+fi
+
+# Use this instead of NR because we don't want to count lines that
+# didn't match the filter. Could simplify this away if we are operating
+# without a filter and use NR as the variable, I suppose, but it's not
+# exactly expensive.
+nr_var='__asum_nr__'
+main_expr="$nr_var += 1"
+
+# Everything keeps track of the current sum; for stdev etc we might
+# add more to main_expr.
+sum_var='__asum_sum__'
+main_expr="$main_expr; $sum_var += $summand"
+
+# Results we can calculate
+case $calc in
+    mean.arithmetic)
+        result_expr="($sum_var) / $nr_var";;
+    mean.geometric)
+        summand="($summand) == 0 ? 0 : 1.0 / ($summand)"
+        result_expr="$nr_var / ($sum_var)";;
+    stdev.*)
+        ssq_var='__asum_ssq__'
+        main_expr="$main_expr; $ssq_var += ($summand) ^ 2"
+        case ${calc#stdev.} in
+            population) stdev_div="$nr_var";;
+            sample) stdev_div="$nr_var - 1";;
+        esac
+        result_expr="(($ssq_var - $sum_var ^ 2 / $nr_var) / ($stdev_div))";;
+    sum)
+        result_expr="$sum_var";;
+esac
+
+if test -z "$result_expr"; then
+    echo "internal error: unknown calculation type $calc" 1>&2
+    exit 2
+fi
+
+# Filters to apply after that
+if test -n "$div"; then
+    result_expr="($result_expr) / ($div)"
+fi
+
+awk ${field_sep:+-F "$field_sep"} "$filter { $main_expr } END { print $result_expr }" "$@"
