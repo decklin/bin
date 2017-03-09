@@ -46,7 +46,17 @@ def parse_time(str)
       end
     end
   end
-  t ||= try_chronic(str)
+  # If it's 7+ digits (>= 1 million seconds == 1970-01-12 13:46:40),
+  # Chronic won't parse it as HHMMSS, and if we've gotten here, we know
+  # Time.parse didn't like it either, so assume it's unambiguously an
+  # epoch time even though --epoch wasn't specified.
+  t ||= str =~ /^\d{7,}$/ ? parse_epoch(str) : try_chronic(str)
+end
+
+def parse_epoch(str)
+  t = str.to_f
+  t /= 1000 while t >= EPOCH_MAX
+  Time.at(t)
 end
 
 def try_chronic(str)
@@ -63,9 +73,7 @@ ARGV.each do |arg|
   when :mtime
     File.mtime(arg)
   when :epoch
-    s = arg.to_f
-    s /= 1000 while s >= EPOCH_MAX
-    Time.at(s)
+    parse_epoch(arg)
   end
   if t
     out = case options.output
