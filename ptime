@@ -35,13 +35,11 @@ class Time
 end
 
 def parse_time(str)
-  t = nil
   # If we know Chronic is required, skip the faster strategies
   unless str =~ /today|yesterday|ago|hence|before|from|this|last/
     %i[rfc2822 httpdate xmlschema ncsa_clf parse].each do |m|
       begin
-        t ||= Time.send(m, str)
-        break
+        return Time.send(m, str)
       rescue ArgumentError
       end
     end
@@ -50,7 +48,7 @@ def parse_time(str)
   # Chronic won't parse it as HHMMSS, and if we've gotten here, we know
   # Time.parse didn't like it either, so assume it's unambiguously an
   # epoch time even though --epoch wasn't specified.
-  t ||= str =~ /^\d{7,}$/ ? parse_epoch(str) : try_chronic(str)
+  str =~ /^\d{7,}$/ ? parse_epoch(str) : try_chronic(str)
 end
 
 def parse_epoch(str)
@@ -62,7 +60,8 @@ end
 def try_chronic(str)
   require 'chronic'
   Chronic.parse(str)
-rescue LoadError
+rescue LoadError => err
+  STDERR.puts err
   nil
 end
 
