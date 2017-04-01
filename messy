@@ -1,29 +1,16 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # Suggested usage: either from cron on Monday morning (for always-on
-# systems), or in shell init (for everywhere else) with something like:
-#
-#     test -n "$(find ~/mess -mtime -7)" || messy
-#
-# Although you probably want more like 6 and a half days to avoid
-# slipping into Tuesday (replace -7 with -6d12h on BSD, -6.5 on GNU).
+# systems), or in shell init (for laptops etc).
 
 link=${1:-~/mess}
 unfiled_relative_to_link=${2:-unfiled}
 week=$(date +%Y-W%V)
-target="$unfiled_relative_to_link/$week"
-
-update_symlink() {
-    # BSD ln wants -h, GNU wants -T (to not follow an existing link in order
-    # for -f to unlink it). Oh well. Just call rm, it's not atomic anyway.
-    rm -f "$2"
-    ln -s "$1" "$2"
-}
+target=$unfiled_relative_to_link/$week
 
 if test "$(readlink "$link")" != "$target"; then
-    echo "welcome to week $week! creating scratch dir and updating $link."
+    echo "Welcome to week $week! creating scratch dir and updating link:"
     mkdir -p "$target"
-    update_symlink "$target" "$link"
-else
-    echo "$link is up to date for $week."
+    ln -sfn "$target" "$link"
+    ls -l "$link"
 fi
